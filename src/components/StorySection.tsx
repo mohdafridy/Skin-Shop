@@ -50,9 +50,12 @@ export default function StorySection({
           {cta && (
             <Link
               href={cta.href}
-              className="mt-7 inline-block rounded-full bg-burgundy px-7 py-3 text-sm font-medium text-ivory transition hover:bg-burgundy-dark"
+              className="group mt-7 inline-flex items-center gap-1.5 text-sm font-medium text-burgundy hover:underline"
             >
               {cta.label}
+              <span aria-hidden="true" className="transition group-hover:translate-x-0.5">
+                →
+              </span>
             </Link>
           )}
         </Reveal>

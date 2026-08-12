@@ -29,7 +29,7 @@ export default function HomePage() {
         ]}
         image="/images/kashmir/story-editorial.jpg"
         imageLabel="From Kashmir, with care"
-        cta={{ label: "Discover Our Story", href: "/our-story" }}
+        cta={{ label: "Read Our Story", href: "/our-story" }}
       />
 
       <ShopByRitual />
