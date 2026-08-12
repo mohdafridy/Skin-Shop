@@ -1,0 +1,173 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  REFUNDED
+  PAYMENT_FAILED
+}
+
+enum DiscountType {
+  PERCENTAGE
+  FIXED
+}
+
+enum LineItemType {
+  PRODUCT
+  COMBO
+}
+
+/// Mirrors src/data/products.ts. Prices are whole-currency-unit integers
+/// (e.g. 380 = ₹380), matching formatPrice()/the rest of the site — NOT
+/// Stripe's smallest-unit convention. Conversion to paise happens only at
+/// the Stripe API boundary (see src/lib/stripe.ts).
+model Product {
+  id         String      @id @default(cuid())
+  slug       String      @unique
+  name       String
+  shortName  String?
+  category   String
+  collection String
+  price      Int
+  currency   String      @default("INR")
+  image      String
+  active     Boolean     @default(true)
+  /// null = not stock-tracked (unlimited). Set a number to enable tracking.
+  stock      Int?
+  orderItems OrderItem[]
+  comboItems ComboItem[]
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+
+  @@index([active])
+}
+
+/// Mirrors src/data/combos.ts. A combo's price is its own locked bundle
+/// price — never the sum of its constituent products (see getComboPricing
+/// in src/data/combos.ts, which computes the "you save" figure from live
+/// product prices rather than storing it).
+model Combo {
+  id         String      @id @default(cuid())
+  slug       String      @unique
+  name       String
+  price      Int
+  currency   String      @default("INR")
+  image      String
+  active     Boolean     @default(true)
+  stock      Int?
+  items      ComboItem[]
+  orderItems OrderItem[]
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+
+  @@index([active])
+}
+
+model ComboItem {
+  id        String  @id @default(cuid())
+  comboId   String
+  combo     Combo   @relation(fields: [comboId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+  quantity  Int     @default(1)
+
+  @@unique([comboId, productId])
+}
+
+model Coupon {
+  id              String       @id @default(cuid())
+  code            String       @unique
+  type            DiscountType
+  value           Int
+  minimumSubtotal Int?
+  maxDiscount     Int?
+  usageLimit      Int?
+  timesUsed       Int          @default(0)
+  active          Boolean      @default(true)
+  startsAt        DateTime?
+  expiresAt       DateTime?
+  orders          Order[]
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+}
+
+model Order {
+  id              String      @id @default(cuid())
+  orderNumber     String      @unique
+  email           String
+  customerName    String?
+  phone           String?
+  /// "cart" or "buy_now" — determines whether /order-success is allowed to
+  /// clear the persistent cart (a Buy Now purchase must never touch cart
+  /// items the customer didn't check out).
+  source          String      @default("cart")
+  status          OrderStatus @default(PENDING)
+  subtotal        Int
+  discount        Int         @default(0)
+  shipping        Int         @default(0)
+  tax             Int         @default(0)
+  total           Int
+  currency        String      @default("INR")
+  couponId        String?
+  coupon          Coupon?     @relation(fields: [couponId], references: [id], onDelete: SetNull)
+  stripeSessionId String?     @unique
+  stripePaymentId String?
+  shippingName    String?
+  shippingLine1   String?
+  shippingLine2   String?
+  shippingCity    String?
+  shippingState   String?
+  shippingPostal  String?
+  shippingCountry String?
+  items           OrderItem[]
+  paidAt          DateTime?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  @@index([email])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model OrderItem {
+  id        String       @id @default(cuid())
+  orderId   String
+  order     Order        @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  type      LineItemType
+  slug      String?
+  productId String?
+  product   Product?     @relation(fields: [productId], references: [id])
+  comboId   String?
+  combo     Combo?       @relation(fields: [comboId], references: [id])
+  name      String
+  image     String?
+  unitPrice Int
+  quantity  Int
+  lineTotal Int
+  createdAt DateTime     @default(now())
+}
+
+model NewsletterSubscriber {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ProcessedStripeEvent {
+  id        String   @id
+  type      String
+  createdAt DateTime @default(now())
+}

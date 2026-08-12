@@ -13,6 +13,22 @@ export type OrderForPayment = {
   currency: string;
   customerEmail: string;
   customerName: string;
+  lines: { type: "product" | "combo"; slug: string; quantity: number }[];
+  couponCode?: string | null;
+  /** "cart" for a normal checkout, "buy_now" when the persistent cart was
+   * never touched — order-success must only clear the cart for "cart". */
+  source: "cart" | "buy_now";
+  shipping: {
+    name: string;
+    email: string;
+    phone: string;
+    address1: string;
+    address2?: string | null;
+    city: string;
+    state: string;
+    postalCode: string;
+    country: string;
+  };
 };
 
 export type PaymentInitiationResult =

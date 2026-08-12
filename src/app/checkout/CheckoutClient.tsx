@@ -162,7 +162,7 @@ function validate(form: FormState): Record<string, string> {
   return errors;
 }
 
-export default function CheckoutClient() {
+export default function CheckoutClient({ isPaymentConfigured }: { isPaymentConfigured: boolean }) {
   const { lines, mode, error: linesError } = useOrderLines();
   const { couponCode, discount, applyCoupon, removeCoupon, clearCart } = useCart();
   const [form, setForm] = useState<FormState>(initialForm);
@@ -203,6 +203,7 @@ export default function CheckoutClient() {
     }
 
     setSubmitting(true);
+    setPaymentPending(null);
     const provider = getActivePaymentProvider();
     const result = await provider.initiate({
       orderNumber: "PENDING",
@@ -210,15 +211,31 @@ export default function CheckoutClient() {
       currency,
       customerEmail: form.email,
       customerName: `${form.firstName} ${form.lastName}`,
+      lines: lines.map((l) => ({ type: l.type, slug: l.slug, quantity: l.quantity })),
+      couponCode: mode === "cart" ? couponCode : null,
+      source: mode === "buynow" ? "buy_now" : "cart",
+      shipping: {
+        name: `${form.firstName} ${form.lastName}`,
+        email: form.email,
+        phone: form.phone,
+        address1: form.address1,
+        address2: form.address2 || null,
+        city: form.city,
+        state: form.state,
+        postalCode: form.postalCode,
+        country: form.country,
+      },
     });
-    setSubmitting(false);
 
     if (result.status === "unavailable") {
+      setSubmitting(false);
       setPaymentPending(result.reason);
       return;
     }
-    // A configured provider (redirect / client-side) would be handled here
-    // once one exists. Nothing today reaches this branch.
+    if (result.status === "redirect") {
+      // Leave `submitting` true — the page is navigating away to Stripe.
+      window.location.assign(result.url);
+    }
   }
 
   if (linesError) {
@@ -488,13 +505,23 @@ export default function CheckoutClient() {
 
           <fieldset>
             <legend className="mb-4 font-display text-xl text-ink">Payment</legend>
-            <div className="rounded-2xl border border-dashed border-gold/40 bg-sand/40 px-5 py-4 text-sm text-walnut/75">
-              <p className="font-medium text-ink">Payment isn&apos;t connected yet</p>
-              <p className="mt-1">
-                This store is ready to accept payment once a provider (Razorpay, Stripe, or
-                another approved gateway) is connected. No card details are collected here.
-              </p>
-            </div>
+            {isPaymentConfigured ? (
+              <div className="rounded-2xl border border-gold/30 bg-white/50 px-5 py-4 text-sm text-walnut/75">
+                <p className="font-medium text-ink">Pay securely with Stripe</p>
+                <p className="mt-1">
+                  You&apos;ll be taken to Stripe to enter your card details. No payment
+                  information is collected on this page.
+                </p>
+              </div>
+            ) : (
+              <div className="rounded-2xl border border-dashed border-gold/40 bg-sand/40 px-5 py-4 text-sm text-walnut/75">
+                <p className="font-medium text-ink">Payment isn&apos;t connected yet</p>
+                <p className="mt-1">
+                  This store is ready to accept payment once a provider (Razorpay, Stripe, or
+                  another approved gateway) is connected. No card details are collected here.
+                </p>
+              </div>
+            )}
           </fieldset>
 
           {paymentPending && (
