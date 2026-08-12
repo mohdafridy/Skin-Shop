@@ -1,3 +1,5 @@
+import { HUSN_E_YUSUF, ARK_E_GULAAB } from "@/lib/proper-nouns";
+
 export type ProductCollection = "Skin" | "Hair" | "Body" | "Kids" | "Lip Care";
 
 export type RitualTag = "Cleanse" | "Treat" | "Hydrate" | "Exfoliate" | "Hair" | "Body" | "Family Care";
@@ -27,10 +29,6 @@ export type Product = {
   related?: string[];
 };
 
-// Non-breaking spaces keep this three-word proper noun from splitting across
-// a line break (e.g. "Husn e" / "Yusuf Cleanser") at narrow widths.
-const HUSN_E_YUSUF = "Husn e Yusuf";
-
 // The primary photo (index 0) is the approved product shot, already supplied
 // as a .png. Slots 2 and 3 stay reserved for additional angles the brief
 // mentioned would follow in a later upload — until those exist, SmartImage
@@ -53,7 +51,7 @@ export const products: Product[] = [
     tagline: "A rose ritual, in a single bar",
     shortDescription: "A gentle, rose-scented cleansing soap for daily skin care.",
     description:
-      "Husn e Yusuf carries forward a beauty ritual long associated with rose and softness. Handcrafted in Kashmir from raw, organic botanicals with no artificial fragrance, it's lathered into a light foam that lifts away the day and leaves skin feeling calm and clean — a first step worth slowing down for.",
+      `${HUSN_E_YUSUF} carries forward a beauty ritual long associated with rose and softness. Handcrafted in Kashmir from raw, organic botanicals with no artificial fragrance, it's lathered into a light foam that lifts away the day and leaves skin feeling calm and clean — a first step worth slowing down for.`,
     image: productImages("husn-e-yusuf-whitening-soap-cleanser")[0],
     gallery: productImages("husn-e-yusuf-whitening-soap-cleanser"),
     ingredients: ["Raw organic botanicals", "Flower nectar", "Rubia tinctoria"],
@@ -120,14 +118,14 @@ export const products: Product[] = [
   {
     id: "ark-e-gulaab",
     slug: "ark-e-gulaab",
-    name: "Ark e Gulaab",
+    name: ARK_E_GULAAB,
     category: "Rose Mist",
     collection: "Skin",
     ritualTags: ["Hydrate"],
     tagline: "Rose water, distilled simply",
     shortDescription: "A fine rose mist for freshness throughout the day.",
     description:
-      "Ark e Gulaab is a traditional rose water, valued for generations as a simple way to refresh and soften the skin. Kept close to the dressing table, it is misted on whenever the day calls for a small moment of coolness.",
+      `${ARK_E_GULAAB} is a traditional rose water, valued for generations as a simple way to refresh and soften the skin. Kept close to the dressing table, it is misted on whenever the day calls for a small moment of coolness.`,
     image: productImages("ark-e-gulaab")[0],
     gallery: productImages("ark-e-gulaab"),
     ritual: [
@@ -315,9 +313,9 @@ export const products: Product[] = [
     collection: "Skin",
     ritualTags: ["Exfoliate"],
     tagline: "Rose, in a softer form",
-    shortDescription: "A gentle exfoliating companion to the Husn e Yusuf cleanser.",
+    shortDescription: `A gentle exfoliating companion to the ${HUSN_E_YUSUF} cleanser.`,
     description:
-      "An exfoliating extension of the Husn e Yusuf ritual, formulated to be worked gently over the skin a few times a week — designed to sit alongside, rather than replace, your regular cleanser.",
+      `An exfoliating extension of the ${HUSN_E_YUSUF} ritual, formulated to be worked gently over the skin a few times a week — designed to sit alongside, rather than replace, your regular cleanser.`,
     image: productImages("husn-e-yusuf-exfoliator")[0],
     gallery: productImages("husn-e-yusuf-exfoliator"),
     ritual: [

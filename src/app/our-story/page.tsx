@@ -3,6 +3,7 @@ import SmartImage from "@/components/SmartImage";
 import SectionDivider from "@/components/SectionDivider";
 import Reveal from "@/components/Reveal";
 import { brandLine, founderName, founderQuote, brandPillars } from "@/data/navigation";
+import { HUSN_E_YUSUF, ARK_E_GULAAB } from "@/lib/proper-nouns";
 
 const philosophyPoints = [
   "Raw and organic botanical ingredients",
@@ -19,10 +20,10 @@ export const metadata: Metadata = {
 };
 
 const transformations = [
-  "Rose becomes Ark e Gulaab.",
+  `Rose becomes ${ARK_E_GULAAB}.`,
   "Saffron becomes an indulgent gel ritual.",
   "Rosemary enters modern hair care.",
-  "Husn e Yusuf becomes part of cleansing and exfoliation.",
+  `${HUSN_E_YUSUF} becomes part of cleansing and exfoliation.`,
 ];
 
 export default function OurStoryPage() {

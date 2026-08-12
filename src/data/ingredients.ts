@@ -1,3 +1,5 @@
+import { HUSN_E_YUSUF, ARK_E_GULAAB } from "@/lib/proper-nouns";
+
 export type IngredientStory = {
   id: string;
   name: string;
@@ -17,7 +19,7 @@ export const ingredientStories: IngredientStory[] = [
     id: "rose",
     name: "Rose",
     story:
-      "Rose has long sat at the centre of Kashmiri beauty tradition — distilled into water, worked into soap, carried on the air of a garden in bloom. Sun-dried Bulgarian rose petals are among the botanicals prepared for the collection, appearing in Ark e Gulaab and the Husn e Yusuf ritual, softening the everyday routine.",
+      `Rose has long sat at the centre of Kashmiri beauty tradition — distilled into water, worked into soap, carried on the air of a garden in bloom. Sun-dried Bulgarian rose petals are among the botanicals prepared for the collection, appearing in ${ARK_E_GULAAB} and the ${HUSN_E_YUSUF} ritual, softening the everyday routine.`,
     relatedProductSlugs: [
       "ark-e-gulaab",
       "husn-e-yusuf-whitening-soap-cleanser",
@@ -82,9 +84,9 @@ export const ingredientStories: IngredientStory[] = [
   },
   {
     id: "husn-e-yusuf",
-    name: "Husn e Yusuf",
+    name: HUSN_E_YUSUF,
     story:
-      "Husn e Yusuf is a name carried through generations of South Asian beauty ritual, built around rose and softness. It appears across the collection in both a cleansing soap and a gentle exfoliator.",
+      `${HUSN_E_YUSUF} is a name carried through generations of South Asian beauty ritual, built around rose and softness. It appears across the collection in both a cleansing soap and a gentle exfoliator.`,
     relatedProductSlugs: ["husn-e-yusuf-whitening-soap-cleanser", "husn-e-yusuf-exfoliator"],
   },
   {
