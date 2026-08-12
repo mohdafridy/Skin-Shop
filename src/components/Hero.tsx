@@ -7,7 +7,7 @@ export default function Hero() {
       <div className="absolute inset-0">
         <SmartImage
           src="/images/kashmir/hero-landscape.jpg"
-          alt="The Skin Shop's full collection of botanical skincare arranged on a rock, set against the snow-capped mountains of Kashmir"
+          alt="A selection of The Skin Shop's botanical skincare arranged on a rock, set against the snow-capped mountains of Kashmir"
           label="The Skin Shop collection in Kashmir"
           priority
           labelPosition="corner"
