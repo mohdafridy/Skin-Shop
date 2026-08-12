@@ -33,7 +33,7 @@ export const combos: Combo[] = [
     mood: "Morning light · Golden glow · Floral · Luminous",
     description:
       "A sequence built for brightness: a rose cleanse, Dahab's nourishing night cream, and Vitamin C to finish. Warm, floral and glowing.",
-    image: "/images/combos/sun-glow-combo.png",
+    image: "/images/combos/sun-glow-combo.jpg",
     productSlugs: [
       "husn-e-yusuf-whitening-soap-cleanser",
       "dahab-whitening-night-cream",
@@ -48,7 +48,7 @@ export const combos: Combo[] = [
     mood: "Garden · Basket · Botanical abundance · Everyday ritual",
     description:
       "For anyone who wants to experience more of The Skin Shop at once — a basketful of favourites spanning cleanse, mist, night care and a weekly mask, gathered for an everyday ritual.",
-    image: "/images/combos/radiance-ritual-combo.png",
+    image: "/images/combos/radiance-ritual-combo.jpg",
     productSlugs: [
       "husn-e-yusuf-whitening-soap-cleanser",
       "ark-e-gulaab",
