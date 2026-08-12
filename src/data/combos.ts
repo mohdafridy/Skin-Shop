@@ -10,11 +10,10 @@ export type Combo = {
 };
 
 /**
- * Combo contents below are composed from the mood/positioning copy supplied
- * in the brief (e.g. Moon Light = "Husn e Yusuf and Dahab Whitening Night
- * Cream" is explicit). Where the brief only described a combo's feeling
- * rather than its exact contents, the product list here is an indicative
- * best fit — confirm against the real bundle before this goes live.
+ * Moon Light Combo's contents and photo are confirmed against the real
+ * product line-up. Sun Glow and Radiance Ritual are still an indicative
+ * best fit composed from the brief's mood/positioning copy — confirm their
+ * names and contents against the real bundles before this goes live.
  */
 export const combos: Combo[] = [
   {
