@@ -7,8 +7,8 @@ export default function Hero() {
       <div className="absolute inset-0">
         <SmartImage
           src="/images/kashmir/hero-landscape.jpg"
-          alt="A Kashmir landscape of gardens, water and mountains, the visual origin of The Skin Shop"
-          label="Kashmir landscape photography"
+          alt="The Skin Shop's full collection of botanical skincare arranged on a rock, set against the snow-capped mountains of Kashmir"
+          label="The Skin Shop collection in Kashmir"
           priority
           labelPosition="corner"
           className="h-full w-full"
