@@ -25,7 +25,7 @@ export default function Hero() {
 
       <div className="relative mx-auto flex h-full w-full max-w-7xl flex-col items-center justify-center px-6 pt-20 text-center sm:px-8 lg:items-start lg:px-12 lg:text-left lg:transition-transform lg:duration-500 lg:ease-out lg:group-hover:-translate-y-2 lg:group-focus-within:-translate-y-2">
         <h1 className="max-w-2xl text-balance font-display text-4xl font-medium leading-[1.15] tracking-tight text-ivory transition-opacity duration-500 ease-out sm:text-5xl lg:max-w-xl lg:text-6xl lg:opacity-[0.18] lg:group-hover:opacity-100 lg:group-focus-within:opacity-100">
-          Kashmir, Bottled Beautifully.
+          Kashmir,<br className="hidden lg:block" /> Bottled Beautifully.
         </h1>
 
         <div className="hidden h-px w-16 bg-gold/60 opacity-0 transition-opacity duration-500 ease-out lg:mt-7 lg:block lg:group-hover:opacity-100 lg:group-focus-within:opacity-100" />
@@ -40,7 +40,7 @@ export default function Hero() {
             href="/shop"
             className="rounded-full bg-ivory px-8 py-3.5 text-sm font-medium text-ink transition hover:bg-sand"
           >
-            Discover The Collection
+            Discover the Collection
           </Link>
           <Link
             href="/our-story"
@@ -51,9 +51,9 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* Optional cue — desktop-only, fades away the moment the main content reveals */}
-      <div className="pointer-events-none absolute inset-x-0 bottom-8 hidden flex-col items-center gap-2 transition-opacity duration-500 ease-out lg:flex lg:group-hover:opacity-0 lg:group-focus-within:opacity-0">
-        <span className="text-[11px] font-medium uppercase tracking-[0.25em] text-ivory/55">
+      {/* Optional cue — desktop-only, stays present alongside the revealed content */}
+      <div className="pointer-events-none absolute inset-x-0 bottom-8 hidden flex-col items-center gap-2 lg:flex">
+        <span className="font-sans text-xs font-medium tracking-wide text-ivory/70">
           Explore
         </span>
         <svg
