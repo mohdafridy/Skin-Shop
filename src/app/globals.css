@@ -4,6 +4,7 @@
   --color-ivory: #f6f0e6;
   --color-burgundy: #7e2539;
   --color-burgundy-dark: #611c2c;
+  --color-wine: #54212b;
   --color-walnut: #45302a;
   --color-gold: #b88b4b;
   --color-olive: #677148;
@@ -17,6 +18,7 @@
   --color-ivory: var(--color-ivory);
   --color-burgundy: var(--color-burgundy);
   --color-burgundy-dark: var(--color-burgundy-dark);
+  --color-wine: var(--color-wine);
   --color-walnut: var(--color-walnut);
   --color-gold: var(--color-gold);
   --color-olive: var(--color-olive);
