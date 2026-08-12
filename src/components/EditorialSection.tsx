@@ -3,9 +3,9 @@ import SectionHeading from "./SectionHeading";
 import Reveal from "./Reveal";
 
 const tiles = [
-  { src: "/images/kashmir/saffron-fields.jpg", label: "Saffron fields, Kashmir" },
+  { src: "/images/kashmir/saffron-fields.jpg", label: "Saffron harvest, Kashmir" },
   { src: "/images/kashmir/rose-garden.jpg", label: "Rose garden" },
-  { src: "/images/kashmir/woven-basket.jpg", label: "Woven basket, botanical materials" },
+  { src: "/images/kashmir/textile-craft.jpg", label: "Traditional textile and craft detail" },
   { src: "/images/kashmir/brass-textile.jpg", label: "Brass and textile detail" },
 ];
 

@@ -29,9 +29,13 @@ export type Product = {
 // a line break (e.g. "Husn e" / "Yusuf Cleanser") at narrow widths.
 const HUSN_E_YUSUF = "Husn e Yusuf";
 
+// The primary photo (index 0) is the approved product shot, already supplied
+// as a .png. Slots 2 and 3 stay reserved for additional angles the brief
+// mentioned would follow in a later upload — until those exist, SmartImage
+// renders its placeholder for those slots automatically.
 function productImages(slug: string, count = 3): string[] {
   return Array.from({ length: count }, (_, i) =>
-    i === 0 ? `/images/products/${slug}.jpg` : `/images/products/${slug}-${i + 1}.jpg`,
+    i === 0 ? `/images/products/${slug}.png` : `/images/products/${slug}-${i + 1}.jpg`,
   );
 }
 
