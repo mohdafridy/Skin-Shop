@@ -10,10 +10,8 @@ export type Combo = {
 };
 
 /**
- * Moon Light Combo's contents and photo are confirmed against the real
- * product line-up. Sun Glow and Radiance Ritual are still an indicative
- * best fit composed from the brief's mood/positioning copy — confirm their
- * names and contents against the real bundles before this goes live.
+ * All three combos' names, contents and photos are confirmed against the
+ * real product line-up.
  */
 export const combos: Combo[] = [
   {
@@ -34,9 +32,13 @@ export const combos: Combo[] = [
     tagline: "A brightening ritual bringing together cleansing, nourishment and Vitamin C care",
     mood: "Morning light · Golden glow · Floral · Luminous",
     description:
-      "A morning sequence built for brightness: a green-botanical cleanse, a rose mist to refresh, and Vitamin C to finish. Light, floral and ready before the day begins.",
-    image: "/images/combos/sun-glow-combo.jpg",
-    productSlugs: ["moringa-whitening-soap-cleanser", "ark-e-gulaab", "vitamin-c-serum"],
+      "A sequence built for brightness: a rose cleanse, Dahab's nourishing night cream, and Vitamin C to finish. Warm, floral and glowing.",
+    image: "/images/combos/sun-glow-combo.png",
+    productSlugs: [
+      "husn-e-yusuf-whitening-soap-cleanser",
+      "dahab-whitening-night-cream",
+      "vitamin-c-serum",
+    ],
   },
   {
     id: "radiance-ritual",
@@ -45,13 +47,13 @@ export const combos: Combo[] = [
     tagline: "Several Skin Shop favourites, gathered into one fuller ritual",
     mood: "Garden · Basket · Botanical abundance · Everyday ritual",
     description:
-      "For anyone who wants to experience more of The Skin Shop at once — a basketful of favourites spanning cleanse, mist, night care and treatment, gathered for an everyday ritual.",
-    image: "/images/combos/radiance-ritual-combo.jpg",
+      "For anyone who wants to experience more of The Skin Shop at once — a basketful of favourites spanning cleanse, mist, night care and a weekly mask, gathered for an everyday ritual.",
+    image: "/images/combos/radiance-ritual-combo.png",
     productSlugs: [
       "husn-e-yusuf-whitening-soap-cleanser",
       "ark-e-gulaab",
+      "coffee-detox-facemask",
       "dahab-whitening-night-cream",
-      "vitamin-c-serum",
       "saffron-gel",
     ],
   },
