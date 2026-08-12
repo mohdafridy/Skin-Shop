@@ -23,8 +23,8 @@ export default function Hero() {
       {/* Localized panel behind the text only, so we never darken the whole image */}
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_58%_at_50%_50%,rgba(32,29,26,0.5),transparent_72%)] opacity-100 transition-opacity duration-500 ease-out lg:bg-[radial-gradient(ellipse_50%_62%_at_27%_48%,rgba(32,29,26,0.55),transparent_72%)] lg:opacity-0 lg:group-hover:opacity-100 lg:group-focus-within:opacity-100" />
 
-      <div className="relative mx-auto flex h-full w-full max-w-7xl flex-col items-center justify-center px-6 pt-20 text-center sm:px-8 lg:items-start lg:px-12 lg:text-left lg:transition-transform lg:duration-500 lg:ease-out lg:group-hover:-translate-y-2 lg:group-focus-within:-translate-y-2">
-        <h1 className="max-w-2xl text-balance font-display text-4xl font-medium leading-[1.15] tracking-tight text-ivory transition-opacity duration-500 ease-out sm:text-5xl lg:max-w-xl lg:text-6xl lg:opacity-[0.18] lg:group-hover:opacity-100 lg:group-focus-within:opacity-100">
+      <div className="relative mx-auto flex h-full w-full max-w-7xl flex-col items-center justify-center px-6 pt-20 text-center sm:px-8 lg:items-start lg:justify-start lg:px-8 lg:pt-32 lg:text-left lg:transition-transform lg:duration-500 lg:ease-out lg:group-hover:-translate-y-2 lg:group-focus-within:-translate-y-2">
+        <h1 className="max-w-2xl text-balance font-display text-4xl font-medium leading-[1.15] tracking-tight text-ivory transition-opacity duration-500 ease-out sm:text-5xl lg:max-w-3xl lg:text-7xl lg:opacity-[0.18] lg:group-hover:opacity-100 lg:group-focus-within:opacity-100">
           Kashmir,<br className="hidden lg:block" /> Bottled Beautifully.
         </h1>
 
