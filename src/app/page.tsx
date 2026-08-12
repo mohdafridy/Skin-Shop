@@ -1,4 +1,5 @@
 import Hero from "@/components/Hero";
+import BrandPillars from "@/components/BrandPillars";
 import FeaturedProducts from "@/components/FeaturedProducts";
 import StorySection from "@/components/StorySection";
 import ShopByRitual from "@/components/ShopByRitual";
@@ -12,6 +13,8 @@ export default function HomePage() {
   return (
     <>
       <Hero />
+
+      <BrandPillars />
 
       <FeaturedProducts />
 

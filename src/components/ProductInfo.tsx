@@ -39,11 +39,37 @@ export default function ProductInfo({ product }: { product: Product }) {
             Bestseller
           </span>
         )}
+        {product.suitableFor && (
+          <span className="rounded-full bg-sand px-3 py-1 text-xs font-medium text-walnut/70">
+            For {product.suitableFor}
+          </span>
+        )}
       </div>
 
       <p className="mt-5 text-balance leading-relaxed text-walnut/80">
         {product.shortDescription}
       </p>
+
+      {product.benefits && product.benefits.length > 0 && (
+        <ul className="mt-5 space-y-2">
+          {product.benefits.map((benefit) => (
+            <li key={benefit} className="flex items-start gap-2.5 text-sm text-walnut/80">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                className="mt-0.5 h-4 w-4 flex-shrink-0 text-olive"
+                aria-hidden="true"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="m5 13 4 4L19 7" />
+              </svg>
+              <span className="text-balance">{benefit}</span>
+            </li>
+          ))}
+        </ul>
+      )}
 
       <div className="mt-8 flex flex-wrap items-center gap-4">
         <div className="flex items-center rounded-full border border-gold/30">

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { footerColumns, brandLine } from "@/data/navigation";
+import { footerColumns, brandLine, productTagline } from "@/data/navigation";
 import Logo from "./Logo";
 import SectionDivider from "./SectionDivider";
 
@@ -15,9 +15,12 @@ export default function Footer() {
             <div className="text-sand">
               <Logo />
             </div>
+            <p className="mt-3 text-xs font-medium uppercase tracking-[0.15em] text-gold">
+              {productTagline}
+            </p>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-sand/70">
-              Botanical skincare, body care and hair care, formulated with a sense of
-              place.
+              Organic, botanical skincare, body care and hair care — handcrafted in
+              Kashmir and shipped across India.
             </p>
           </div>
 

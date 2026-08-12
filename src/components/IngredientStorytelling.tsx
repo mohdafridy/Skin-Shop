@@ -12,9 +12,9 @@ export default function IngredientStorytelling() {
         subtitle="The names behind the collection — familiar botanicals, carried into contemporary format."
         center
       />
-      <div className="mt-12 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+      <div className="mt-12 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
         {ingredientStories.map((ingredient, i) => (
-          <Reveal key={ingredient.id} delay={(i % 5) * 60}>
+          <Reveal key={ingredient.id} delay={(i % 4) * 60}>
             <IngredientCard ingredient={ingredient} />
           </Reveal>
         ))}

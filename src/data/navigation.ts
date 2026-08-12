@@ -47,3 +47,16 @@ export const footerColumns: { title: string; links: NavLink[] }[] = [
 export const brandLine = "Kashmir, Bottled Beautifully.";
 export const logoLine = "To End Skin Problems.";
 export const announcementMessage = brandLine;
+
+// As supplied by the business — the tagline printed on packaging.
+export const productTagline = "Food For Your Skin";
+
+export const founderName = "Mumin Bhat";
+export const founderQuote = "The Skin Shop is the name, where results claim the fame.";
+
+export const brandPillars: string[] = [
+  "Organic & Botanical",
+  "Cruelty-Free",
+  "Handcrafted in Kashmir",
+  "Ships Across India",
+];

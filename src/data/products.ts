@@ -19,6 +19,8 @@ export type Product = {
   currency?: string;
   size?: string;
   ingredients?: string[];
+  benefits?: string[];
+  suitableFor?: string;
   ritual?: string[];
   featured?: boolean;
   bestseller?: boolean;
@@ -51,9 +53,20 @@ export const products: Product[] = [
     tagline: "A rose ritual, in a single bar",
     shortDescription: "A gentle, rose-scented cleansing soap for daily skin care.",
     description:
-      "Husn e Yusuf carries forward a beauty ritual long associated with rose and softness. Lathered into a light foam, it lifts away the day and leaves skin feeling calm and clean — a first step worth slowing down for.",
+      "Husn e Yusuf carries forward a beauty ritual long associated with rose and softness. Handcrafted in Kashmir from raw, organic botanicals with no artificial fragrance, it's lathered into a light foam that lifts away the day and leaves skin feeling calm and clean — a first step worth slowing down for.",
     image: productImages("husn-e-yusuf-whitening-soap-cleanser")[0],
     gallery: productImages("husn-e-yusuf-whitening-soap-cleanser"),
+    ingredients: ["Raw organic botanicals", "Flower nectar", "Rubia tinctoria"],
+    benefits: [
+      "Helps promote an even-looking skin tone",
+      "Helps improve the appearance of pigmentation",
+      "Helps reduce the appearance of dark spots and discoloration",
+      "Helps improve the appearance of sun tan",
+      "Deep cleansing",
+      "Leaves skin feeling soft and refreshed",
+      "Helps promote a brighter-looking complexion",
+    ],
+    suitableFor: "All skin types",
     ritual: [
       "Wet the face with lukewarm water.",
       "Work the bar into a soft lather between your hands.",
@@ -82,6 +95,14 @@ export const products: Product[] = [
       "Dahab — meaning gold — is formulated as the last step of an evening routine, applied after cleansing to comfort the skin overnight. Its texture is generous and warming: a small ritual of care before sleep.",
     image: productImages("dahab-whitening-night-cream")[0],
     gallery: productImages("dahab-whitening-night-cream"),
+    benefits: [
+      "Promotes a brighter-looking complexion",
+      "Helps improve the appearance of uneven skin tone",
+      "Helps reduce visible signs of ageing",
+      "Supports breakout-prone skin",
+      "Helps create a smoother surface for makeup application",
+      "Helps keep skin looking plump and bright",
+    ],
     ritual: [
       "Apply after cleansing and toning, as the final step of your evening routine.",
       "Smooth a small amount over the face and neck.",
@@ -176,6 +197,16 @@ export const products: Product[] = [
       "Coffee Detox brings the deep, earthy character of coffee into a weekly face mask ritual. Applied to clean skin and rinsed away after a short pause, it is a small ceremony of stillness in a busy week.",
     image: productImages("coffee-detox-facemask")[0],
     gallery: productImages("coffee-detox-facemask"),
+    ingredients: ["Coffee / caffeine"],
+    benefits: [
+      "Helps skin look energised and refreshed",
+      "Promotes a glowing appearance",
+      "Helps improve the appearance of uneven skin tone",
+      "Helps improve the appearance of sun tan",
+      "Helps improve the appearance of blemishes",
+      "Supports smoother-looking skin",
+    ],
+    suitableFor: "All skin types",
     ritual: [
       "Apply an even layer to clean, dry skin, avoiding the eye area.",
       "Leave on for around 10–15 minutes.",
@@ -256,11 +287,20 @@ export const products: Product[] = [
     category: "Lip Balm",
     collection: "Lip Care",
     tagline: "A small comfort, kept close",
-    shortDescription: "A shea-based lip balm for everyday softness.",
+    shortDescription: "A pure shea butter lip balm for everyday softness, gentle enough for the whole family.",
     description:
-      "Small enough for a pocket or bag, this shea-based lip balm is designed to be reached for throughout the day — a small, quiet act of care.",
+      "Small enough for a pocket or bag, this lip balm is built around pure organic shea butter and designed to be reached for throughout the day — a small, quiet act of care, gentle enough for children too.",
     image: productImages("shea-lip-balm")[0],
     gallery: productImages("shea-lip-balm"),
+    size: "Available in two sizes",
+    ingredients: ["Pure organic shea butter"],
+    benefits: [
+      "Moisturises dry and chapped lips",
+      "Helps retain the lips' natural colour",
+      "Helps improve the appearance of dark lips",
+      "Designed for everyday lip care",
+      "Gentle enough for children",
+    ],
     ritual: [
       "Apply to lips as needed throughout the day.",
       "Reapply after eating, drinking or exposure to wind and cold.",
@@ -301,6 +341,15 @@ export const products: Product[] = [
       "Saffron — grown in the fields of Kashmir and gathered by hand — is the centrepiece of this lightweight gel. Golden in tone and cooling in texture, it is formulated as an indulgent step within a broader skincare ritual.",
     image: productImages("saffron-gel")[0],
     gallery: productImages("saffron-gel"),
+    ingredients: ["Kashmiri saffron", "Rosehip oil", "Calendula extract"],
+    benefits: [
+      "Helps reduce the appearance of open pores",
+      "Can be used as a leave-in face mask",
+      "Suitable as a daytime moisturiser",
+      "Helps diminish the appearance of dark spots and blemishes",
+      "Gives the skin a healthy-looking shine",
+    ],
+    suitableFor: "Oily & acne-prone skin",
     ritual: [
       "Apply a thin, even layer to clean skin.",
       "Allow to absorb fully before layering other products.",

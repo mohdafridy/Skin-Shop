@@ -25,12 +25,12 @@ export const metadata: Metadata = {
     template: "%s | The Skin Shop",
   },
   description:
-    "Botanical beauty inspired by ritual, ingredient and a remarkable sense of place. Discover The Skin Shop's collection of cleansers, serums, creams and rituals rooted in Kashmir.",
+    "Organic, botanical skincare handcrafted in Kashmir. Discover The Skin Shop's collection of cleansers, serums, creams and rituals rooted in traditional craftsmanship and result-oriented, cruelty-free formulations. Ships across India.",
   openGraph: {
     siteName: "The Skin Shop",
     title: "The Skin Shop — Kashmir, Bottled Beautifully.",
     description:
-      "Botanical beauty inspired by ritual, ingredient and a remarkable sense of place.",
+      "Organic, botanical skincare handcrafted in Kashmir — cruelty-free, plant-based, result-oriented. Ships across India.",
     type: "website",
   },
 };

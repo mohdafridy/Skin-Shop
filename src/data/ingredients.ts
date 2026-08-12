@@ -17,12 +17,19 @@ export const ingredientStories: IngredientStory[] = [
     id: "rose",
     name: "Rose",
     story:
-      "Rose has long sat at the centre of Kashmiri beauty tradition — distilled into water, worked into soap, carried on the air of a garden in bloom. Across the collection it appears in Ark e Gulaab and the Husn e Yusuf ritual, softening the everyday routine.",
+      "Rose has long sat at the centre of Kashmiri beauty tradition — distilled into water, worked into soap, carried on the air of a garden in bloom. Sun-dried Bulgarian rose petals are among the botanicals prepared for the collection, appearing in Ark e Gulaab and the Husn e Yusuf ritual, softening the everyday routine.",
     relatedProductSlugs: [
       "ark-e-gulaab",
       "husn-e-yusuf-whitening-soap-cleanser",
       "husn-e-yusuf-exfoliator",
     ],
+  },
+  {
+    id: "hibiscus",
+    name: "Hibiscus",
+    story:
+      "Sun-dried hibiscus flowers are prepared alongside rose and saffron as part of The Skin Shop's botanical raw materials — a bloom with its own long-standing place in skin and hair care tradition.",
+    relatedProductSlugs: [],
   },
   {
     id: "rosemary",
@@ -79,5 +86,12 @@ export const ingredientStories: IngredientStory[] = [
     story:
       "Husn e Yusuf is a name carried through generations of South Asian beauty ritual, built around rose and softness. It appears across the collection in both a cleansing soap and a gentle exfoliator.",
     relatedProductSlugs: ["husn-e-yusuf-whitening-soap-cleanser", "husn-e-yusuf-exfoliator"],
+  },
+  {
+    id: "solar-infusion",
+    name: "Solar Infusion",
+    story:
+      "Some herbal formulations are prepared using a traditional solar-infusion process: jars set outdoors in sunlight through the day and brought back in each evening, repeated for around 40 days — a slow, hands-on part of how the collection is made.",
+    relatedProductSlugs: [],
   },
 ];

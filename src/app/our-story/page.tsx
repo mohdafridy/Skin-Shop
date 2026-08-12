@@ -2,7 +2,15 @@ import type { Metadata } from "next";
 import SmartImage from "@/components/SmartImage";
 import SectionDivider from "@/components/SectionDivider";
 import Reveal from "@/components/Reveal";
-import { brandLine } from "@/data/navigation";
+import { brandLine, founderName, founderQuote, brandPillars } from "@/data/navigation";
+
+const philosophyPoints = [
+  "Raw and organic botanical ingredients",
+  "Traditional Kashmiri skincare knowledge",
+  "Modern formulation techniques",
+  "Plant-based, cruelty-free formulations",
+  "Formulas refined over several years",
+];
 
 export const metadata: Metadata = {
   title: "Our Story",
@@ -75,6 +83,48 @@ export default function OurStoryPage() {
             feel premium. It should become part of the reason the brand is
             remembered.
           </p>
+        </Reveal>
+      </div>
+
+      <div className="bg-sand/50 py-16 lg:py-20">
+        <div className="mx-auto max-w-2xl px-6 sm:px-8">
+          <Reveal>
+            <p className="mb-4 text-center text-xs font-semibold uppercase tracking-[0.2em] text-burgundy">
+              What Goes Into Every Formula
+            </p>
+            <h2 className="text-balance text-center font-display text-2xl text-ink sm:text-3xl">
+              Organic, Botanical, Result-Oriented
+            </h2>
+            <ul className="mx-auto mt-8 max-w-md space-y-3">
+              {philosophyPoints.map((point) => (
+                <li key={point} className="flex items-start gap-2.5 text-walnut/80">
+                  <span className="mt-2 h-1 w-1 flex-shrink-0 rounded-full bg-gold" aria-hidden="true" />
+                  <span className="text-balance">{point}</span>
+                </li>
+              ))}
+            </ul>
+            <ul className="mt-8 flex flex-wrap justify-center gap-x-3 gap-y-2 text-center text-xs font-medium uppercase tracking-wide text-walnut/70">
+              {brandPillars.map((pillar, i) => (
+                <li key={pillar} className="flex items-center gap-3">
+                  {i > 0 && (
+                    <span className="text-gold" aria-hidden="true">
+                      ·
+                    </span>
+                  )}
+                  {pillar}
+                </li>
+              ))}
+            </ul>
+          </Reveal>
+        </div>
+      </div>
+
+      <div className="mx-auto max-w-2xl px-6 py-16 text-center sm:px-8 lg:py-20">
+        <Reveal>
+          <p className="text-balance font-display text-2xl leading-snug text-ink sm:text-3xl">
+            &ldquo;{founderQuote}&rdquo;
+          </p>
+          <p className="mt-4 text-sm text-walnut/60">— {founderName}, Founder</p>
         </Reveal>
       </div>
 
