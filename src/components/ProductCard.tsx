@@ -34,11 +34,9 @@ export default function ProductCard({ product }: { product: Product }) {
           </h3>
         </Link>
 
-        {typeof product.price === "number" && (
-          <p className="mt-1 text-sm font-medium text-ink">
-            {formatPrice(product.price, product.currency)}
-          </p>
-        )}
+        <p className="mt-1 text-sm font-medium text-ink">
+          {formatPrice(product.price, product.currency)}
+        </p>
 
         <div className="mt-3 flex items-center gap-3">
           <button

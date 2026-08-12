@@ -51,15 +51,13 @@ export default async function ProductPage({
     description: product.shortDescription,
     image: product.image,
     category: product.category,
-  };
-  if (typeof product.price === "number") {
-    jsonLd.offers = {
+    offers: {
       "@type": "Offer",
       price: product.price,
-      priceCurrency: product.currency ?? "INR",
+      priceCurrency: product.currency,
       availability: "https://schema.org/InStock",
-    };
-  }
+    },
+  };
 
   return (
     <div className="mx-auto max-w-7xl px-6 pb-24 pt-10 sm:px-8 lg:pb-16 lg:pt-14">

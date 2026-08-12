@@ -17,8 +17,9 @@ export type Product = {
   description: string;
   image: string;
   gallery?: string[];
-  price?: number;
-  currency?: string;
+  /** Locked commercial price. INR, numeric, no invented values. */
+  price: number;
+  currency: string;
   size?: string;
   ingredients?: string[];
   benefits?: string[];
@@ -54,6 +55,8 @@ export const products: Product[] = [
     description:
       `${HUSN_E_YUSUF} carries forward a beauty ritual long associated with rose and softness. Handcrafted in Kashmir from raw, organic botanicals with no artificial fragrance, it's lathered into a light foam that lifts away the day and leaves skin feeling calm and clean — a first step worth slowing down for.`,
     image: productImages("husn-e-yusuf-whitening-soap-cleanser")[0],
+    price: 380,
+    currency: "INR",
     gallery: productImages("husn-e-yusuf-whitening-soap-cleanser"),
     ingredients: ["Raw organic botanicals", "Flower nectar", "Rubia tinctoria"],
     benefits: [
@@ -93,6 +96,8 @@ export const products: Product[] = [
     description:
       "Dahab — meaning gold — is formulated as the last step of an evening routine, applied after cleansing to comfort the skin overnight. Its texture is generous and warming: a small ritual of care before sleep.",
     image: productImages("dahab-whitening-night-cream")[0],
+    price: 880,
+    currency: "INR",
     gallery: productImages("dahab-whitening-night-cream"),
     benefits: [
       "Promotes a brighter-looking complexion",
@@ -128,6 +133,8 @@ export const products: Product[] = [
     description:
       `${ARK_E_GULAAB} is a traditional rose water, valued for generations as a simple way to refresh and soften the skin. Kept close to the dressing table, it is misted on whenever the day calls for a small moment of coolness.`,
     image: productImages("ark-e-gulaab")[0],
+    price: 250,
+    currency: "INR",
     gallery: productImages("ark-e-gulaab"),
     ritual: [
       "Shake gently before use.",
@@ -151,6 +158,8 @@ export const products: Product[] = [
     description:
       "Formulated around Vitamin C, this serum is designed to sit lightly under moisturizer as part of a brightening morning routine. A few drops go a long way, absorbing quickly into clean skin.",
     image: productImages("vitamin-c-serum")[0],
+    price: 780,
+    currency: "INR",
     gallery: productImages("vitamin-c-serum"),
     ritual: [
       "Apply to clean, dry skin.",
@@ -174,6 +183,8 @@ export const products: Product[] = [
     description:
       "Rosemary has long held a place in hair care traditions, and this serum brings it into a modern, easy-to-use format. Worked through the scalp and lengths, it fits naturally into a weekly hair routine.",
     image: productImages("rosemary-hair-serum")[0],
+    price: 480,
+    currency: "INR",
     gallery: productImages("rosemary-hair-serum"),
     ritual: [
       "Apply a small amount directly to the scalp or lengths.",
@@ -195,6 +206,8 @@ export const products: Product[] = [
     description:
       "Coffee Detox brings the deep, earthy character of coffee into a weekly face mask ritual. Applied to clean skin and rinsed away after a short pause, it is a small ceremony of stillness in a busy week.",
     image: productImages("coffee-detox-facemask")[0],
+    price: 650,
+    currency: "INR",
     gallery: productImages("coffee-detox-facemask"),
     ingredients: ["Coffee / caffeine"],
     benefits: [
@@ -227,6 +240,8 @@ export const products: Product[] = [
     description:
       "Moringa lends this cleansing bar its fresh, green botanical character. Designed for daily use, it lathers gently and rinses clean, leaving skin ready for the rest of the routine.",
     image: productImages("moringa-whitening-soap-cleanser")[0],
+    price: 380,
+    currency: "INR",
     gallery: productImages("moringa-whitening-soap-cleanser"),
     ritual: [
       "Wet the face with lukewarm water.",
@@ -249,6 +264,8 @@ export const products: Product[] = [
     description:
       "Built around argan, long prized in body care traditions, this cream is formulated for daily use across the body. Its warm, generous texture is designed to sink in without leaving skin feeling heavy.",
     image: productImages("argan-body-whitening-cream")[0],
+    price: 780,
+    currency: "INR",
     gallery: productImages("argan-body-whitening-cream"),
     ritual: [
       "Apply to clean, dry skin after bathing.",
@@ -270,6 +287,8 @@ export const products: Product[] = [
     description:
       "Jojoba Kids Soap is formulated with a lighter touch, designed for children's daily wash routines — simple and gentle enough to build into a family bath-time habit.",
     image: productImages("jojoba-kids-soap")[0],
+    price: 130,
+    currency: "INR",
     gallery: productImages("jojoba-kids-soap"),
     ritual: [
       "Wet the skin with lukewarm water.",
@@ -290,6 +309,8 @@ export const products: Product[] = [
     description:
       "Small enough for a pocket or bag, this lip balm is built around pure organic shea butter and designed to be reached for throughout the day — a small, quiet act of care, gentle enough for children too.",
     image: productImages("shea-lip-balm")[0],
+    price: 120,
+    currency: "INR",
     gallery: productImages("shea-lip-balm"),
     size: "Available in two sizes",
     ingredients: ["Pure organic shea butter"],
@@ -318,6 +339,8 @@ export const products: Product[] = [
     description:
       `An exfoliating extension of the ${HUSN_E_YUSUF} ritual, formulated to be worked gently over the skin a few times a week — designed to sit alongside, rather than replace, your regular cleanser.`,
     image: productImages("husn-e-yusuf-exfoliator")[0],
+    price: 450,
+    currency: "INR",
     gallery: productImages("husn-e-yusuf-exfoliator"),
     ritual: [
       "Apply to damp skin.",
@@ -339,6 +362,8 @@ export const products: Product[] = [
     description:
       "Saffron — grown in the fields of Kashmir and gathered by hand — is the centrepiece of this lightweight gel. Golden in tone and cooling in texture, it is formulated as an indulgent step within a broader skincare ritual.",
     image: productImages("saffron-gel")[0],
+    price: 480,
+    currency: "INR",
     gallery: productImages("saffron-gel"),
     ingredients: ["Kashmiri saffron", "Rosehip oil", "Calendula extract"],
     benefits: [

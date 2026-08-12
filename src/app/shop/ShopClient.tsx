@@ -6,12 +6,14 @@ import { products, collections, categories, type Product } from "@/data/products
 import type { RitualTag } from "@/data/products";
 import ProductGrid from "@/components/ProductGrid";
 
-type SortOption = "featured" | "name-asc" | "name-desc";
+type SortOption = "featured" | "name-asc" | "name-desc" | "price-asc" | "price-desc";
 
 const sortLabels: Record<SortOption, string> = {
   featured: "Featured",
   "name-asc": "Name: A to Z",
   "name-desc": "Name: Z to A",
+  "price-asc": "Price: Low to High",
+  "price-desc": "Price: High to Low",
 };
 
 const filterChips = [...collections, ...categories];
@@ -20,6 +22,8 @@ function sortProducts(list: Product[], sort: SortOption): Product[] {
   const copy = [...list];
   if (sort === "name-asc") return copy.sort((a, b) => a.name.localeCompare(b.name));
   if (sort === "name-desc") return copy.sort((a, b) => b.name.localeCompare(a.name));
+  if (sort === "price-asc") return copy.sort((a, b) => a.price - b.price);
+  if (sort === "price-desc") return copy.sort((a, b) => b.price - a.price);
   return copy.sort((a, b) => Number(b.featured) - Number(a.featured));
 }
 
@@ -107,7 +111,7 @@ export default function ShopClient() {
           ))}
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <label htmlFor="shop-search" className="sr-only">
             Search products
           </label>
@@ -117,7 +121,7 @@ export default function ShopClient() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search…"
-            className="w-36 rounded-full border border-gold/30 bg-white/60 px-4 py-2 text-sm text-ink placeholder:text-walnut/40 focus:outline-none sm:w-48"
+            className="w-full min-w-0 flex-1 rounded-full border border-gold/30 bg-white/60 px-4 py-2 text-sm text-ink placeholder:text-walnut/40 focus:outline-none sm:w-48"
           />
           <label htmlFor="shop-sort" className="sr-only">
             Sort products

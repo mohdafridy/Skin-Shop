@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { searchProducts } from "@/lib/search";
+import { formatPrice } from "@/lib/format";
 import SmartImage from "./SmartImage";
 
 export default function SearchOverlay({
@@ -113,12 +114,15 @@ export default function SearchOverlay({
                       className="h-14 w-14 flex-shrink-0 rounded-lg"
                       sizes="56px"
                     />
-                    <div>
-                      <p className="font-medium text-ink">{product.name}</p>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate font-medium text-ink">{product.name}</p>
                       <p className="text-xs uppercase tracking-wide text-walnut/70">
                         {product.category}
                       </p>
                     </div>
+                    <span className="flex-shrink-0 text-sm font-medium text-ink">
+                      {formatPrice(product.price, product.currency)}
+                    </span>
                   </Link>
                 </li>
               ))}

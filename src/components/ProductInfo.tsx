@@ -1,12 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import type { Product } from "@/data/products";
 import { useCart } from "@/lib/cart-context";
 import { formatPrice } from "@/lib/format";
 
 export default function ProductInfo({ product }: { product: Product }) {
   const { addItem } = useCart();
+  const router = useRouter();
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
 
@@ -14,6 +16,13 @@ export default function ProductInfo({ product }: { product: Product }) {
     addItem(product, quantity);
     setAdded(true);
     setTimeout(() => setAdded(false), 1800);
+  }
+
+  function handleBuyNow() {
+    // Buy Now skips the cart entirely and goes straight to a checkout that's
+    // scoped to just this product/quantity — the persistent cart (if the
+    // shopper already has one) is left untouched.
+    router.push(`/checkout?mode=buynow&type=product&slug=${product.slug}&qty=${quantity}`);
   }
 
   return (
@@ -24,11 +33,9 @@ export default function ProductInfo({ product }: { product: Product }) {
       </h1>
 
       <div className="mt-4 flex flex-wrap items-center gap-3">
-        {typeof product.price === "number" && (
-          <span className="text-xl font-medium text-ink">
-            {formatPrice(product.price, product.currency)}
-          </span>
-        )}
+        <span className="text-xl font-medium text-ink">
+          {formatPrice(product.price, product.currency)}
+        </span>
         {product.size && (
           <span className="rounded-full bg-sand px-3 py-1 text-xs font-medium text-walnut/70">
             {product.size}
@@ -101,7 +108,7 @@ export default function ProductInfo({ product }: { product: Product }) {
         </button>
         <button
           type="button"
-          onClick={handleAdd}
+          onClick={handleBuyNow}
           className="flex-1 rounded-full border border-ink px-8 py-3.5 text-sm font-medium text-ink transition hover:bg-ink hover:text-ivory sm:flex-none"
         >
           Buy Now
@@ -112,9 +119,7 @@ export default function ProductInfo({ product }: { product: Product }) {
       <div className="fixed inset-x-0 bottom-0 z-40 flex items-center gap-3 border-t border-gold/20 bg-ivory/95 p-4 backdrop-blur-sm lg:hidden">
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-medium text-ink">{product.shortName ?? product.name}</p>
-          {typeof product.price === "number" && (
-            <p className="text-xs text-walnut/70">{formatPrice(product.price, product.currency)}</p>
-          )}
+          <p className="text-xs text-walnut/70">{formatPrice(product.price, product.currency)}</p>
         </div>
         <button
           type="button"

@@ -1,19 +1,24 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import type { Combo } from "@/data/combos";
+import { getComboPricing } from "@/data/combos";
 import { getProductBySlug } from "@/data/products";
 import { useCart } from "@/lib/cart-context";
+import { formatPrice } from "@/lib/format";
 import SmartImage from "./SmartImage";
 
 export default function ComboDetail({ combo }: { combo: Combo }) {
-  const { addItem } = useCart();
+  const { addCombo } = useCart();
+  const router = useRouter();
   const comboProducts = combo.productSlugs
     .map((slug) => getProductBySlug(slug))
     .filter((p): p is NonNullable<typeof p> => Boolean(p));
+  const { individualValue, price, savings, currency } = getComboPricing(combo);
 
-  function handleAddAll() {
-    comboProducts.forEach((product) => addItem(product));
+  function handleBuyNow() {
+    router.push(`/checkout?mode=buynow&type=combo&slug=${combo.slug}&qty=1`);
   }
 
   return (
@@ -36,26 +41,52 @@ export default function ComboDetail({ combo }: { combo: Combo }) {
         <h3 className="mt-3 text-balance font-display text-3xl text-ink">{combo.name}</h3>
         <p className="mt-3 text-balance leading-relaxed text-walnut/80">{combo.description}</p>
 
+        <div className="mt-5 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+          <span className="text-2xl font-medium text-ink">{formatPrice(price, currency)}</span>
+          {savings > 0 && (
+            <>
+              <span className="text-base text-walnut/50 line-through">
+                {formatPrice(individualValue, currency)}
+              </span>
+              <span className="rounded-full bg-olive/15 px-3 py-1 text-xs font-medium text-olive">
+                Save {formatPrice(savings, currency)}
+              </span>
+            </>
+          )}
+        </div>
+
         <ul className="mt-6 space-y-2">
           {comboProducts.map((product) => (
-            <li key={product.slug}>
+            <li key={product.slug} className="flex items-center justify-between gap-3 text-sm">
               <Link
                 href={`/products/${product.slug}`}
-                className="text-sm text-walnut/80 underline-offset-4 transition hover:text-burgundy hover:underline"
+                className="text-walnut/80 underline-offset-4 transition hover:text-burgundy hover:underline"
               >
                 {product.shortName ?? product.name}
               </Link>
+              <span className="flex-shrink-0 text-walnut/50">
+                {formatPrice(product.price, product.currency)}
+              </span>
             </li>
           ))}
         </ul>
 
-        <button
-          type="button"
-          onClick={handleAddAll}
-          className="mt-8 w-fit rounded-full bg-burgundy px-7 py-3 text-sm font-medium text-ivory transition hover:bg-burgundy-dark"
-        >
-          Add Ritual To Bag
-        </button>
+        <div className="mt-8 flex flex-wrap gap-4">
+          <button
+            type="button"
+            onClick={() => addCombo(combo)}
+            className="flex-1 rounded-full bg-burgundy px-7 py-3 text-sm font-medium text-ivory transition hover:bg-burgundy-dark sm:flex-none"
+          >
+            Add Ritual To Bag
+          </button>
+          <button
+            type="button"
+            onClick={handleBuyNow}
+            className="flex-1 rounded-full border border-ink px-7 py-3 text-sm font-medium text-ink transition hover:bg-ink hover:text-ivory sm:flex-none"
+          >
+            Buy Now
+          </button>
+        </div>
       </div>
     </div>
   );

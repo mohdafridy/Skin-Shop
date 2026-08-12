@@ -7,17 +7,34 @@ import { formatPrice } from "@/lib/format";
 import SmartImage from "./SmartImage";
 
 export default function CartDrawer() {
-  const { items, isOpen, closeCart, removeItem, updateQuantity, itemCount, subtotal, currency } =
-    useCart();
+  const {
+    items,
+    isOpen,
+    closeCart,
+    removeItem,
+    updateQuantity,
+    itemCount,
+    currency,
+    subtotal,
+    couponCode,
+    discount,
+    applyCoupon,
+    removeCoupon,
+    total,
+  } = useCart();
   const closeButtonRef = useRef<HTMLButtonElement>(null);
-  const [checkoutNotice, setCheckoutNotice] = useState(false);
+  const [couponInput, setCouponInput] = useState("");
+  const [couponError, setCouponError] = useState<string | null>(null);
 
   // Reset transient UI state as soon as the open/closed state flips, rather
   // than in a follow-up effect (see https://react.dev/learn/you-might-not-need-an-effect).
   const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
   if (isOpen !== prevIsOpen) {
     setPrevIsOpen(isOpen);
-    if (!isOpen) setCheckoutNotice(false);
+    if (!isOpen) {
+      setCouponInput("");
+      setCouponError(null);
+    }
   }
 
   useEffect(() => {
@@ -34,6 +51,17 @@ export default function CartDrawer() {
       document.body.style.overflow = "";
     };
   }, [isOpen, closeCart]);
+
+  function handleApplyCoupon(e: React.FormEvent) {
+    e.preventDefault();
+    const result = applyCoupon(couponInput);
+    if (!result.valid) {
+      setCouponError(result.reason ?? "That code isn't valid.");
+      return;
+    }
+    setCouponError(null);
+    setCouponInput("");
+  }
 
   return (
     <div
@@ -71,23 +99,20 @@ export default function CartDrawer() {
 
         {items.length === 0 ? (
           <div className="flex flex-1 flex-col items-center justify-center gap-4 px-6 text-center">
-            <p className="font-display text-xl text-ink">Your bag is empty</p>
-            <p className="max-w-xs text-sm text-walnut/70">
-              Begin your ritual — explore cleansers, serums and creams from the collection.
-            </p>
+            <p className="font-display text-xl text-ink">Your ritual is waiting.</p>
             <Link
               href="/shop"
               onClick={closeCart}
               className="mt-2 rounded-full bg-burgundy px-6 py-3 text-sm font-medium text-ivory transition hover:bg-burgundy-dark"
             >
-              Shop The Collection
+              Explore The Collection
             </Link>
           </div>
         ) : (
           <>
             <ul className="flex-1 divide-y divide-gold/15 overflow-y-auto px-6">
               {items.map((item) => (
-                <li key={item.slug} className="flex gap-4 py-5">
+                <li key={item.key} className="flex gap-4 py-5">
                   <SmartImage
                     src={item.image}
                     alt={item.name}
@@ -98,21 +123,23 @@ export default function CartDrawer() {
                   <div className="flex flex-1 flex-col justify-between">
                     <div>
                       <Link
-                        href={`/products/${item.slug}`}
+                        href={item.type === "combo" ? `/rituals#${item.slug}` : `/products/${item.slug}`}
                         onClick={closeCart}
                         className="font-medium text-ink hover:text-burgundy"
                       >
                         {item.name}
                       </Link>
-                      <p className="mt-0.5 text-xs uppercase tracking-wide text-walnut/70">
+                      <p className="mt-0.5 flex items-center gap-2 text-xs uppercase tracking-wide text-walnut/70">
                         {item.category}
+                        <span aria-hidden="true">·</span>
+                        {formatPrice(item.price, item.currency)} each
                       </p>
                     </div>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center rounded-full border border-gold/30">
                         <button
                           type="button"
-                          onClick={() => updateQuantity(item.slug, item.quantity - 1)}
+                          onClick={() => updateQuantity(item.key, item.quantity - 1)}
                           className="flex h-8 w-8 items-center justify-center text-ink transition hover:text-burgundy"
                           aria-label={`Decrease quantity of ${item.name}`}
                         >
@@ -121,45 +148,115 @@ export default function CartDrawer() {
                         <span className="w-5 text-center text-sm">{item.quantity}</span>
                         <button
                           type="button"
-                          onClick={() => updateQuantity(item.slug, item.quantity + 1)}
+                          onClick={() => updateQuantity(item.key, item.quantity + 1)}
                           className="flex h-8 w-8 items-center justify-center text-ink transition hover:text-burgundy"
                           aria-label={`Increase quantity of ${item.name}`}
                         >
                           +
                         </button>
                       </div>
-                      <button
-                        type="button"
-                        onClick={() => removeItem(item.slug)}
-                        className="text-xs text-walnut/70 underline-offset-2 transition hover:text-burgundy hover:underline"
-                      >
-                        Remove
-                      </button>
+                      <span className="text-sm font-medium text-ink">
+                        {formatPrice(item.price * item.quantity, item.currency)}
+                      </span>
                     </div>
                   </div>
+                  <button
+                    type="button"
+                    onClick={() => removeItem(item.key)}
+                    aria-label={`Remove ${item.name}`}
+                    className="flex-shrink-0 self-start text-walnut/50 transition hover:text-burgundy"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.6"
+                      className="h-4 w-4"
+                      aria-hidden="true"
+                    >
+                      <path strokeLinecap="round" d="M6 6l12 12M18 6 6 18" />
+                    </svg>
+                  </button>
                 </li>
               ))}
             </ul>
 
             <div className="border-t border-gold/25 px-6 py-6">
-              <div className="mb-4 flex items-center justify-between text-sm">
-                <span className="text-walnut/70">Subtotal</span>
-                <span className="font-medium text-ink">
-                  {subtotal === null ? "Confirmed at checkout" : formatPrice(subtotal, currency)}
-                </span>
+              {couponCode && discount > 0 ? (
+                <div className="mb-4 flex items-center justify-between rounded-full bg-olive/10 px-4 py-2 text-xs text-olive">
+                  <span>
+                    Code <span className="font-semibold">{couponCode}</span> applied
+                  </span>
+                  <button type="button" onClick={removeCoupon} className="underline">
+                    Remove
+                  </button>
+                </div>
+              ) : (
+                <form onSubmit={handleApplyCoupon} className="mb-4 flex gap-2">
+                  <label htmlFor="cart-coupon" className="sr-only">
+                    Coupon code
+                  </label>
+                  <input
+                    id="cart-coupon"
+                    type="text"
+                    value={couponInput}
+                    onChange={(e) => {
+                      setCouponInput(e.target.value);
+                      setCouponError(null);
+                    }}
+                    placeholder="Coupon code"
+                    className="w-full min-w-0 rounded-full border border-gold/30 bg-white/60 px-4 py-2 text-sm text-ink placeholder:text-walnut/40 focus:outline-none"
+                  />
+                  <button
+                    type="submit"
+                    className="flex-shrink-0 rounded-full border border-ink px-4 py-2 text-xs font-medium text-ink transition hover:bg-ink hover:text-ivory"
+                  >
+                    Apply
+                  </button>
+                </form>
+              )}
+              {couponError && (
+                <p className="-mt-2 mb-4 text-xs text-burgundy" role="alert">
+                  {couponError}
+                </p>
+              )}
+
+              <div className="space-y-2 text-sm">
+                <div className="flex items-center justify-between">
+                  <span className="text-walnut/70">Subtotal</span>
+                  <span className="font-medium text-ink">{formatPrice(subtotal, currency)}</span>
+                </div>
+                {discount > 0 && (
+                  <div className="flex items-center justify-between text-olive">
+                    <span>Discount</span>
+                    <span>&minus;{formatPrice(discount, currency)}</span>
+                  </div>
+                )}
+                <div className="flex items-center justify-between">
+                  <span className="text-walnut/70">Shipping</span>
+                  <span className="text-walnut/70">Calculated at checkout</span>
+                </div>
+                <div className="flex items-center justify-between border-t border-gold/20 pt-2 text-base font-medium text-ink">
+                  <span>Total</span>
+                  <span>{formatPrice(total, currency)}</span>
+                </div>
               </div>
-              <button
-                type="button"
-                onClick={() => setCheckoutNotice(true)}
-                className="w-full rounded-full bg-burgundy px-6 py-3.5 text-sm font-medium text-ivory transition hover:bg-burgundy-dark"
+
+              <Link
+                href="/checkout"
+                onClick={closeCart}
+                className="mt-5 block w-full rounded-full bg-burgundy px-6 py-3.5 text-center text-sm font-medium text-ivory transition hover:bg-burgundy-dark"
               >
                 Checkout
+              </Link>
+              <button
+                type="button"
+                onClick={closeCart}
+                className="mt-2 w-full rounded-full px-6 py-3 text-center text-sm font-medium text-walnut/70 transition hover:text-ink"
+              >
+                Continue Shopping
               </button>
-              <p className="mt-3 text-center text-xs text-walnut/70" role="status">
-                {checkoutNotice
-                  ? "Checkout is launching soon — your bag is saved for when it does."
-                  : "Shipping and taxes calculated at checkout."}
-              </p>
             </div>
           </>
         )}
