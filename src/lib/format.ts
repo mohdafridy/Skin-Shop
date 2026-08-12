@@ -1,7 +1,7 @@
-export function formatPrice(cents: number): string {
+export function formatPrice(amount: number, currency = "INR"): string {
   return new Intl.NumberFormat("en-IN", {
     style: "currency",
-    currency: "INR",
+    currency,
     maximumFractionDigits: 0,
-  }).format(cents / 100);
+  }).format(amount);
 }

@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
-import { Fraunces, Manrope } from "next/font/google";
+import { Cormorant_Garamond, Manrope } from "next/font/google";
 import "./globals.css";
+import AnnouncementBar from "@/components/AnnouncementBar";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import CartDrawer from "@/components/CartDrawer";
 import { CartProvider } from "@/lib/cart-context";
 
-const fraunces = Fraunces({
-  variable: "--font-fraunces",
+const cormorant = Cormorant_Garamond({
+  variable: "--font-cormorant",
   subsets: ["latin"],
   weight: ["400", "500", "600"],
 });
@@ -17,22 +19,43 @@ const manrope = Manrope({
 });
 
 export const metadata: Metadata = {
-  title: "Petal & Skin | Clean Skincare",
+  metadataBase: new URL("https://theskinshop.example.com"),
+  title: {
+    default: "The Skin Shop — Kashmir, Bottled Beautifully.",
+    template: "%s | The Skin Shop",
+  },
   description:
-    "Thoughtfully formulated skincare — cleansers, serums, moisturizers, and sunscreen for every skin type.",
+    "Botanical beauty inspired by ritual, ingredient and a remarkable sense of place. Discover The Skin Shop's collection of cleansers, serums, creams and rituals rooted in Kashmir.",
+  openGraph: {
+    siteName: "The Skin Shop",
+    title: "The Skin Shop — Kashmir, Bottled Beautifully.",
+    description:
+      "Botanical beauty inspired by ritual, ingredient and a remarkable sense of place.",
+    type: "website",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${fraunces.variable} ${manrope.variable} h-full antialiased`}
+      className={`${cormorant.variable} ${manrope.variable} h-full antialiased`}
     >
-      <body className="flex min-h-full flex-col bg-cream text-ink">
+      <body className="flex min-h-full flex-col bg-ivory text-ink">
         <CartProvider>
+          <a
+            href="#main-content"
+            className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-burgundy focus:px-4 focus:py-2 focus:text-sm focus:text-ivory"
+          >
+            Skip to content
+          </a>
+          <AnnouncementBar />
           <Header />
-          <main className="flex-1">{children}</main>
+          <main id="main-content" className="flex-1">
+            {children}
+          </main>
           <Footer />
+          <CartDrawer />
         </CartProvider>
       </body>
     </html>

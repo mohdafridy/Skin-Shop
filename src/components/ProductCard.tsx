@@ -1,50 +1,61 @@
-import Image from "next/image";
+"use client";
+
 import Link from "next/link";
-import type { Product } from "@/lib/types";
+import type { Product } from "@/data/products";
+import { useCart } from "@/lib/cart-context";
 import { formatPrice } from "@/lib/format";
+import SmartImage from "./SmartImage";
 
 export default function ProductCard({ product }: { product: Product }) {
-  const onSale =
-    product.compare_at_price_cents !== null &&
-    product.compare_at_price_cents > product.price_cents;
+  const { addItem } = useCart();
 
   return (
-    <Link
-      href={`/product/${product.slug}`}
-      className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-white/60 transition hover:-translate-y-1 hover:shadow-lg hover:shadow-ink/5"
-    >
-      <div className="relative aspect-square overflow-hidden bg-cream-dark">
-        {product.image_url && (
-          <Image
-            src={product.image_url}
-            alt={product.name}
-            fill
-            sizes="(min-width: 1024px) 280px, (min-width: 640px) 45vw, 90vw"
-            className="object-cover transition duration-500 group-hover:scale-105"
-          />
+    <div className="group relative flex flex-col">
+      <Link
+        href={`/products/${product.slug}`}
+        className="block overflow-hidden rounded-2xl"
+        aria-label={`View ${product.name}`}
+      >
+        <SmartImage
+          src={product.image}
+          alt={product.name}
+          label={product.shortName ?? product.name}
+          className="aspect-[4/5]"
+          sizes="(min-width: 1024px) 23vw, (min-width: 640px) 45vw, 48vw"
+          imageClassName="transition duration-700 ease-out group-hover:scale-105"
+        />
+      </Link>
+
+      <div className="mt-4 flex flex-1 flex-col">
+        <p className="text-xs uppercase tracking-wide text-walnut/70">{product.category}</p>
+        <Link href={`/products/${product.slug}`} className="mt-1">
+          <h3 className="text-balance font-display text-lg leading-snug text-ink transition group-hover:text-burgundy">
+            {product.shortName ?? product.name}
+          </h3>
+        </Link>
+
+        {typeof product.price === "number" && (
+          <p className="mt-1 text-sm font-medium text-ink">
+            {formatPrice(product.price, product.currency)}
+          </p>
         )}
-        {onSale && (
-          <span className="absolute left-3 top-3 rounded-full bg-terracotta px-2.5 py-1 text-xs font-semibold text-white">
-            Sale
-          </span>
-        )}
-        {!product.in_stock && (
-          <span className="absolute right-3 top-3 rounded-full bg-ink/80 px-2.5 py-1 text-xs font-semibold text-cream">
-            Sold out
-          </span>
-        )}
-      </div>
-      <div className="flex flex-1 flex-col gap-1.5 p-4">
-        <h3 className="font-display text-lg leading-snug text-ink">{product.name}</h3>
-        <div className="flex items-center gap-2 text-sm">
-          <span className="font-semibold text-ink">{formatPrice(product.price_cents)}</span>
-          {onSale && (
-            <span className="text-ink-soft line-through">
-              {formatPrice(product.compare_at_price_cents!)}
-            </span>
-          )}
+
+        <div className="mt-3 flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => addItem(product)}
+            className="rounded-full border border-burgundy px-4 py-2 text-xs font-medium text-burgundy transition hover:bg-burgundy hover:text-ivory"
+          >
+            Quick Add
+          </button>
+          <Link
+            href={`/products/${product.slug}`}
+            className="text-xs font-medium text-walnut/70 underline-offset-2 transition hover:text-burgundy hover:underline"
+          >
+            View Product
+          </Link>
         </div>
       </div>
-    </Link>
+    </div>
   );
 }
