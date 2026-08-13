@@ -6,12 +6,13 @@ import type { Product } from "@/data/products";
 import { useCart } from "@/lib/cart-context";
 import { formatPrice } from "@/lib/format";
 import { track } from "@/lib/analytics";
+import { useAddedFeedback } from "@/lib/use-added-feedback";
 
 export default function ProductInfo({ product }: { product: Product }) {
   const { addItem } = useCart();
   const router = useRouter();
   const [quantity, setQuantity] = useState(1);
-  const [added, setAdded] = useState(false);
+  const [added, triggerAdded] = useAddedFeedback();
   const [showStickyBar, setShowStickyBar] = useState(false);
   const ctaRef = useRef<HTMLDivElement>(null);
 
@@ -32,8 +33,7 @@ export default function ProductInfo({ product }: { product: Product }) {
 
   function handleAdd() {
     addItem(product, quantity);
-    setAdded(true);
-    setTimeout(() => setAdded(false), 1800);
+    triggerAdded();
   }
 
   function handleBuyNow() {
@@ -122,7 +122,7 @@ export default function ProductInfo({ product }: { product: Product }) {
           onClick={handleAdd}
           className="flex-1 rounded-full bg-burgundy px-8 py-3.5 text-sm font-medium text-ivory transition hover:bg-burgundy-dark sm:flex-none"
         >
-          {added ? "Added to Bag" : "Add to Bag"}
+          {added ? "Added ✓" : "Add to Bag"}
         </button>
         <button
           type="button"
@@ -149,7 +149,7 @@ export default function ProductInfo({ product }: { product: Product }) {
           onClick={handleAdd}
           className="flex-shrink-0 rounded-full bg-burgundy px-6 py-3 text-sm font-medium text-ivory transition hover:bg-burgundy-dark"
         >
-          {added ? "Added" : "Add to Bag"}
+          {added ? "Added ✓" : "Add to Bag"}
         </button>
       </div>
     </div>

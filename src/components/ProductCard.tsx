@@ -4,10 +4,12 @@ import Link from "next/link";
 import type { Product } from "@/data/products";
 import { useCart } from "@/lib/cart-context";
 import { formatPrice } from "@/lib/format";
+import { useAddedFeedback } from "@/lib/use-added-feedback";
 import SmartImage from "./SmartImage";
 
 export default function ProductCard({ product }: { product: Product }) {
   const { addItem } = useCart();
+  const [added, triggerAdded] = useAddedFeedback();
 
   return (
     <div className="group relative flex flex-col">
@@ -41,10 +43,13 @@ export default function ProductCard({ product }: { product: Product }) {
         <div className="mt-3 flex items-center gap-3">
           <button
             type="button"
-            onClick={() => addItem(product)}
+            onClick={() => {
+              addItem(product);
+              triggerAdded();
+            }}
             className="rounded-full border border-burgundy px-4 py-2 text-xs font-medium text-burgundy transition hover:bg-burgundy hover:text-ivory"
           >
-            Quick Add
+            {added ? "Added ✓" : "Quick Add"}
           </button>
           <Link
             href={`/products/${product.slug}`}

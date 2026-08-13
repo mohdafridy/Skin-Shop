@@ -5,10 +5,12 @@ import type { Combo } from "@/data/combos";
 import { getComboPricing } from "@/data/combos";
 import { useCart } from "@/lib/cart-context";
 import { formatPrice } from "@/lib/format";
+import { useAddedFeedback } from "@/lib/use-added-feedback";
 import SmartImage from "./SmartImage";
 
 export default function ComboCard({ combo }: { combo: Combo }) {
   const { addCombo } = useCart();
+  const [added, triggerAdded] = useAddedFeedback();
   const { individualValue, price, savings, currency } = getComboPricing(combo);
 
   return (
@@ -50,10 +52,13 @@ export default function ComboCard({ combo }: { combo: Combo }) {
         <div className="mt-4 flex items-center gap-3">
           <button
             type="button"
-            onClick={() => addCombo(combo)}
+            onClick={() => {
+              addCombo(combo);
+              triggerAdded();
+            }}
             className="rounded-full bg-burgundy px-4 py-2 text-xs font-medium text-ivory transition hover:bg-burgundy-dark"
           >
-            Add The Ritual
+            {added ? "Added ✓" : "Add The Ritual"}
           </button>
           <Link
             href={`/rituals#${combo.slug}`}

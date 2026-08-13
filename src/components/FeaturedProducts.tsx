@@ -5,11 +5,13 @@ import Link from "next/link";
 import { products, type Product } from "@/data/products";
 import { formatPrice } from "@/lib/format";
 import { useCart } from "@/lib/cart-context";
+import { useAddedFeedback } from "@/lib/use-added-feedback";
 import SmartImage from "./SmartImage";
 import Reveal from "./Reveal";
 
 function BestsellerCard({ product }: { product: Product }) {
   const { addItem } = useCart();
+  const [added, triggerAdded] = useAddedFeedback();
 
   return (
     <div className="flex flex-col">
@@ -35,10 +37,13 @@ function BestsellerCard({ product }: { product: Product }) {
       <p className="mt-1 text-sm font-medium text-ink">{formatPrice(product.price, product.currency)}</p>
       <button
         type="button"
-        onClick={() => addItem(product)}
+        onClick={() => {
+          addItem(product);
+          triggerAdded();
+        }}
         className="mt-3 w-full rounded-full bg-ink px-5 py-2.5 text-xs font-medium text-ivory transition hover:bg-burgundy"
       >
-        Add to Bag
+        {added ? "Added ✓" : "Add to Bag"}
       </button>
     </div>
   );
