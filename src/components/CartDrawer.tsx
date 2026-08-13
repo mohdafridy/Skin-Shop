@@ -1,9 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useCart } from "@/lib/cart-context";
 import { formatPrice } from "@/lib/format";
+import { getCartSuggestion, getComboPricing } from "@/data/combos";
+import { getProductBySlug } from "@/data/products";
 import SmartImage from "./SmartImage";
 
 export default function CartDrawer() {
@@ -13,6 +15,7 @@ export default function CartDrawer() {
     closeCart,
     removeItem,
     updateQuantity,
+    addItem,
     itemCount,
     currency,
     subtotal,
@@ -25,6 +28,12 @@ export default function CartDrawer() {
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const [couponInput, setCouponInput] = useState("");
   const [couponError, setCouponError] = useState<string | null>(null);
+
+  const suggestion = useMemo(() => {
+    const productSlugs = items.filter((i) => i.type === "product").map((i) => i.slug);
+    const comboSlugs = items.filter((i) => i.type === "combo").map((i) => i.slug);
+    return getCartSuggestion(productSlugs, comboSlugs);
+  }, [items]);
 
   // Reset transient UI state as soon as the open/closed state flips, rather
   // than in a follow-up effect (see https://react.dev/learn/you-might-not-need-an-effect).
@@ -181,6 +190,64 @@ export default function CartDrawer() {
                 </li>
               ))}
             </ul>
+
+            {suggestion && (
+              <div className="mx-6 mb-2 rounded-2xl border border-gold/20 bg-sand/40 p-4">
+                {suggestion.kind === "complete-ritual" ? (
+                  <>
+                    <p className="text-xs font-semibold uppercase tracking-wide text-burgundy">
+                      You&apos;re already building {suggestion.combo.name}
+                    </p>
+                    <p className="mt-1 text-sm text-walnut/75">
+                      Discover the complete ritual — save{" "}
+                      {formatPrice(getComboPricing(suggestion.combo).savings, suggestion.combo.currency)} when
+                      bundled.
+                    </p>
+                    <Link
+                      href={`/rituals#${suggestion.combo.slug}`}
+                      onClick={closeCart}
+                      className="mt-2 inline-block text-xs font-medium text-burgundy underline-offset-2 hover:underline"
+                    >
+                      View The Ritual →
+                    </Link>
+                  </>
+                ) : (
+                  (() => {
+                    const product = getProductBySlug(suggestion.missingSlug);
+                    if (!product) return null;
+                    return (
+                      <>
+                        <p className="text-xs font-semibold uppercase tracking-wide text-burgundy">
+                          Continue The {suggestion.combo.name.replace(/ Combo$/, "")} Ritual
+                        </p>
+                        <div className="mt-2 flex items-center gap-3">
+                          <SmartImage
+                            src={product.image}
+                            alt={product.name}
+                            label={product.shortName ?? product.name}
+                            className="h-12 w-12 flex-shrink-0 rounded-lg"
+                            sizes="48px"
+                          />
+                          <div className="min-w-0 flex-1">
+                            <p className="truncate text-sm font-medium text-ink">
+                              {product.shortName ?? product.name}
+                            </p>
+                            <p className="text-xs text-walnut/70">{formatPrice(product.price, product.currency)}</p>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => addItem(product)}
+                            className="flex-shrink-0 rounded-full border border-burgundy px-3 py-1.5 text-xs font-medium text-burgundy transition hover:bg-burgundy hover:text-ivory"
+                          >
+                            + Add
+                          </button>
+                        </div>
+                      </>
+                    );
+                  })()
+                )}
+              </div>
+            )}
 
             <div className="border-t border-gold/25 px-6 py-6">
               {couponCode && discount > 0 ? (

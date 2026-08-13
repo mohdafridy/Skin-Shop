@@ -95,3 +95,37 @@ export function getComboPricing(combo: Combo): ComboPricing {
     currency: combo.currency,
   };
 }
+
+export type CartSuggestion =
+  | { kind: "complete-ritual"; combo: Combo }
+  | { kind: "continue-ritual"; combo: Combo; missingSlug: string };
+
+/**
+ * Looks at what's already in the cart and surfaces at most one genuinely
+ * relevant nudge — never a generic "you may also like" list.
+ */
+export function getCartSuggestion(cartProductSlugs: string[], cartComboSlugs: string[]): CartSuggestion | null {
+  const productSet = new Set(cartProductSlugs);
+  const comboSet = new Set(cartComboSlugs);
+
+  // Every constituent product is already in the cart as separate items —
+  // point out the ritual rather than suggest re-buying the same products.
+  for (const combo of combos) {
+    if (comboSet.has(combo.slug)) continue;
+    if (combo.productSlugs.length > 1 && combo.productSlugs.every((slug) => productSet.has(slug))) {
+      return { kind: "complete-ritual", combo };
+    }
+  }
+
+  // Exactly one product away from completing a ritual — suggest adding
+  // just that product at its own price, not the bundle.
+  for (const combo of combos) {
+    if (comboSet.has(combo.slug)) continue;
+    const missing = combo.productSlugs.filter((slug) => !productSet.has(slug));
+    if (missing.length === 1 && combo.productSlugs.length > 1) {
+      return { kind: "continue-ritual", combo, missingSlug: missing[0] };
+    }
+  }
+
+  return null;
+}
