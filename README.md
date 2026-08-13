@@ -73,8 +73,19 @@ the session will fail to create. Configure a webhook pointed at
 - `checkout.session.completed`
 - `checkout.session.async_payment_succeeded`
 - `checkout.session.async_payment_failed`
+- `checkout.session.expired`
+
+`checkout.session.expired` is **required** if you ever issue limited-use
+coupons: a use is reserved when checkout starts, and this event is what
+releases it when the shopper abandons the session. Without it an abandoned
+checkout holds that use permanently.
 
 Local testing: `stripe listen --forward-to localhost:3000/api/webhooks/stripe`
+
+Webhook handling is idempotent: the `ProcessedStripeEvent` marker is written
+inside the same serializable transaction as fulfillment, so a redelivered
+event is rejected on the marker's primary key and a failed one rolls the
+marker back for Stripe to retry. Stock is never decremented twice.
 
 ### 3. Routes this adds
 

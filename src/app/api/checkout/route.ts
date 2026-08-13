@@ -4,16 +4,17 @@ import { getStripe, isStripeConfigured, toStripeAmount } from "@/lib/stripe";
 import { calculateDiscount, checkoutSchema, couponIsUsable, createOrderNumber } from "@/lib/backend";
 import { getCurrentUser } from "@/lib/auth";
 
+/** A checkout failure the shopper can act on (an item sold out or was
+ * withdrawn). Its message is written to be shown as-is; every other error
+ * stays generic so implementation details never reach the browser. */
+class CheckoutError extends Error {}
+
 export async function POST(request: Request) {
-  // Check payment configuration before touching the database at all, so
-  // checkout degrades to the same honest "not connected yet" response
-  // whether or not a database is even reachable yet.
   if (!isStripeConfigured()) {
     return NextResponse.json(
       {
         error: "not_configured",
-        message:
-          "No payment gateway is connected yet. Add a Stripe integration to accept payment.",
+        message: "No payment gateway is connected yet. Add a Stripe integration to accept payment.",
       },
       { status: 503 },
     );
@@ -23,13 +24,20 @@ export async function POST(request: Request) {
   try {
     body = await request.json();
   } catch {
-    return NextResponse.json({ error: "invalid_request", message: "Malformed request body." }, { status: 400 });
+    return NextResponse.json(
+      { error: "invalid_request", message: "Malformed request body." },
+      { status: 400 },
+    );
   }
 
   const parsed = checkoutSchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json(
-      { error: "invalid_request", message: "Invalid checkout request.", details: parsed.error.flatten() },
+      {
+        error: "invalid_request",
+        message: "Invalid checkout request.",
+        details: parsed.error.flatten(),
+      },
       { status: 400 },
     );
   }
@@ -39,8 +47,8 @@ export async function POST(request: Request) {
     // Optional — guest checkout is the default and stays fully supported.
     const currentUser = await getCurrentUser();
 
-    const productSlugs = lines.filter((l) => l.type === "product").map((l) => l.slug);
-    const comboSlugs = lines.filter((l) => l.type === "combo").map((l) => l.slug);
+    const productSlugs = lines.filter((line) => line.type === "product").map((line) => line.slug);
+    const comboSlugs = lines.filter((line) => line.type === "combo").map((line) => line.slug);
 
     const [products, combos] = await Promise.all([
       productSlugs.length
@@ -51,44 +59,53 @@ export async function POST(request: Request) {
         : Promise.resolve([]),
     ]);
 
-    const productBySlug = new Map(products.map((p) => [p.slug, p]));
-    const comboBySlug = new Map(combos.map((c) => [c.slug, c]));
+    const productBySlug = new Map(products.map((product) => [product.slug, product]));
+    const comboBySlug = new Map(combos.map((combo) => [combo.slug, combo]));
 
     let subtotal = 0;
     const orderItems = lines.map((line) => {
       if (line.type === "product") {
-        const p = productBySlug.get(line.slug);
-        if (!p) throw new Error(`"${line.slug}" is no longer available.`);
-        if (p.stock !== null && line.quantity > p.stock) {
-          throw new Error(`Only ${p.stock} of ${p.name} left in stock.`);
+        const product = productBySlug.get(line.slug);
+        if (!product) {
+          throw new CheckoutError("A product in your cart is no longer available.");
         }
-        const lineTotal = p.price * line.quantity;
+        if (product.stock !== null && line.quantity > product.stock) {
+          throw new CheckoutError("A product in your cart no longer has enough stock.");
+        }
+
+        const lineTotal = product.price * line.quantity;
         subtotal += lineTotal;
+
         return {
           type: "PRODUCT" as const,
-          slug: p.slug,
-          productId: p.id,
-          name: p.name,
-          image: p.image,
-          unitPrice: p.price,
+          slug: product.slug,
+          productId: product.id,
+          name: product.name,
+          image: product.image,
+          unitPrice: product.price,
           quantity: line.quantity,
           lineTotal,
         };
       }
-      const c = comboBySlug.get(line.slug);
-      if (!c) throw new Error(`"${line.slug}" is no longer available.`);
-      if (c.stock !== null && line.quantity > c.stock) {
-        throw new Error(`Only ${c.stock} of ${c.name} left in stock.`);
+
+      const combo = comboBySlug.get(line.slug);
+      if (!combo) {
+        throw new CheckoutError("A combo in your cart is no longer available.");
       }
-      const lineTotal = c.price * line.quantity;
+      if (combo.stock !== null && line.quantity > combo.stock) {
+        throw new CheckoutError("A combo in your cart no longer has enough stock.");
+      }
+
+      const lineTotal = combo.price * line.quantity;
       subtotal += lineTotal;
+
       return {
         type: "COMBO" as const,
-        slug: c.slug,
-        comboId: c.id,
-        name: c.name,
-        image: c.image,
-        unitPrice: c.price,
+        slug: combo.slug,
+        comboId: combo.id,
+        name: combo.name,
+        image: combo.image,
+        unitPrice: combo.price,
         quantity: line.quantity,
         lineTotal,
       };
@@ -96,98 +113,184 @@ export async function POST(request: Request) {
 
     let coupon = null;
     let discount = 0;
+    let couponReserved = false;
+
     if (couponCode) {
-      coupon = await prisma.coupon.findUnique({ where: { code: couponCode.trim().toUpperCase() } });
-      if (coupon && couponIsUsable(coupon, subtotal)) discount = calculateDiscount(coupon, subtotal);
-      else coupon = null;
+      coupon = await prisma.coupon.findUnique({
+        where: { code: couponCode.trim().toUpperCase() },
+      });
+
+      if (coupon && couponIsUsable(coupon, subtotal)) {
+        discount = calculateDiscount(coupon, subtotal);
+
+        // For limited-use coupons, reserve one use before creating the Stripe
+        // session. The conditional update prevents two concurrent checkouts
+        // from both claiming the same final use.
+        if (coupon.usageLimit !== null) {
+          const reservation = await prisma.coupon.updateMany({
+            where: {
+              id: coupon.id,
+              active: true,
+              timesUsed: { lt: coupon.usageLimit },
+            },
+            data: { timesUsed: { increment: 1 } },
+          });
+
+          if (reservation.count !== 1) {
+            return NextResponse.json(
+              {
+                error: "coupon_unavailable",
+                message: "That coupon is no longer available. Please try again.",
+              },
+              { status: 409 },
+            );
+          }
+
+          couponReserved = true;
+        }
+      } else {
+        coupon = null;
+      }
     }
 
     // Shipping and tax are not configured anywhere on the site yet (see
-    // src/data/shipping.ts and src/data/tax.ts) — kept at 0 here rather
-    // than invented, consistent with the rest of the checkout flow.
+    // src/data/shipping.ts and src/data/tax.ts) — kept at 0 here rather than
+    // invented, consistent with the rest of the checkout flow.
     const shippingCost = 0;
     const tax = 0;
     const currency = (process.env.STORE_CURRENCY || "INR").toUpperCase();
     const total = Math.max(0, subtotal - discount + shippingCost + tax);
 
-    const order = await prisma.order.create({
-      data: {
-        orderNumber: createOrderNumber(),
-        email: shipping.email,
-        customerName: shipping.name,
-        phone: shipping.phone,
-        // Guest checkout leaves this null; a signed-in shopper gets the order
-        // linked so it appears in their /account order history.
-        userId: currentUser?.id ?? null,
-        source,
-        status: "PENDING",
-        subtotal,
-        discount,
-        shipping: shippingCost,
-        tax,
-        total,
-        currency,
-        couponId: coupon?.id,
-        shippingName: shipping.name,
-        shippingLine1: shipping.address1,
-        shippingLine2: shipping.address2 || null,
-        shippingCity: shipping.city,
-        shippingState: shipping.state,
-        shippingPostal: shipping.postalCode,
-        shippingCountry: shipping.country,
-        items: { create: orderItems },
-      },
-    });
-
-    const stripe = getStripe();
-    const stripeCurrency = currency.toLowerCase();
-
-    let discounts: { coupon: string }[] | undefined;
-    if (discount > 0) {
-      const stripeCoupon = await stripe.coupons.create({
-        amount_off: toStripeAmount(discount),
-        currency: stripeCurrency,
-        duration: "once",
-        name: coupon?.code ?? "Discount",
-        metadata: { orderId: order.id },
+    let order;
+    try {
+      order = await prisma.order.create({
+        data: {
+          orderNumber: createOrderNumber(),
+          email: shipping.email,
+          customerName: shipping.name,
+          phone: shipping.phone,
+          // Guest checkout leaves this null; a signed-in shopper gets the
+          // order linked so it appears in their /account order history.
+          userId: currentUser?.id ?? null,
+          source,
+          status: "PENDING",
+          subtotal,
+          discount,
+          shipping: shippingCost,
+          tax,
+          total,
+          currency,
+          couponId: coupon?.id,
+          shippingName: shipping.name,
+          shippingLine1: shipping.address1,
+          shippingLine2: shipping.address2 || null,
+          shippingCity: shipping.city,
+          shippingState: shipping.state,
+          shippingPostal: shipping.postalCode,
+          shippingCountry: shipping.country,
+          items: { create: orderItems },
+        },
       });
-      discounts = [{ coupon: stripeCoupon.id }];
+    } catch (error) {
+      if (couponReserved && coupon) {
+        await prisma.coupon.updateMany({
+          where: { id: coupon.id, timesUsed: { gt: 0 } },
+          data: { timesUsed: { decrement: 1 } },
+        });
+      }
+      throw error;
     }
 
-    const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000").replace(/\/$/, "");
+    try {
+      const stripe = getStripe();
+      const stripeCurrency = currency.toLowerCase();
 
-    // Our own checkout form already collected shipping/billing address and
-    // email, so we don't ask Stripe's hosted page to collect them again —
-    // it only needs to handle the payment method itself.
-    const session = await stripe.checkout.sessions.create({
-      mode: "payment",
-      // UPI requires an India-domiciled Stripe account (STORE_CURRENCY is
-      // "inr" by default) with UPI enabled under Dashboard → Payment methods.
-      payment_method_types: ["card", "upi"],
-      customer_email: shipping.email,
-      line_items: orderItems.map((item) => ({
-        quantity: item.quantity,
-        price_data: {
+      let discounts: { coupon: string }[] | undefined;
+      if (discount > 0) {
+        const stripeCoupon = await stripe.coupons.create({
+          amount_off: toStripeAmount(discount),
           currency: stripeCurrency,
-          unit_amount: toStripeAmount(item.unitPrice),
-          product_data: {
-            name: item.name,
-            ...(item.image?.startsWith("http") ? { images: [item.image] } : {}),
+          duration: "once",
+          name: coupon?.code ?? "Discount",
+          metadata: { orderId: order.id },
+        });
+        discounts = [{ coupon: stripeCoupon.id }];
+      }
+
+      const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000").replace(/\/$/, "");
+
+      // Our own form already collected shipping/billing and email, so Stripe's
+      // hosted page only handles the payment method itself.
+      const session = await stripe.checkout.sessions.create({
+        mode: "payment",
+        // UPI requires an India-domiciled Stripe account (STORE_CURRENCY is
+        // "inr" by default) with UPI enabled under Dashboard → Payment methods.
+        payment_method_types: ["card", "upi"],
+        customer_email: shipping.email,
+        line_items: orderItems.map((item) => ({
+          quantity: item.quantity,
+          price_data: {
+            currency: stripeCurrency,
+            unit_amount: toStripeAmount(item.unitPrice),
+            product_data: {
+              name: item.name,
+              ...(item.image?.startsWith("http") ? { images: [item.image] } : {}),
+            },
           },
-        },
-      })),
-      ...(discounts ? { discounts } : {}),
-      success_url: `${siteUrl}/order-success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${siteUrl}/checkout`,
-      metadata: { orderId: order.id, orderNumber: order.orderNumber },
-    });
+        })),
+        ...(discounts ? { discounts } : {}),
+        success_url: `${siteUrl}/order-success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${siteUrl}/checkout`,
+        metadata: { orderId: order.id, orderNumber: order.orderNumber },
+      });
 
-    await prisma.order.update({ where: { id: order.id }, data: { stripeSessionId: session.id } });
+      await prisma.order.update({
+        where: { id: order.id },
+        data: { stripeSessionId: session.id },
+      });
 
-    return NextResponse.json({ checkoutUrl: session.url, orderId: order.id, orderNumber: order.orderNumber });
+      return NextResponse.json({
+        checkoutUrl: session.url,
+        orderId: order.id,
+        orderNumber: order.orderNumber,
+      });
+    } catch (error) {
+      // Stripe session creation failed. Remove the unusable pending order and
+      // release any limited coupon reservation.
+      await prisma.$transaction(async (tx) => {
+        await tx.order.deleteMany({
+          where: { id: order.id, status: "PENDING" },
+        });
+
+        if (couponReserved && coupon) {
+          await tx.coupon.updateMany({
+            where: { id: coupon.id, timesUsed: { gt: 0 } },
+            data: { timesUsed: { decrement: 1 } },
+          });
+        }
+      });
+
+      throw error;
+    }
   } catch (error) {
-    console.error(error);
-    const message = error instanceof Error ? error.message : "Unable to start checkout.";
-    return NextResponse.json({ error: "checkout_failed", message }, { status: 500 });
+    console.error("checkout_failed", error);
+
+    // Availability problems are the shopper's to resolve, so their (already
+    // sanitized) message is returned; otherwise a retry tells them nothing.
+    if (error instanceof CheckoutError) {
+      return NextResponse.json(
+        { error: "line_unavailable", message: error.message },
+        { status: 409 },
+      );
+    }
+
+    // Keep implementation/database/Stripe details out of the browser response.
+    return NextResponse.json(
+      {
+        error: "checkout_failed",
+        message: "Unable to start checkout right now. Please try again.",
+      },
+      { status: 500 },
+    );
   }
 }
