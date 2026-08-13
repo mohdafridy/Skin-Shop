@@ -63,7 +63,11 @@ code once real keys exist; just add them and redeploy.
 
 Checkout uses Stripe's hosted Checkout page for the actual payment step
 (our own form still collects shipping/billing first, so Stripe isn't asked
-to collect it twice). Configure a webhook pointed at
+to collect it twice). The session requests both `card` and `upi` — UPI only
+appears for an India-domiciled Stripe account with UPI turned on under
+Dashboard → Settings → Payment methods; card-only accounts should remove
+`"upi"` from `payment_method_types` in `src/app/api/checkout/route.ts` or
+the session will fail to create. Configure a webhook pointed at
 `https://YOUR-DOMAIN.com/api/webhooks/stripe`, listening for:
 
 - `checkout.session.completed`
@@ -84,12 +88,47 @@ Admin (requires an `x-admin-key` header matching `ADMIN_API_KEY`):
 `GET /api/admin/orders`, `PATCH /api/admin/orders/[id]`. Replace the simple
 API-key guard with real staff authentication before relying on these.
 
-### 4. Order confirmation
+### 4. Customer accounts (optional)
+
+Guest checkout is the default and always works. Accounts add order history
+only, and need nothing beyond `DATABASE_URL`:
+
+- `POST /api/auth/register`, `POST /api/auth/login`, `POST /api/auth/logout`
+- `/account` — sign-in/register when signed out, profile + order history when
+  signed in.
+
+Passwords are hashed with `scrypt` from `node:crypto` (no third-party
+hashing dependency); sessions are opaque random tokens stored in the
+`Session` table and sent as an httpOnly, SameSite=Lax cookie that is
+`secure` in production. Without `DATABASE_URL`, `/account` shows an honest
+"accounts aren't connected yet" notice and the auth routes return 503 —
+browsing and guest checkout are unaffected.
+
+Orders placed while signed in get `Order.userId` set so they appear in
+order history; guest orders leave it null.
+
+### 5. Order confirmation
 
 `/order-success` only ever renders after verifying payment directly with
 Stripe (using the secret key server-side) — never from anything in the URL
 alone. It clears the persistent cart only for a cart-mode checkout; a Buy
 Now purchase never touches cart items the customer didn't check out.
+
+## Contact and WhatsApp
+
+The business email and phone/WhatsApp number live in `src/data/contact.ts`
+and are the single source for the footer, the contact page, the floating
+WhatsApp button, and the "Order via WhatsApp" option in the cart. Change
+them there only. `whatsappLink(message?)` builds `wa.me` deep links;
+`src/lib/whatsapp-order.ts` builds the prefilled cart-order message so
+shoppers can order over chat as an alternative to on-site checkout.
+
+## Wishlist
+
+Saved products live in `localStorage` (`src/lib/wishlist-context.tsx`), so
+the wishlist works with no account and no database. It stores slugs only and
+resolves them against `src/data/products.ts` at render time — nothing to keep
+in sync, and a removed product simply drops out of `/wishlist`.
 
 ## Brand assets
 

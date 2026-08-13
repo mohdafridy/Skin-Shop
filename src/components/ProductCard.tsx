@@ -3,13 +3,17 @@
 import Link from "next/link";
 import type { Product } from "@/data/products";
 import { useCart } from "@/lib/cart-context";
+import { useWishlist } from "@/lib/wishlist-context";
 import { formatPrice } from "@/lib/format";
 import { useAddedFeedback } from "@/lib/use-added-feedback";
+import { HeartIcon } from "./icons";
 import SmartImage from "./SmartImage";
 
 export default function ProductCard({ product }: { product: Product }) {
   const { addItem } = useCart();
+  const { isWishlisted, toggle } = useWishlist();
   const [added, triggerAdded] = useAddedFeedback();
+  const wishlisted = isWishlisted(product.slug);
 
   return (
     <div className="group relative flex flex-col">
@@ -27,6 +31,19 @@ export default function ProductCard({ product }: { product: Product }) {
           imageClassName="transition duration-700 ease-out group-hover:scale-105"
         />
       </Link>
+
+      <button
+        type="button"
+        onClick={() => toggle(product.slug)}
+        aria-label={wishlisted ? `Remove ${product.name} from wishlist` : `Add ${product.name} to wishlist`}
+        aria-pressed={wishlisted}
+        className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-ivory/90 text-ink shadow-sm transition hover:scale-105"
+      >
+        <HeartIcon
+          filled={wishlisted}
+          className={`h-4 w-4 ${wishlisted ? "text-burgundy" : "text-ink"}`}
+        />
+      </button>
 
       <div className="mt-4 flex flex-1 flex-col">
         <p className="text-xs uppercase tracking-wide text-walnut/70">{product.category}</p>

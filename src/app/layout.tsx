@@ -5,7 +5,9 @@ import AnnouncementBar from "@/components/AnnouncementBar";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import CartDrawer from "@/components/CartDrawer";
+import WhatsAppButton from "@/components/WhatsAppButton";
 import { CartProvider } from "@/lib/cart-context";
+import { WishlistProvider } from "@/lib/wishlist-context";
 import { brandLine } from "@/data/navigation";
 
 const cormorant = Cormorant_Garamond({
@@ -44,19 +46,22 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="flex min-h-full flex-col bg-ivory text-ink">
         <CartProvider>
-          <a
-            href="#main-content"
-            className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-burgundy focus:px-4 focus:py-2 focus:text-sm focus:text-ivory"
-          >
-            Skip to content
-          </a>
-          <AnnouncementBar />
-          <Header />
-          <main id="main-content" className="flex-1">
-            {children}
-          </main>
-          <Footer />
-          <CartDrawer />
+          <WishlistProvider>
+            <a
+              href="#main-content"
+              className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-burgundy focus:px-4 focus:py-2 focus:text-sm focus:text-ivory"
+            >
+              Skip to content
+            </a>
+            <AnnouncementBar />
+            <Header />
+            <main id="main-content" className="flex-1">
+              {children}
+            </main>
+            <Footer />
+            <CartDrawer />
+            <WhatsAppButton />
+          </WishlistProvider>
         </CartProvider>
       </body>
     </html>

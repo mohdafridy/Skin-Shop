@@ -5,7 +5,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { mainNav } from "@/data/navigation";
 import { useCart } from "@/lib/cart-context";
+import { useWishlist } from "@/lib/wishlist-context";
 import { track } from "@/lib/analytics";
+import { HeartIcon } from "./icons";
 import Logo from "./Logo";
 import SearchOverlay from "./SearchOverlay";
 
@@ -16,8 +18,8 @@ export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const [accountTip, setAccountTip] = useState(false);
   const { itemCount, subtotal, openCart } = useCart();
+  const { count: wishlistCount } = useWishlist();
 
   useEffect(() => {
     if (!isHome) return;
@@ -108,37 +110,37 @@ export default function Header() {
             </svg>
           </button>
 
-          <div className="relative hidden sm:block">
-            <button
-              type="button"
-              onClick={() => setAccountTip((v) => !v)}
-              onBlur={() => setAccountTip(false)}
-              aria-label="Account"
-              aria-expanded={accountTip}
-              className="flex h-11 w-11 items-center justify-center rounded-full transition hover:opacity-70"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.6"
-                className="h-5 w-5"
-                aria-hidden="true"
-              >
-                <circle cx="12" cy="8" r="3.5" />
-                <path strokeLinecap="round" d="M4.5 20c1.4-3.6 4.4-5.5 7.5-5.5s6.1 1.9 7.5 5.5" />
-              </svg>
-            </button>
-            {accountTip && (
-              <div
-                role="status"
-                className="absolute right-0 top-12 w-48 rounded-xl border border-gold/20 bg-ivory p-3 text-xs text-ink shadow-lg"
-              >
-                Accounts are launching soon.
-              </div>
+          <Link
+            href="/wishlist"
+            aria-label={`Wishlist, ${wishlistCount} item${wishlistCount === 1 ? "" : "s"}`}
+            className="relative flex h-11 w-11 items-center justify-center rounded-full transition hover:opacity-70"
+          >
+            <HeartIcon className="h-5 w-5" />
+            {wishlistCount > 0 && (
+              <span className="absolute right-0.5 top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-burgundy px-1 text-[10px] font-semibold text-ivory">
+                {wishlistCount}
+              </span>
             )}
-          </div>
+          </Link>
+
+          <Link
+            href="/account"
+            aria-label="Account"
+            className="hidden h-11 w-11 items-center justify-center rounded-full transition hover:opacity-70 sm:flex"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.6"
+              className="h-5 w-5"
+              aria-hidden="true"
+            >
+              <circle cx="12" cy="8" r="3.5" />
+              <path strokeLinecap="round" d="M4.5 20c1.4-3.6 4.4-5.5 7.5-5.5s6.1 1.9 7.5 5.5" />
+            </svg>
+          </Link>
 
           <button
             type="button"

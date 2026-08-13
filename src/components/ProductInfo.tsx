@@ -4,12 +4,16 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Product } from "@/data/products";
 import { useCart } from "@/lib/cart-context";
+import { useWishlist } from "@/lib/wishlist-context";
 import { formatPrice } from "@/lib/format";
 import { track } from "@/lib/analytics";
 import { useAddedFeedback } from "@/lib/use-added-feedback";
+import { HeartIcon } from "./icons";
 
 export default function ProductInfo({ product }: { product: Product }) {
   const { addItem } = useCart();
+  const { isWishlisted, toggle } = useWishlist();
+  const wishlisted = isWishlisted(product.slug);
   const router = useRouter();
   const [quantity, setQuantity] = useState(1);
   const [added, triggerAdded] = useAddedFeedback();
@@ -130,6 +134,18 @@ export default function ProductInfo({ product }: { product: Product }) {
           className="flex-1 rounded-full border border-ink px-8 py-3.5 text-sm font-medium text-ink transition hover:bg-ink hover:text-ivory sm:flex-none"
         >
           Buy Now
+        </button>
+        <button
+          type="button"
+          onClick={() => toggle(product.slug)}
+          aria-label={wishlisted ? "Remove from wishlist" : "Save to wishlist"}
+          aria-pressed={wishlisted}
+          className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full border border-gold/30 transition hover:border-burgundy"
+        >
+          <HeartIcon
+            filled={wishlisted}
+            className={`h-5 w-5 ${wishlisted ? "text-burgundy" : "text-ink"}`}
+          />
         </button>
       </div>
 

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { footerColumns, brandLine, productTagline } from "@/data/navigation";
+import { contactEmail, contactPhoneDisplay, whatsappLink } from "@/data/contact";
 import Logo from "./Logo";
 import SectionDivider from "./SectionDivider";
 
@@ -22,6 +23,19 @@ export default function Footer() {
               Organic, botanical skincare, body care and hair care — handcrafted in
               Kashmir and shipped across India.
             </p>
+            <div className="mt-5 space-y-1.5 text-sm text-sand/80">
+              <a href={`mailto:${contactEmail}`} className="block transition hover:text-ivory">
+                {contactEmail}
+              </a>
+              <a
+                href={whatsappLink("Hi! I have a question about The Skin Shop.")}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block transition hover:text-ivory"
+              >
+                {contactPhoneDisplay} (WhatsApp)
+              </a>
+            </div>
           </div>
 
           {footerColumns.map((column) => (

@@ -27,6 +27,8 @@ export const footerColumns: { title: string; links: NavLink[] }[] = [
     links: [
       { label: "Our Story", href: "/our-story" },
       { label: "Contact", href: "/contact" },
+      { label: "Wishlist", href: "/wishlist" },
+      { label: "Account", href: "/account" },
     ],
   },
   {

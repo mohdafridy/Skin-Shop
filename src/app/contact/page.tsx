@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import ContactForm from "./ContactForm";
+import { contactEmail, contactPhoneDisplay, whatsappLink } from "@/data/contact";
+import { WhatsAppIcon } from "@/components/icons";
 
 export const metadata: Metadata = {
   title: "Contact",
@@ -19,6 +21,24 @@ export default function ContactPage() {
         Questions about a product, an order, or a ritual you&apos;re building — send us
         a note and we&apos;ll get back to you.
       </p>
+
+      <div className="mt-8 flex flex-col items-center gap-3 rounded-2xl border border-gold/20 bg-white/40 p-6 text-center sm:flex-row sm:justify-center sm:gap-8">
+        <a
+          href={`mailto:${contactEmail}`}
+          className="text-sm font-medium text-ink transition hover:text-burgundy"
+        >
+          {contactEmail}
+        </a>
+        <a
+          href={whatsappLink("Hi! I have a question about The Skin Shop.")}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 text-sm font-medium text-ink transition hover:text-burgundy"
+        >
+          <WhatsAppIcon className="h-4 w-4" />
+          {contactPhoneDisplay}
+        </a>
+      </div>
 
       <div className="mt-10">
         <ContactForm />

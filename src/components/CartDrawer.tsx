@@ -6,6 +6,10 @@ import { useCart } from "@/lib/cart-context";
 import { formatPrice } from "@/lib/format";
 import { getCartSuggestion, getComboPricing } from "@/data/combos";
 import { getProductBySlug } from "@/data/products";
+import { whatsappLink } from "@/data/contact";
+import { buildWhatsAppOrderMessage } from "@/lib/whatsapp-order";
+import { track } from "@/lib/analytics";
+import { WhatsAppIcon } from "./icons";
 import SmartImage from "./SmartImage";
 
 export default function CartDrawer() {
@@ -317,6 +321,16 @@ export default function CartDrawer() {
               >
                 Checkout
               </Link>
+              <a
+                href={whatsappLink(buildWhatsAppOrderMessage(items, total, currency))}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => track({ name: "whatsapp_click", source: "cart_order" })}
+                className="mt-2.5 flex w-full items-center justify-center gap-2 rounded-full border border-gold/30 px-6 py-3 text-center text-sm font-medium text-ink transition hover:border-[#25D366] hover:text-[#1DA851]"
+              >
+                <WhatsAppIcon className="h-4 w-4" />
+                Order via WhatsApp
+              </a>
               <button
                 type="button"
                 onClick={closeCart}

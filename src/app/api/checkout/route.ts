@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getStripe, isStripeConfigured, toStripeAmount } from "@/lib/stripe";
 import { calculateDiscount, checkoutSchema, couponIsUsable, createOrderNumber } from "@/lib/backend";
+import { getCurrentUser } from "@/lib/auth";
 
 export async function POST(request: Request) {
   // Check payment configuration before touching the database at all, so
@@ -35,6 +36,8 @@ export async function POST(request: Request) {
 
   try {
     const { lines, couponCode, shipping, source } = parsed.data;
+    // Optional — guest checkout is the default and stays fully supported.
+    const currentUser = await getCurrentUser();
 
     const productSlugs = lines.filter((l) => l.type === "product").map((l) => l.slug);
     const comboSlugs = lines.filter((l) => l.type === "combo").map((l) => l.slug);
@@ -113,6 +116,9 @@ export async function POST(request: Request) {
         email: shipping.email,
         customerName: shipping.name,
         phone: shipping.phone,
+        // Guest checkout leaves this null; a signed-in shopper gets the order
+        // linked so it appears in their /account order history.
+        userId: currentUser?.id ?? null,
         source,
         status: "PENDING",
         subtotal,
@@ -155,6 +161,9 @@ export async function POST(request: Request) {
     // it only needs to handle the payment method itself.
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
+      // UPI requires an India-domiciled Stripe account (STORE_CURRENCY is
+      // "inr" by default) with UPI enabled under Dashboard → Payment methods.
+      payment_method_types: ["card", "upi"],
       customer_email: shipping.email,
       line_items: orderItems.map((item) => ({
         quantity: item.quantity,

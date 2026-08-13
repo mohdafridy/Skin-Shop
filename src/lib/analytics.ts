@@ -18,7 +18,10 @@ export type AnalyticsEvent =
   | { name: "begin_checkout"; itemCount: number; subtotal: number; currency: string }
   | { name: "add_shipping_info" }
   | { name: "add_payment_info" }
-  | { name: "purchase"; orderNumber: string; total: number; currency: string };
+  | { name: "purchase"; orderNumber: string; total: number; currency: string }
+  | { name: "whatsapp_click"; source: "floating" | "footer" | "contact" | "cart_order" }
+  | { name: "wishlist_add"; slug: string }
+  | { name: "wishlist_remove"; slug: string };
 
 export function track(event: AnalyticsEvent) {
   if (process.env.NODE_ENV !== "production") {
