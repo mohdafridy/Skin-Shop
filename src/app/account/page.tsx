@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { formatPrice } from "@/lib/format";
+import { FulfilmentStatusBadge, PaymentStatusBadge } from "@/components/OrderStatusBadge";
 import AccountAuthForm from "./AccountAuthForm";
 import SignOutButton from "./SignOutButton";
 
@@ -97,9 +98,20 @@ export default async function AccountPage() {
                   })}
                 </p>
               </div>
-              <p className="mt-1 text-xs uppercase tracking-wide text-walnut/60">
-                {order.status.toLowerCase().replace(/_/g, " ")}
-              </p>
+              <div className="mt-1.5 flex flex-wrap items-center gap-2">
+                <PaymentStatusBadge status={order.paymentStatus} />
+                <FulfilmentStatusBadge status={order.fulfilmentStatus} paymentStatus={order.paymentStatus} />
+              </div>
+              {order.trackingUrl && (
+                <a
+                  href={order.trackingUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-2 inline-block text-xs font-medium text-burgundy underline-offset-2 hover:underline"
+                >
+                  Track shipment →
+                </a>
+              )}
               <ul className="mt-3 space-y-1 text-sm text-walnut/80">
                 {order.items.map((item) => (
                   <li key={item.id}>

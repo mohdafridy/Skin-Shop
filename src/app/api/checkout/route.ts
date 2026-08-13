@@ -1,8 +1,16 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { getStripe, isStripeConfigured, toStripeAmount } from "@/lib/stripe";
+import { getStripe, toStripeAmount } from "@/lib/stripe";
+import { createRazorpayOrder, razorpayPublicKeyId } from "@/lib/razorpay";
+import { toMinorUnits } from "@/lib/format";
 import { calculateDiscount, checkoutSchema, couponIsUsable, createOrderNumber } from "@/lib/backend";
 import { getCurrentUser } from "@/lib/auth";
+import { createAccessToken, recordOrderEvent } from "@/lib/orders/events";
+import {
+  getServerPaymentProviderId,
+  isActiveProviderConfigured,
+  unconfiguredProviderMessage,
+} from "@/lib/payment/server";
 
 /** A checkout failure the shopper can act on (an item sold out or was
  * withdrawn). Its message is written to be shown as-is; every other error
@@ -10,12 +18,12 @@ import { getCurrentUser } from "@/lib/auth";
 class CheckoutError extends Error {}
 
 export async function POST(request: Request) {
-  if (!isStripeConfigured()) {
+  // Whichever gateway is active must have its secrets before we touch the
+  // database, so checkout degrades to the same honest "not connected yet"
+  // response rather than leaving a pending order nothing can pay for.
+  if (!isActiveProviderConfigured()) {
     return NextResponse.json(
-      {
-        error: "not_configured",
-        message: "No payment gateway is connected yet. Add a Stripe integration to accept payment.",
-      },
+      { error: "not_configured", message: unconfiguredProviderMessage() },
       { status: 503 },
     );
   }
@@ -153,6 +161,8 @@ export async function POST(request: Request) {
       }
     }
 
+    const provider = getServerPaymentProviderId();
+
     // Shipping and tax are not configured anywhere on the site yet (see
     // src/data/shipping.ts and src/data/tax.ts) — kept at 0 here rather than
     // invented, consistent with the rest of the checkout flow.
@@ -173,7 +183,11 @@ export async function POST(request: Request) {
           // order linked so it appears in their /account order history.
           userId: currentUser?.id ?? null,
           source,
-          status: "PENDING",
+          paymentStatus: "PENDING",
+          paymentProvider: provider,
+          // Unguessable token so a guest can track this order without an
+          // account, and without the order number alone granting access.
+          accessToken: createAccessToken(),
           subtotal,
           discount,
           shipping: shippingCost,
@@ -201,7 +215,49 @@ export async function POST(request: Request) {
       throw error;
     }
 
+    // Order exists as PENDING from here on; the history trail starts now.
+    await recordOrderEvent(order.id, "ORDER_CREATED", {
+      provider,
+      total,
+      currency,
+      lineCount: orderItems.length,
+    });
+
     try {
+      if (provider === "razorpay") {
+        // Razorpay Checkout is a browser modal, not a redirect, so we hand
+        // the client the gateway order id plus the PUBLIC key id only. The
+        // key secret never leaves the server, and the browser's eventual
+        // success claim is worthless until /api/payments/razorpay/verify
+        // checks its HMAC signature.
+        const rzpOrder = await createRazorpayOrder({
+          amount: total,
+          currency,
+          receipt: order.orderNumber,
+          notes: { orderId: order.id, orderNumber: order.orderNumber },
+        });
+
+        await prisma.order.update({
+          where: { id: order.id },
+          data: { razorpayOrderId: rzpOrder.id },
+        });
+
+        const keyId = razorpayPublicKeyId();
+        if (!keyId) throw new Error("RAZORPAY_KEY_ID is not set.");
+
+        return NextResponse.json({
+          orderId: order.id,
+          orderNumber: order.orderNumber,
+          accessToken: order.accessToken,
+          razorpay: {
+            keyId,
+            orderId: rzpOrder.id,
+            amount: rzpOrder.amount ?? toMinorUnits(total),
+            currency: rzpOrder.currency ?? currency,
+          },
+        });
+      }
+
       const stripe = getStripe();
       const stripeCurrency = currency.toLowerCase();
 
@@ -253,13 +309,14 @@ export async function POST(request: Request) {
         checkoutUrl: session.url,
         orderId: order.id,
         orderNumber: order.orderNumber,
+        accessToken: order.accessToken,
       });
     } catch (error) {
-      // Stripe session creation failed. Remove the unusable pending order and
-      // release any limited coupon reservation.
+      // Gateway order/session creation failed. Remove the unusable pending
+      // order and release any limited coupon reservation.
       await prisma.$transaction(async (tx) => {
         await tx.order.deleteMany({
-          where: { id: order.id, status: "PENDING" },
+          where: { id: order.id, paymentStatus: "PENDING" },
         });
 
         if (couponReserved && coupon) {

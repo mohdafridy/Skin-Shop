@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
-import { Prisma, type Order, type OrderItem } from "@prisma/client";
+import { Prisma, type Order, type OrderItem, type OrderEventType } from "@prisma/client";
 import type Stripe from "stripe";
 import { getStripe, isStripeConfigured } from "@/lib/stripe";
 import { prisma } from "@/lib/prisma";
+import { notifyOrderEvent } from "@/lib/notifications";
+import { recordOrderEvent } from "@/lib/orders/events";
 
 export const runtime = "nodejs";
 
@@ -30,16 +32,16 @@ async function releaseLimitedCoupon(
 async function fulfill(
   tx: Prisma.TransactionClient,
   session: Stripe.Checkout.Session,
-) {
+): Promise<boolean> {
   const orderId = session.metadata?.orderId;
-  if (!orderId) return;
+  if (!orderId) return false;
 
   const order = await tx.order.findUnique({
     where: { id: orderId },
     include: { items: true },
   });
 
-  if (!order || order.status === "PAID") return;
+  if (!order || order.paymentStatus === "PAID") return false;
 
   for (const item of order.items) {
     if (item.type === "PRODUCT" && item.productId) {
@@ -78,7 +80,8 @@ async function fulfill(
   await tx.order.update({
     where: { id: order.id },
     data: {
-      status: "PAID",
+      paymentStatus: "PAID",
+      paymentProvider: "stripe",
       paidAt: new Date(),
       email: session.customer_details?.email || order.email,
       stripePaymentId:
@@ -103,50 +106,54 @@ async function fulfill(
       });
     }
   }
+
+  return true;
 }
 
 async function markPaymentFailed(
   tx: Prisma.TransactionClient,
   session: Stripe.Checkout.Session,
-) {
+): Promise<boolean> {
   const orderId = session.metadata?.orderId;
-  if (!orderId) return;
+  if (!orderId) return false;
 
   const order = await tx.order.findUnique({
     where: { id: orderId },
     include: { items: true },
   });
 
-  if (!order || order.status !== "PENDING") return;
+  if (!order || order.paymentStatus !== "PENDING") return false;
 
   await tx.order.update({
     where: { id: order.id },
-    data: { status: "PAYMENT_FAILED" },
+    data: { paymentStatus: "FAILED" },
   });
 
   await releaseLimitedCoupon(tx, order);
+  return true;
 }
 
 async function expireCheckout(
   tx: Prisma.TransactionClient,
   session: Stripe.Checkout.Session,
-) {
+): Promise<boolean> {
   const orderId = session.metadata?.orderId;
-  if (!orderId) return;
+  if (!orderId) return false;
 
   const order = await tx.order.findUnique({
     where: { id: orderId },
     include: { items: true },
   });
 
-  if (!order || order.status !== "PENDING") return;
+  if (!order || order.paymentStatus !== "PENDING") return false;
 
   await tx.order.update({
     where: { id: order.id },
-    data: { status: "CANCELLED" },
+    data: { fulfilmentStatus: "CANCELLED", cancelledAt: new Date() },
   });
 
   await releaseLimitedCoupon(tx, order);
+  return true;
 }
 
 export async function POST(request: Request) {
@@ -181,13 +188,19 @@ export async function POST(request: Request) {
     );
   }
 
+  // Set inside the transaction, dispatched only after it commits: a
+  // notification must never be sent for a transition that later rolled back,
+  // and a messaging outage must never roll back a confirmed payment.
+  let pending: { orderId: string; event: OrderEventType } | null = null;
+
   try {
     await prisma.$transaction(
       async (tx) => {
+        pending = null;
         // Insert the event marker inside the same transaction as fulfillment.
         // The unique primary key makes retries idempotent; if processing fails,
         // the marker rolls back too and Stripe can safely retry.
-        await tx.processedStripeEvent.create({
+        await tx.processedWebhookEvent.create({
           data: { id: event.id, type: event.type },
         });
 
@@ -196,25 +209,33 @@ export async function POST(request: Request) {
           event.type === "checkout.session.async_payment_succeeded"
         ) {
           const session = event.data.object as Stripe.Checkout.Session;
-          if (session.payment_status === "paid") {
-            await fulfill(tx, session);
+          if (session.payment_status === "paid" && (await fulfill(tx, session))) {
+            pending = { orderId: session.metadata!.orderId!, event: "PAYMENT_SUCCESSFUL" };
           }
         } else if (event.type === "checkout.session.async_payment_failed") {
-          await markPaymentFailed(
-            tx,
-            event.data.object as Stripe.Checkout.Session,
-          );
+          const session = event.data.object as Stripe.Checkout.Session;
+          if (await markPaymentFailed(tx, session)) {
+            pending = { orderId: session.metadata!.orderId!, event: "PAYMENT_FAILED" };
+          }
         } else if (event.type === "checkout.session.expired") {
-          await expireCheckout(
-            tx,
-            event.data.object as Stripe.Checkout.Session,
-          );
+          const session = event.data.object as Stripe.Checkout.Session;
+          if (await expireCheckout(tx, session)) {
+            pending = { orderId: session.metadata!.orderId!, event: "CANCELLED" };
+          }
         }
       },
       {
         isolationLevel: Prisma.TransactionIsolationLevel.Serializable,
       },
     );
+
+    // Committed. Record history and notify; notifyOrderEvent never throws and
+    // deduplicates per (order, event, channel) on its own.
+    const settled = pending as { orderId: string; event: OrderEventType } | null;
+    if (settled) {
+      await recordOrderEvent(settled.orderId, settled.event, { source: "stripe_webhook" });
+      await notifyOrderEvent(settled.orderId, settled.event);
+    }
 
     return NextResponse.json({ received: true });
   } catch (error) {

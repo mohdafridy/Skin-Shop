@@ -1,4 +1,5 @@
 import Stripe from "stripe";
+import { toMinorUnits } from "./format";
 
 /**
  * Lazy, safe Stripe access. Unlike a plain `new Stripe(process.env.STRIPE_SECRET_KEY)`
@@ -20,9 +21,8 @@ export function getStripe(): Stripe {
   return cached;
 }
 
-/** Stripe amounts are in the smallest currency unit (paise for INR). Every
- * price in this codebase is a whole-rupee integer — convert only here, at
- * the Stripe API boundary, never anywhere prices are stored or displayed. */
+/** Stripe bills in the smallest currency unit (paise for INR). Shared with
+ * the Razorpay boundary via toMinorUnits so the conversion exists once. */
 export function toStripeAmount(wholeCurrencyUnits: number): number {
-  return Math.round(wholeCurrencyUnits * 100);
+  return toMinorUnits(wholeCurrencyUnits);
 }

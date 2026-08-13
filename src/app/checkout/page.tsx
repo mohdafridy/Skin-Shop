@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
-import { isStripeConfigured } from "@/lib/stripe";
+import { isActiveProviderConfigured } from "@/lib/payment/server";
 import CheckoutClient from "./CheckoutClient";
 
 export const metadata: Metadata = {
@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 export default function CheckoutPage() {
   return (
     <Suspense fallback={null}>
-      <CheckoutClient isPaymentConfigured={isStripeConfigured()} />
+      <CheckoutClient isPaymentConfigured={isActiveProviderConfigured()} />
     </Suspense>
   );
 }

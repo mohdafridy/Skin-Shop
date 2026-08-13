@@ -7,15 +7,58 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum OrderStatus {
+/// Payment lifecycle only. Kept deliberately separate from FulfilmentStatus:
+/// an order can be PAID while still UNFULFILLED, and shipping progress must
+/// never overwrite what the gateway told us about the money.
+enum PaymentStatus {
   PENDING
   PAID
+  FAILED
+  REFUND_PENDING
+  REFUNDED
+}
+
+/// Physical fulfilment, advanced manually by the store owner (there is no
+/// courier API integration — shipping is booked by hand).
+enum FulfilmentStatus {
+  UNFULFILLED
   PROCESSING
+  PACKED
   SHIPPED
+  OUT_FOR_DELIVERY
   DELIVERED
   CANCELLED
-  REFUNDED
+}
+
+/// Append-only order history. Every payment and fulfilment transition writes
+/// one row, so support can reconstruct what happened and when.
+enum OrderEventType {
+  ORDER_CREATED
+  PAYMENT_PENDING
+  PAYMENT_SUCCESSFUL
   PAYMENT_FAILED
+  PROCESSING
+  PACKED
+  SHIPPED
+  OUT_FOR_DELIVERY
+  DELIVERED
+  CANCELLED
+  REFUND_INITIATED
+  REFUNDED
+}
+
+enum NotificationChannel {
+  WHATSAPP
+  EMAIL
+}
+
+enum NotificationStatus {
+  PENDING
+  SENT
+  FAILED
+  /// Provider not configured — recorded rather than silently dropped, so an
+  /// unconfigured integration is visible instead of looking like a success.
+  SKIPPED
 }
 
 enum DiscountType {
@@ -143,34 +186,96 @@ model Order {
   /// "cart" or "buy_now" — determines whether /order-success is allowed to
   /// clear the persistent cart (a Buy Now purchase must never touch cart
   /// items the customer didn't check out).
-  source          String      @default("cart")
-  status          OrderStatus @default(PENDING)
-  subtotal        Int
-  discount        Int         @default(0)
-  shipping        Int         @default(0)
-  tax             Int         @default(0)
-  total           Int
-  currency        String      @default("INR")
-  couponId        String?
-  coupon          Coupon?     @relation(fields: [couponId], references: [id], onDelete: SetNull)
-  stripeSessionId String?     @unique
-  stripePaymentId String?
-  shippingName    String?
-  shippingLine1   String?
-  shippingLine2   String?
-  shippingCity    String?
-  shippingState   String?
-  shippingPostal  String?
-  shippingCountry String?
-  items           OrderItem[]
-  paidAt          DateTime?
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
+  source           String              @default("cart")
+  paymentStatus    PaymentStatus       @default(PENDING)
+  fulfilmentStatus FulfilmentStatus    @default(UNFULFILLED)
+  subtotal         Int
+  discount         Int                 @default(0)
+  shipping         Int                 @default(0)
+  tax              Int                 @default(0)
+  total            Int
+  currency         String              @default("INR")
+  couponId         String?
+  coupon           Coupon?             @relation(fields: [couponId], references: [id], onDelete: SetNull)
+  /// Gateway that handled (or will handle) this order: "razorpay", "stripe".
+  paymentProvider  String?
+  /// Instrument the gateway reported (upi, card, netbanking…). Never card
+  /// numbers or any other instrument detail — the gateway holds all of that.
+  paymentMethod    String?
+  /// The gateway's own order id. Deliberately distinct from orderNumber:
+  /// orderNumber is ours and is what the customer and store owner quote.
+  razorpayOrderId  String?             @unique
+  razorpayPaymentId String?
+  razorpayRefundId String?
+  stripeSessionId  String?             @unique
+  stripePaymentId  String?
+  /// Unguessable token for guest order tracking at /track/[token]. An order
+  /// number alone is sequential-ish and must never grant access on its own.
+  accessToken      String              @unique
+  shippingName     String?
+  shippingLine1    String?
+  shippingLine2    String?
+  shippingCity     String?
+  shippingState    String?
+  shippingPostal   String?
+  shippingCountry  String?
+  /// Manual fulfilment details, entered by the store owner when shipping.
+  courierName      String?
+  trackingNumber   String?
+  trackingUrl      String?
+  /// Internal, staff-only. Never rendered in customer-facing UI.
+  notes            String?
+  items            OrderItem[]
+  events           OrderEvent[]
+  notifications    OrderNotification[]
+  paidAt           DateTime?
+  shippedAt        DateTime?
+  deliveredAt      DateTime?
+  cancelledAt      DateTime?
+  refundedAt       DateTime?
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
 
   @@index([email])
-  @@index([status])
+  @@index([paymentStatus])
+  @@index([fulfilmentStatus])
   @@index([createdAt])
   @@index([userId])
+}
+
+/// Append-only. Never updated or deleted, so it stays a trustworthy audit
+/// trail of everything that happened to an order.
+model OrderEvent {
+  id        String         @id @default(cuid())
+  orderId   String
+  order     Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  type      OrderEventType
+  /// Free-form context (gateway ids, courier, previous status). Must never
+  /// contain secrets or full gateway payloads.
+  metadata  Json?
+  createdAt DateTime       @default(now())
+
+  @@index([orderId, createdAt])
+}
+
+/// One row per (order, event, channel). The unique constraint is the
+/// deduplication mechanism: a redelivered gateway webhook cannot produce a
+/// second WhatsApp message or a second email for the same event.
+model OrderNotification {
+  id                String              @id @default(cuid())
+  orderId           String
+  order             Order               @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  eventType         OrderEventType
+  channel           NotificationChannel
+  status            NotificationStatus  @default(PENDING)
+  providerMessageId String?
+  error             String?
+  attempts          Int                 @default(0)
+  createdAt         DateTime            @default(now())
+  sentAt            DateTime?
+
+  @@unique([orderId, eventType, channel])
+  @@index([status])
 }
 
 model OrderItem {
@@ -199,7 +304,10 @@ model NewsletterSubscriber {
   updatedAt DateTime @updatedAt
 }
 
-model ProcessedStripeEvent {
+/// Webhook delivery markers for every gateway (Stripe and Razorpay). The
+/// primary key is the gateway's own event id, namespaced per provider, which
+/// is what makes redelivery a no-op.
+model ProcessedWebhookEvent {
   id        String   @id
   type      String
   createdAt DateTime @default(now())
