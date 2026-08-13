@@ -1,0 +1,314 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// Payment lifecycle only. Kept deliberately separate from FulfilmentStatus:
+/// an order can be PAID while still UNFULFILLED, and shipping progress must
+/// never overwrite what the gateway told us about the money.
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUND_PENDING
+  REFUNDED
+}
+
+/// Physical fulfilment, advanced manually by the store owner (there is no
+/// courier API integration — shipping is booked by hand).
+enum FulfilmentStatus {
+  UNFULFILLED
+  PROCESSING
+  PACKED
+  SHIPPED
+  OUT_FOR_DELIVERY
+  DELIVERED
+  CANCELLED
+}
+
+/// Append-only order history. Every payment and fulfilment transition writes
+/// one row, so support can reconstruct what happened and when.
+enum OrderEventType {
+  ORDER_CREATED
+  PAYMENT_PENDING
+  PAYMENT_SUCCESSFUL
+  PAYMENT_FAILED
+  PROCESSING
+  PACKED
+  SHIPPED
+  OUT_FOR_DELIVERY
+  DELIVERED
+  CANCELLED
+  REFUND_INITIATED
+  REFUNDED
+}
+
+enum NotificationChannel {
+  WHATSAPP
+  EMAIL
+}
+
+enum NotificationStatus {
+  PENDING
+  SENT
+  FAILED
+  /// Provider not configured — recorded rather than silently dropped, so an
+  /// unconfigured integration is visible instead of looking like a success.
+  SKIPPED
+}
+
+enum DiscountType {
+  PERCENTAGE
+  FIXED
+}
+
+enum LineItemType {
+  PRODUCT
+  COMBO
+}
+
+/// Mirrors src/data/products.ts. Prices are whole-currency-unit integers
+/// (e.g. 380 = ₹380), matching formatPrice()/the rest of the site — NOT
+/// Razorpay's smallest-unit convention. Conversion to paise happens only at
+/// the Razorpay API boundary (see src/lib/razorpay.ts).
+model Product {
+  id         String      @id @default(cuid())
+  slug       String      @unique
+  name       String
+  shortName  String?
+  category   String
+  collection String
+  price      Int
+  currency   String      @default("INR")
+  image      String
+  active     Boolean     @default(true)
+  /// null = not stock-tracked (unlimited). Set a number to enable tracking.
+  stock      Int?
+  orderItems OrderItem[]
+  comboItems ComboItem[]
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+
+  @@index([active])
+}
+
+/// Mirrors src/data/combos.ts. A combo's price is its own locked bundle
+/// price — never the sum of its constituent products (see getComboPricing
+/// in src/data/combos.ts, which computes the "you save" figure from live
+/// product prices rather than storing it).
+model Combo {
+  id         String      @id @default(cuid())
+  slug       String      @unique
+  name       String
+  price      Int
+  currency   String      @default("INR")
+  image      String
+  active     Boolean     @default(true)
+  stock      Int?
+  items      ComboItem[]
+  orderItems OrderItem[]
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+
+  @@index([active])
+}
+
+model ComboItem {
+  id        String  @id @default(cuid())
+  comboId   String
+  combo     Combo   @relation(fields: [comboId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+  quantity  Int     @default(1)
+
+  @@unique([comboId, productId])
+}
+
+/// Customer accounts are entirely optional — guest checkout stays the
+/// default path and never creates a User. An account only adds order
+/// history and saved details for shoppers who explicitly register.
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  name         String?
+  phone        String?
+  /// scrypt hash, "salt:derivedKey" hex — see src/lib/auth.ts.
+  passwordHash String
+  orders       Order[]
+  sessions     Session[]
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+
+model Session {
+  /// Opaque random token, also the value of the httpOnly session cookie.
+  id        String   @id
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model Coupon {
+  id              String       @id @default(cuid())
+  code            String       @unique
+  type            DiscountType
+  value           Int
+  minimumSubtotal Int?
+  maxDiscount     Int?
+  usageLimit      Int?
+  timesUsed       Int          @default(0)
+  active          Boolean      @default(true)
+  startsAt        DateTime?
+  expiresAt       DateTime?
+  orders          Order[]
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+}
+
+model Order {
+  id              String      @id @default(cuid())
+  orderNumber     String      @unique
+  email           String
+  customerName    String?
+  phone           String?
+  /// null for guest checkout — the default. Set only when the shopper was
+  /// signed in, so their order shows up in /account order history.
+  userId          String?
+  user            User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
+  /// "cart" or "buy_now" — determines whether /order-success is allowed to
+  /// clear the persistent cart (a Buy Now purchase must never touch cart
+  /// items the customer didn't check out).
+  source           String              @default("cart")
+  paymentStatus    PaymentStatus       @default(PENDING)
+  fulfilmentStatus FulfilmentStatus    @default(UNFULFILLED)
+  subtotal         Int
+  discount         Int                 @default(0)
+  shipping         Int                 @default(0)
+  tax              Int                 @default(0)
+  total            Int
+  currency         String              @default("INR")
+  couponId         String?
+  coupon           Coupon?             @relation(fields: [couponId], references: [id], onDelete: SetNull)
+  /// Gateway that handled (or will handle) this order. Always "razorpay"
+  /// today; kept as a string rather than an enum so a future gateway needs
+  /// no migration.
+  paymentProvider  String?
+  /// Instrument the gateway reported (upi, card, netbanking…). Never card
+  /// numbers or any other instrument detail — the gateway holds all of that.
+  paymentMethod    String?
+  /// The gateway's own order id. Deliberately distinct from orderNumber:
+  /// orderNumber is ours and is what the customer and store owner quote.
+  razorpayOrderId  String?             @unique
+  razorpayPaymentId String?
+  razorpayRefundId String?
+  /// Unguessable token for guest order tracking at /track/[token]. An order
+  /// number alone is sequential-ish and must never grant access on its own.
+  accessToken      String              @unique
+  shippingName     String?
+  shippingLine1    String?
+  shippingLine2    String?
+  shippingCity     String?
+  shippingState    String?
+  shippingPostal   String?
+  shippingCountry  String?
+  /// Manual fulfilment details, entered by the store owner when shipping.
+  courierName      String?
+  trackingNumber   String?
+  trackingUrl      String?
+  /// Internal, staff-only. Never rendered in customer-facing UI.
+  notes            String?
+  items            OrderItem[]
+  events           OrderEvent[]
+  notifications    OrderNotification[]
+  paidAt           DateTime?
+  shippedAt        DateTime?
+  deliveredAt      DateTime?
+  cancelledAt      DateTime?
+  refundedAt       DateTime?
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+
+  @@index([email])
+  @@index([paymentStatus])
+  @@index([fulfilmentStatus])
+  @@index([createdAt])
+  @@index([userId])
+}
+
+/// Append-only. Never updated or deleted, so it stays a trustworthy audit
+/// trail of everything that happened to an order.
+model OrderEvent {
+  id        String         @id @default(cuid())
+  orderId   String
+  order     Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  type      OrderEventType
+  /// Free-form context (gateway ids, courier, previous status). Must never
+  /// contain secrets or full gateway payloads.
+  metadata  Json?
+  createdAt DateTime       @default(now())
+
+  @@index([orderId, createdAt])
+}
+
+/// One row per (order, event, channel). The unique constraint is the
+/// deduplication mechanism: a redelivered gateway webhook cannot produce a
+/// second WhatsApp message or a second email for the same event.
+model OrderNotification {
+  id                String              @id @default(cuid())
+  orderId           String
+  order             Order               @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  eventType         OrderEventType
+  channel           NotificationChannel
+  status            NotificationStatus  @default(PENDING)
+  providerMessageId String?
+  error             String?
+  attempts          Int                 @default(0)
+  createdAt         DateTime            @default(now())
+  sentAt            DateTime?
+
+  @@unique([orderId, eventType, channel])
+  @@index([status])
+}
+
+model OrderItem {
+  id        String       @id @default(cuid())
+  orderId   String
+  order     Order        @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  type      LineItemType
+  slug      String?
+  productId String?
+  product   Product?     @relation(fields: [productId], references: [id])
+  comboId   String?
+  combo     Combo?       @relation(fields: [comboId], references: [id])
+  name      String
+  image     String?
+  unitPrice Int
+  quantity  Int
+  lineTotal Int
+  createdAt DateTime     @default(now())
+}
+
+model NewsletterSubscriber {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+/// Webhook delivery markers, one row per delivery. The primary key is the
+/// gateway's own event id, namespaced per provider (e.g. "rzp_..."), which
+/// is what makes redelivery a no-op.
+model ProcessedWebhookEvent {
+  id        String   @id
+  type      String
+  createdAt DateTime @default(now())
+}

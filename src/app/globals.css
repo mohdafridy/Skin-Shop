@@ -1,0 +1,114 @@
+@import "tailwindcss";
+
+:root {
+  --color-ivory: #f6f0e6;
+  --color-burgundy: #7e2539;
+  --color-burgundy-dark: #611c2c;
+  --color-wine: #54212b;
+  --color-walnut: #45302a;
+  --color-gold: #b88b4b;
+  --color-olive: #677148;
+  --color-dustyrose: #c98f91;
+  --color-sand: #e9ddcd;
+  --color-ink: #201d1a;
+  --color-white: #ffffff;
+}
+
+@theme inline {
+  --color-ivory: var(--color-ivory);
+  --color-burgundy: var(--color-burgundy);
+  --color-burgundy-dark: var(--color-burgundy-dark);
+  --color-wine: var(--color-wine);
+  --color-walnut: var(--color-walnut);
+  --color-gold: var(--color-gold);
+  --color-olive: var(--color-olive);
+  --color-dustyrose: var(--color-dustyrose);
+  --color-sand: var(--color-sand);
+  --color-ink: var(--color-ink);
+  --font-display: var(--font-cormorant);
+  --font-sans: var(--font-manrope);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+body {
+  background: var(--color-ivory);
+  color: var(--color-ink);
+  font-family: var(--font-manrope), Arial, Helvetica, sans-serif;
+}
+
+::selection {
+  background: var(--color-burgundy);
+  color: var(--color-ivory);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-burgundy);
+  outline-offset: 3px;
+}
+
+h1,
+h2,
+h3,
+h4,
+.font-display {
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+@keyframes slow-zoom {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.08);
+  }
+}
+
+.animate-slow-zoom {
+  animation: slow-zoom 18s ease-out forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-slow-zoom {
+    animation: none;
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.reveal {
+  opacity: 0;
+}
+
+.reveal.in-view {
+  animation: fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    animation: none;
+  }
+}
