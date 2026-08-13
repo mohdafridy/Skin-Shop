@@ -6,6 +6,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import CartDrawer from "@/components/CartDrawer";
 import { CartProvider } from "@/lib/cart-context";
+import { brandLine } from "@/data/navigation";
 
 const cormorant = Cormorant_Garamond({
   variable: "--font-cormorant",
@@ -21,14 +22,14 @@ const manrope = Manrope({
 export const metadata: Metadata = {
   metadataBase: new URL("https://theskinshop.example.com"),
   title: {
-    default: "The Skin Shop — Kashmir, Bottled Beautifully.",
+    default: `The Skin Shop — ${brandLine}`,
     template: "%s | The Skin Shop",
   },
   description:
     "Organic, botanical skincare handcrafted in Kashmir. Discover The Skin Shop's collection of cleansers, serums, creams and rituals rooted in traditional craftsmanship and result-oriented, cruelty-free formulations. Ships across India.",
   openGraph: {
     siteName: "The Skin Shop",
-    title: "The Skin Shop — Kashmir, Bottled Beautifully.",
+    title: `The Skin Shop — ${brandLine}`,
     description:
       "Organic, botanical skincare handcrafted in Kashmir — cruelty-free, plant-based, result-oriented. Ships across India.",
     type: "website",

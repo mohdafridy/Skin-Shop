@@ -1,6 +1,6 @@
 # The Skin Shop
 
-**Kashmir, Bottled Beautifully.**
+**Rooted in Kashmir. Made for Your Ritual.**
 
 A premium botanical skincare, body care and hair care storefront, built with
 Next.js and Tailwind CSS.

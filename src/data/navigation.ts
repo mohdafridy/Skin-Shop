@@ -44,7 +44,7 @@ export const footerColumns: { title: string; links: NavLink[] }[] = [
   },
 ];
 
-export const brandLine = "Kashmir, Bottled Beautifully.";
+export const brandLine = "Rooted in Kashmir. Made for Your Ritual.";
 export const logoLine = "To End Skin Problems.";
 export const announcementMessage = brandLine;
 

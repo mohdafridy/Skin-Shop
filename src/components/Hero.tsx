@@ -31,7 +31,7 @@ export default function Hero() {
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold">{productTagline}</p>
 
         <h1 className="mt-4 max-w-2xl text-balance font-display text-4xl font-medium leading-[1.15] tracking-tight text-ivory sm:text-5xl lg:max-w-3xl lg:text-7xl">
-          Kashmir,<br className="hidden lg:block" /> Bottled Beautifully.
+          Rooted in Kashmir.<br className="hidden lg:block" /> Made for Your Ritual.
         </h1>
 
         <p className="mt-5 max-w-sm text-balance text-base leading-relaxed text-ivory/90 sm:text-lg">
