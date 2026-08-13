@@ -11,13 +11,13 @@ export default function ShopByRitual() {
       <div className="mx-auto max-w-7xl px-6 sm:px-8">
         <SectionHeading eyebrow="Shop By Desire" title="What Are You In The Mood For?" center />
 
-        <div className="mt-12 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+        <div className="mt-12 grid grid-cols-2 gap-5 sm:grid-cols-3">
           {ritualCategories.map((ritual, i) => {
             const product = getProductBySlug(ritual.representativeSlug);
             return (
-              <Reveal key={ritual.tag} delay={(i % 4) * 60}>
+              <Reveal key={ritual.name} delay={(i % 4) * 60}>
                 <Link
-                  href={`/shop?ritual=${encodeURIComponent(ritual.tag)}`}
+                  href={`/shop?ritual=${encodeURIComponent(ritual.filterValues.join(","))}`}
                   className="group block overflow-hidden rounded-2xl"
                 >
                   <SmartImage
@@ -25,7 +25,7 @@ export default function ShopByRitual() {
                     alt={ritual.name}
                     label={ritual.name}
                     className="aspect-square rounded-2xl"
-                    sizes="(min-width: 1024px) 22vw, 45vw"
+                    sizes="(min-width: 640px) 30vw, 45vw"
                     imageClassName="transition duration-700 ease-out group-hover:scale-105"
                   />
                   <div className="mt-3">

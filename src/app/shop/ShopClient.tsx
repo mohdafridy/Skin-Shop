@@ -55,11 +55,14 @@ export default function ShopClient() {
     let list = products;
 
     if (activeFilter) {
-      list = list.filter(
-        (p) =>
-          p.collection === activeFilter ||
-          p.category === activeFilter ||
-          p.ritualTags?.includes(activeFilter as RitualTag),
+      // Supports comma-joined values so one link can OR together multiple
+      // real category/ritualTag values (e.g. "Hair,Body") for a combined
+      // discovery pathway, without inventing a category that doesn't exist.
+      const values = activeFilter.split(",");
+      list = list.filter((p) =>
+        values.some(
+          (v) => p.collection === v || p.category === v || p.ritualTags?.includes(v as RitualTag),
+        ),
       );
     }
 

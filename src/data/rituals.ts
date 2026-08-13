@@ -1,7 +1,9 @@
-import type { RitualTag } from "./products";
-
 export type RitualCategory = {
-  tag: RitualTag;
+  /** Value(s) passed to /shop?ritual=... — joined with a comma when there's
+   * more than one, so a single mood pathway can OR together a ritualTag
+   * and/or collection value (e.g. Hair + Body) without inventing a new,
+   * fake unified category that doesn't exist in the product data. */
+  filterValues: string[];
   name: string;
   description: string;
   representativeSlug: string;
@@ -9,45 +11,39 @@ export type RitualCategory = {
 
 export const ritualCategories: RitualCategory[] = [
   {
-    tag: "Cleanse",
+    filterValues: ["Cleanse"],
     name: "A Fresh Start",
     description: "The first step — rose and moringa soap cleansers for a daily reset.",
     representativeSlug: "husn-e-yusuf-whitening-soap-cleanser",
   },
   {
-    tag: "Treat",
+    filterValues: ["Treat"],
     name: "A Little Glow",
     description: "Serums, masks and gels for the moments you slow down and focus.",
     representativeSlug: "vitamin-c-serum",
   },
   {
-    tag: "Hydrate",
+    filterValues: ["Hydrate"],
     name: "A Slow Evening",
     description: "Creams and mists that carry moisture through the day and night.",
     representativeSlug: "dahab-whitening-night-cream",
   },
   {
-    tag: "Exfoliate",
+    filterValues: ["Exfoliate"],
     name: "A Weekly Reset",
     description: "A gentler, weekly step for softness beneath the surface.",
     representativeSlug: "husn-e-yusuf-exfoliator",
   },
   {
-    tag: "Hair",
-    name: "Beyond The Face",
-    description: "Rosemary, brought into a modern scalp-to-length ritual.",
+    filterValues: ["Hair", "Body"],
+    name: "Care Beyond The Face",
+    description: "Rosemary hair care and argan body care, for beyond-the-face routines.",
     representativeSlug: "rosemary-hair-serum",
   },
   {
-    tag: "Body",
-    name: "Whole-Body Care",
-    description: "Argan-rich care for the whole body, beyond the face.",
-    representativeSlug: "argan-body-whitening-cream",
-  },
-  {
-    tag: "Family Care",
+    filterValues: ["Family Care", "Lip Care"],
     name: "Everyday Essentials",
-    description: "Gentle formulas for the youngest members of the family.",
+    description: "Gentle lip and family formulas, reached for every day.",
     representativeSlug: "jojoba-kids-soap",
   },
 ];
