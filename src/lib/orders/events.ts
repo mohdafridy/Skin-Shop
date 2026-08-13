@@ -69,7 +69,6 @@ export async function applyPaymentStatus(input: {
   razorpayOrderId?: string | null;
   razorpayPaymentId?: string | null;
   razorpayRefundId?: string | null;
-  stripePaymentId?: string | null;
   email?: string | null;
   metadata?: Prisma.InputJsonValue;
 }): Promise<boolean> {
@@ -81,7 +80,6 @@ export async function applyPaymentStatus(input: {
   if (input.razorpayOrderId) data.razorpayOrderId = input.razorpayOrderId;
   if (input.razorpayPaymentId) data.razorpayPaymentId = input.razorpayPaymentId;
   if (input.razorpayRefundId) data.razorpayRefundId = input.razorpayRefundId;
-  if (input.stripePaymentId) data.stripePaymentId = input.stripePaymentId;
   if (input.email) data.email = input.email;
   if (input.status === "PAID") data.paidAt = now;
   if (input.status === "REFUNDED") data.refundedAt = now;

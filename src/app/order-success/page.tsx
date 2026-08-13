@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
-import { getStripe, isStripeConfigured } from "@/lib/stripe";
 import { track } from "@/lib/analytics";
 import OrderConfirmationView, { type ConfirmedOrder } from "@/components/checkout/OrderConfirmationView";
 import ClearCartOnSuccess from "./ClearCartOnSuccess";
@@ -85,74 +84,32 @@ function toConfirmedOrder(order: {
 }
 
 /**
- * Two gateways redirect here with two different tokens:
- *  - Razorpay: `?order=<accessToken>`. /api/payments/razorpay/verify already
- *    checked the HMAC signature and persisted paymentStatus before issuing
- *    this redirect, so the stored status is read as-is — never re-derived
- *    from anything in the URL.
- *  - Stripe: `?session_id=<id>` (kept only while Stripe is still an
- *    available provider). Verified live against Stripe here because the
- *    webhook confirming it can arrive a few seconds after the redirect.
- *
- * Either way, the persisted order is the source of truth for what the
- * customer sees — the URL only says which order to look up.
+ * Razorpay redirects here as `?order=<accessToken>`.
+ * /api/payments/razorpay/verify already checked the HMAC signature and
+ * persisted paymentStatus before issuing that redirect, so the stored status
+ * is read as-is — this page never re-derives payment state from the URL,
+ * and never fabricates a success.
  */
 export default async function OrderSuccessPage({
   searchParams,
 }: {
-  searchParams: Promise<{ session_id?: string; order?: string }>;
+  searchParams: Promise<{ order?: string }>;
 }) {
-  const { session_id, order: accessToken } = await searchParams;
+  const { order: accessToken } = await searchParams;
 
-  if (accessToken) {
-    if (!/^[a-f0-9]{64}$/.test(accessToken)) return notFound;
-
-    let order;
-    try {
-      order = await prisma.order.findUnique({ where: { accessToken }, include: { items: true } });
-    } catch {
-      return confirming;
-    }
-    if (!order) return notFound;
-    if (order.paymentStatus !== "PAID") return confirming;
-
-    track({ name: "purchase", orderNumber: order.orderNumber, total: order.total, currency: order.currency });
-
-    return (
-      <>
-        {order.source === "cart" && <ClearCartOnSuccess />}
-        <OrderConfirmationView order={toConfirmedOrder(order)} />
-      </>
-    );
-  }
-
-  if (!session_id || !isStripeConfigured()) return notFound;
+  if (!accessToken || !/^[a-f0-9]{64}$/.test(accessToken)) return notFound;
 
   let order;
   try {
-    order = await prisma.order.findUnique({ where: { stripeSessionId: session_id }, include: { items: true } });
+    order = await prisma.order.findUnique({ where: { accessToken }, include: { items: true } });
   } catch {
     return confirming;
   }
   if (!order) return notFound;
+  if (order.paymentStatus !== "PAID") return confirming;
 
-  // The webhook is the authoritative fulfillment path (it decrements
-  // stock), but it can land a few seconds after Stripe redirects the
-  // customer back here. Verifying the session directly with Stripe (using
-  // our secret key, never trusting anything from the URL alone) lets us
-  // show a real confirmation immediately without waiting on the webhook —
-  // this is never a fabricated success, only ever a Stripe-confirmed one.
-  let paid = order.paymentStatus === "PAID";
-  if (!paid) {
-    try {
-      const session = await getStripe().checkout.sessions.retrieve(session_id);
-      paid = session.payment_status === "paid" && session.metadata?.orderId === order.id;
-    } catch {
-      paid = false;
-    }
-  }
-  if (!paid) return confirming;
-
+  // Fires only here, after the order was confirmed paid — never on page
+  // load, never speculatively.
   track({ name: "purchase", orderNumber: order.orderNumber, total: order.total, currency: order.currency });
 
   return (

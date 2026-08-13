@@ -7,8 +7,7 @@ import { toMinorUnits } from "./format";
  * requests, and signature verification is HMAC-SHA256 from node:crypto.
  *
  * Nothing here throws at import time, so every route that imports this
- * module stays loadable before credentials exist — the same pattern
- * src/lib/stripe.ts uses.
+ * module stays loadable before credentials exist.
  *
  * KEY_SECRET and WEBHOOK_SECRET are server-only. Only RAZORPAY_KEY_ID is
  * ever safe to expose to the browser (it is the public checkout key).

@@ -7,7 +7,7 @@ import { useCart } from "@/lib/cart-context";
 import { getProductBySlug } from "@/data/products";
 import { getComboBySlug } from "@/data/combos";
 import { defaultZone } from "@/data/shipping";
-import { getActivePaymentProvider, getActivePaymentProviderId } from "@/lib/payment";
+import { getActivePaymentProvider } from "@/lib/payment";
 import { openRazorpayCheckout, type RazorpayCheckoutConfig } from "@/lib/payment/razorpay-client";
 import { track } from "@/lib/analytics";
 import OrderSummary, { type OrderLine } from "@/components/checkout/OrderSummary";
@@ -164,9 +164,6 @@ function validate(form: FormState): Record<string, string> {
 
   return errors;
 }
-
-const activeProviderId = getActivePaymentProviderId();
-const providerLabel = activeProviderId === "stripe" ? "Stripe" : "Razorpay";
 
 export default function CheckoutClient({ isPaymentConfigured }: { isPaymentConfigured: boolean }) {
   const { lines, mode, error: linesError } = useOrderLines();
@@ -534,20 +531,18 @@ export default function CheckoutClient({ isPaymentConfigured }: { isPaymentConfi
             <legend className="mb-4 font-display text-xl text-ink">Payment</legend>
             {isPaymentConfigured ? (
               <div className="rounded-2xl border border-gold/30 bg-white/50 px-5 py-4 text-sm text-walnut/75">
-                <p className="font-medium text-ink">Pay securely with {providerLabel}</p>
+                <p className="font-medium text-ink">Pay securely with Razorpay</p>
                 <p className="mt-1">
-                  {activeProviderId === "razorpay"
-                    ? "UPI, cards and netbanking open in a secure Razorpay window."
-                    : `You'll be taken to ${providerLabel} to enter your card details.`}{" "}
-                  No payment information is collected on this page.
+                  UPI, cards and netbanking open in a secure Razorpay window. No payment
+                  information is collected on this page.
                 </p>
               </div>
             ) : (
               <div className="rounded-2xl border border-dashed border-gold/40 bg-sand/40 px-5 py-4 text-sm text-walnut/75">
                 <p className="font-medium text-ink">Payment isn&apos;t connected yet</p>
                 <p className="mt-1">
-                  This store is ready to accept payment once {providerLabel} is connected. No
-                  card details are collected here.
+                  This store is ready to accept payment once Razorpay is connected. No card
+                  details are collected here.
                 </p>
               </div>
             )}

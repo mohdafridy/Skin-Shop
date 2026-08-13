@@ -11,7 +11,7 @@ Next.js and Tailwind CSS.
 - **Tailwind CSS v4** for styling
 - Product/combo/ingredient display data lives in `src/data/` and is the
   source of truth for everything shown on the site (prices, names, images).
-- **Optional commerce backend** (PostgreSQL via Prisma + Stripe Checkout) —
+- **Optional commerce backend** (PostgreSQL via Prisma + Razorpay Checkout) —
   see [Commerce backend](#commerce-backend) below. The site runs and looks
   complete with none of it configured; checkout, coupons, and newsletter
   signup just show an honest "not connected yet" state instead of erroring.
@@ -47,57 +47,66 @@ only for checkout's own price re-validation — `src/data/*` stays the source
 of truth for everything the site displays. Re-run `npm run db:seed` after
 editing locked prices there to keep the two in sync.
 
-### 2. Stripe
+### 2. Razorpay
 
 Add to `.env.local`:
 
 ```
-STRIPE_SECRET_KEY="sk_test_..."
-STRIPE_WEBHOOK_SECRET="whsec_..."
+RAZORPAY_KEY_ID="rzp_test_..."
+RAZORPAY_KEY_SECRET="..."
+RAZORPAY_WEBHOOK_SECRET="..."
+NEXT_PUBLIC_RAZORPAY_KEY_ID="rzp_test_..."   # same value as RAZORPAY_KEY_ID
 ```
 
-Until both are set, `/checkout` shows "Payment isn't connected yet" and
-never attempts a charge — this is checked server-side
-(`src/lib/stripe.ts#isStripeConfigured`), so there's nothing to toggle in
-code once real keys exist; just add them and redeploy.
+Until `RAZORPAY_KEY_ID` and `RAZORPAY_KEY_SECRET` are both set, `/checkout`
+shows "Payment isn't connected yet" and never attempts a charge — this is
+checked server-side (`src/lib/razorpay.ts#isRazorpayConfigured`), so
+there's nothing to toggle in code once real keys exist; just add them and
+redeploy.
 
-Checkout uses Stripe's hosted Checkout page for the actual payment step
-(our own form still collects shipping/billing first, so Stripe isn't asked
-to collect it twice). The session requests both `card` and `upi` — UPI only
-appears for an India-domiciled Stripe account with UPI turned on under
-Dashboard → Settings → Payment methods; card-only accounts should remove
-`"upi"` from `payment_method_types` in `src/app/api/checkout/route.ts` or
-the session will fail to create. Configure a webhook pointed at
-`https://YOUR-DOMAIN.com/api/webhooks/stripe`, listening for:
+Checkout opens Razorpay's Checkout modal in the browser (our own form still
+collects shipping/billing first). The browser's success callback is never
+trusted on its own: `/api/payments/razorpay/verify` checks the HMAC
+signature and confirms the payment with Razorpay's API before the order is
+marked paid, and the redirect to `/order-success` reads that persisted
+status — never anything from the URL. Configure a webhook pointed at
+`https://YOUR-DOMAIN.com/api/webhooks/razorpay`, listening for:
 
-- `checkout.session.completed`
-- `checkout.session.async_payment_succeeded`
-- `checkout.session.async_payment_failed`
-- `checkout.session.expired`
+- `order.paid`
+- `payment.captured`
+- `payment.failed`
+- `refund.created`
+- `refund.processed`
 
-`checkout.session.expired` is **required** if you ever issue limited-use
-coupons: a use is reserved when checkout starts, and this event is what
-releases it when the shopper abandons the session. Without it an abandoned
-checkout holds that use permanently.
+`refund.created`/`refund.processed` are **required** if you ever issue
+refunds — they're what moves the order to `REFUND_PENDING`/`REFUNDED`.
 
-Local testing: `stripe listen --forward-to localhost:3000/api/webhooks/stripe`
+Webhook handling is idempotent: the `ProcessedWebhookEvent` marker is
+written inside the same transaction as the status update, so a redelivered
+event is rejected on the marker's primary key. Stock, coupon usage and
+customer notifications are never applied twice for one event.
 
-Webhook handling is idempotent: the `ProcessedStripeEvent` marker is written
-inside the same serializable transaction as fulfillment, so a redelivered
-event is rejected on the marker's primary key and a failed one rolls the
-marker back for Stripe to retry. Stock is never decremented twice.
+**Known gap:** a limited-use coupon reserves one use when checkout starts.
+If the shopper closes the Razorpay modal instead of paying, no webhook
+fires (Razorpay has no equivalent of Stripe's `checkout.session.expired`),
+so that reservation is never released. Low-impact for typical usage limits,
+but worth knowing if you rely on tightly-capped codes.
 
 ### 3. Routes this adds
 
 Public: `GET /api/products`-equivalent data comes from `src/data/products.ts`
 directly (no route needed) — the backend only exposes what genuinely needs a
-server: `POST /api/checkout`, `POST /api/coupons/validate`,
-`POST /api/newsletter`, `POST /api/webhooks/stripe`.
+server: `POST /api/checkout`, `POST /api/payments/razorpay/verify`,
+`POST /api/coupons/validate`, `POST /api/newsletter`,
+`POST /api/webhooks/razorpay`, and `/track/[token]` (guest order tracking,
+gated on the order's `accessToken` — never on the order number alone).
 
 Admin (requires an `x-admin-key` header matching `ADMIN_API_KEY`):
 `POST /api/admin/products`, `PATCH`/`DELETE /api/admin/products/[id]`,
-`GET /api/admin/orders`, `PATCH /api/admin/orders/[id]`. Replace the simple
-API-key guard with real staff authentication before relying on these.
+`GET /api/admin/orders`, `PATCH /api/admin/orders/[id]` (also where manual
+fulfilment updates — status, courier, tracking number/URL — are recorded;
+see "Manual fulfilment" below). Replace the simple API-key guard with real
+staff authentication before relying on these.
 
 ### 4. Customer accounts (optional)
 
@@ -120,10 +129,11 @@ order history; guest orders leave it null.
 
 ### 5. Order confirmation
 
-`/order-success` only ever renders after verifying payment directly with
-Stripe (using the secret key server-side) — never from anything in the URL
-alone. It clears the persistent cart only for a cart-mode checkout; a Buy
-Now purchase never touches cart items the customer didn't check out.
+`/order-success` reads the order's persisted `paymentStatus` — set by
+`/api/payments/razorpay/verify` (signature-checked) before the redirect
+happens — never anything derived from the URL itself. It clears the
+persistent cart only for a cart-mode checkout; a Buy Now purchase never
+touches cart items the customer didn't check out.
 
 ## Contact and WhatsApp
 
@@ -164,12 +174,15 @@ Product slugs are listed in `src/data/products.ts`; combo slugs in
 
 ```
 app/            Routes: home, /shop, /products/[slug], /rituals, /our-story,
-                /contact, /checkout, /order-success, /shipping, /returns,
-                /privacy, /terms, api/*
+                /contact, /checkout, /order-success, /track/[token],
+                /account, /wishlist, /shipping, /returns, /privacy, /terms, api/*
 components/     Reusable UI (Header, ProductCard, CartDrawer, SmartImage, ...)
 data/           Product, combo, ingredient, navigation, shipping, tax, coupon data
 lib/            Cart context, search, formatting, payment provider abstraction
-lib/payment/    PaymentProvider interface + the Stripe Checkout implementation
+lib/payment/    PaymentProvider interface + the Razorpay Checkout implementation
+lib/notifications/  WhatsApp + email dispatch, shared by webhook and admin routes
+lib/orders/     applyPaymentStatus/applyFulfilmentStatus — the only place
+                order status transitions and history are written
 prisma/         schema.prisma + seed.ts for the optional commerce backend
 ```
 

@@ -73,8 +73,8 @@ enum LineItemType {
 
 /// Mirrors src/data/products.ts. Prices are whole-currency-unit integers
 /// (e.g. 380 = ₹380), matching formatPrice()/the rest of the site — NOT
-/// Stripe's smallest-unit convention. Conversion to paise happens only at
-/// the Stripe API boundary (see src/lib/stripe.ts).
+/// Razorpay's smallest-unit convention. Conversion to paise happens only at
+/// the Razorpay API boundary (see src/lib/razorpay.ts).
 model Product {
   id         String      @id @default(cuid())
   slug       String      @unique
@@ -197,7 +197,9 @@ model Order {
   currency         String              @default("INR")
   couponId         String?
   coupon           Coupon?             @relation(fields: [couponId], references: [id], onDelete: SetNull)
-  /// Gateway that handled (or will handle) this order: "razorpay", "stripe".
+  /// Gateway that handled (or will handle) this order. Always "razorpay"
+  /// today; kept as a string rather than an enum so a future gateway needs
+  /// no migration.
   paymentProvider  String?
   /// Instrument the gateway reported (upi, card, netbanking…). Never card
   /// numbers or any other instrument detail — the gateway holds all of that.
@@ -207,8 +209,6 @@ model Order {
   razorpayOrderId  String?             @unique
   razorpayPaymentId String?
   razorpayRefundId String?
-  stripeSessionId  String?             @unique
-  stripePaymentId  String?
   /// Unguessable token for guest order tracking at /track/[token]. An order
   /// number alone is sequential-ish and must never grant access on its own.
   accessToken      String              @unique
@@ -304,8 +304,8 @@ model NewsletterSubscriber {
   updatedAt DateTime @updatedAt
 }
 
-/// Webhook delivery markers for every gateway (Stripe and Razorpay). The
-/// primary key is the gateway's own event id, namespaced per provider, which
+/// Webhook delivery markers, one row per delivery. The primary key is the
+/// gateway's own event id, namespaced per provider (e.g. "rzp_..."), which
 /// is what makes redelivery a no-op.
 model ProcessedWebhookEvent {
   id        String   @id

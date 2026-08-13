@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { getStripe, toStripeAmount } from "@/lib/stripe";
 import { createRazorpayOrder, razorpayPublicKeyId } from "@/lib/razorpay";
 import { toMinorUnits } from "@/lib/format";
 import { calculateDiscount, checkoutSchema, couponIsUsable, createOrderNumber } from "@/lib/backend";
@@ -131,8 +130,8 @@ export async function POST(request: Request) {
       if (coupon && couponIsUsable(coupon, subtotal)) {
         discount = calculateDiscount(coupon, subtotal);
 
-        // For limited-use coupons, reserve one use before creating the Stripe
-        // session. The conditional update prevents two concurrent checkouts
+        // For limited-use coupons, reserve one use before creating the
+        // Razorpay order. The conditional update prevents two concurrent checkouts
         // from both claiming the same final use.
         if (coupon.usageLimit !== null) {
           const reservation = await prisma.coupon.updateMany({
@@ -224,96 +223,40 @@ export async function POST(request: Request) {
     });
 
     try {
-      if (provider === "razorpay") {
-        // Razorpay Checkout is a browser modal, not a redirect, so we hand
-        // the client the gateway order id plus the PUBLIC key id only. The
-        // key secret never leaves the server, and the browser's eventual
-        // success claim is worthless until /api/payments/razorpay/verify
-        // checks its HMAC signature.
-        const rzpOrder = await createRazorpayOrder({
-          amount: total,
-          currency,
-          receipt: order.orderNumber,
-          notes: { orderId: order.id, orderNumber: order.orderNumber },
-        });
-
-        await prisma.order.update({
-          where: { id: order.id },
-          data: { razorpayOrderId: rzpOrder.id },
-        });
-
-        const keyId = razorpayPublicKeyId();
-        if (!keyId) throw new Error("RAZORPAY_KEY_ID is not set.");
-
-        return NextResponse.json({
-          orderId: order.id,
-          orderNumber: order.orderNumber,
-          accessToken: order.accessToken,
-          razorpay: {
-            keyId,
-            orderId: rzpOrder.id,
-            amount: rzpOrder.amount ?? toMinorUnits(total),
-            currency: rzpOrder.currency ?? currency,
-          },
-        });
-      }
-
-      const stripe = getStripe();
-      const stripeCurrency = currency.toLowerCase();
-
-      let discounts: { coupon: string }[] | undefined;
-      if (discount > 0) {
-        const stripeCoupon = await stripe.coupons.create({
-          amount_off: toStripeAmount(discount),
-          currency: stripeCurrency,
-          duration: "once",
-          name: coupon?.code ?? "Discount",
-          metadata: { orderId: order.id },
-        });
-        discounts = [{ coupon: stripeCoupon.id }];
-      }
-
-      const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000").replace(/\/$/, "");
-
-      // Our own form already collected shipping/billing and email, so Stripe's
-      // hosted page only handles the payment method itself.
-      const session = await stripe.checkout.sessions.create({
-        mode: "payment",
-        // UPI requires an India-domiciled Stripe account (STORE_CURRENCY is
-        // "inr" by default) with UPI enabled under Dashboard → Payment methods.
-        payment_method_types: ["card", "upi"],
-        customer_email: shipping.email,
-        line_items: orderItems.map((item) => ({
-          quantity: item.quantity,
-          price_data: {
-            currency: stripeCurrency,
-            unit_amount: toStripeAmount(item.unitPrice),
-            product_data: {
-              name: item.name,
-              ...(item.image?.startsWith("http") ? { images: [item.image] } : {}),
-            },
-          },
-        })),
-        ...(discounts ? { discounts } : {}),
-        success_url: `${siteUrl}/order-success?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${siteUrl}/checkout`,
-        metadata: { orderId: order.id, orderNumber: order.orderNumber },
+      // Razorpay Checkout is a browser modal, not a redirect, so we hand the
+      // client the gateway order id plus the PUBLIC key id only. The key
+      // secret never leaves the server, and the browser's eventual success
+      // claim is worthless until /api/payments/razorpay/verify checks its
+      // HMAC signature.
+      const rzpOrder = await createRazorpayOrder({
+        amount: total,
+        currency,
+        receipt: order.orderNumber,
+        notes: { orderId: order.id, orderNumber: order.orderNumber },
       });
 
       await prisma.order.update({
         where: { id: order.id },
-        data: { stripeSessionId: session.id },
+        data: { razorpayOrderId: rzpOrder.id },
       });
 
+      const keyId = razorpayPublicKeyId();
+      if (!keyId) throw new Error("RAZORPAY_KEY_ID is not set.");
+
       return NextResponse.json({
-        checkoutUrl: session.url,
         orderId: order.id,
         orderNumber: order.orderNumber,
         accessToken: order.accessToken,
+        razorpay: {
+          keyId,
+          orderId: rzpOrder.id,
+          amount: rzpOrder.amount ?? toMinorUnits(total),
+          currency: rzpOrder.currency ?? currency,
+        },
       });
     } catch (error) {
-      // Gateway order/session creation failed. Remove the unusable pending
-      // order and release any limited coupon reservation.
+      // Gateway order creation failed. Remove the unusable pending order and
+      // release any limited coupon reservation.
       await prisma.$transaction(async (tx) => {
         await tx.order.deleteMany({
           where: { id: order.id, paymentStatus: "PENDING" },
@@ -341,7 +284,7 @@ export async function POST(request: Request) {
       );
     }
 
-    // Keep implementation/database/Stripe details out of the browser response.
+    // Keep implementation/database/gateway details out of the browser response.
     return NextResponse.json(
       {
         error: "checkout_failed",

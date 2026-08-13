@@ -12,8 +12,7 @@ export const unconfiguredProvider: PaymentProvider = {
   async initiate() {
     return {
       status: "unavailable",
-      reason:
-        "No payment gateway is connected yet. Add a Razorpay, Stripe, or other approved provider integration to accept payment.",
+      reason: "No payment gateway is connected yet. Add a Razorpay integration to accept payment.",
     };
   },
 };

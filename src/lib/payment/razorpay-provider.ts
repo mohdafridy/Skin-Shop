@@ -3,10 +3,9 @@ import type { OrderForPayment, PaymentInitiationResult, PaymentProvider } from "
 /**
  * Razorpay implementation of the existing PaymentProvider interface.
  *
- * Like the Stripe provider, this always calls /api/checkout and lets the
- * server be the authority on whether credentials exist — so the UI needs no
- * knowledge of configuration state and starts working the moment real keys
- * are added.
+ * Always calls /api/checkout and lets the server be the authority on
+ * whether credentials exist — so the UI needs no knowledge of configuration
+ * state and starts working the moment real keys are added.
  *
  * Razorpay's Checkout is a browser modal rather than a redirect, so this
  * resolves to the interface's existing `client-side` variant carrying the

@@ -1,11 +1,10 @@
 /**
- * Payment provider abstraction. No gateway is connected yet — this defines
- * the shape a real integration (Razorpay, Stripe, etc.) would implement,
- * so the checkout UI can be built against a stable interface today and
- * swapped to a live provider later without touching checkout code.
+ * Payment provider abstraction. Razorpay is the only real gateway, but the
+ * checkout UI is built against this interface — not Razorpay's API directly
+ * — so a future provider swap touches this module, not checkout code.
  */
 
-export type PaymentProviderId = "razorpay" | "stripe" | "cod" | "unconfigured";
+export type PaymentProviderId = "razorpay" | "cod" | "unconfigured";
 
 export type OrderForPayment = {
   orderNumber: string;
