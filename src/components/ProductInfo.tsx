@@ -1,16 +1,34 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Product } from "@/data/products";
 import { useCart } from "@/lib/cart-context";
 import { formatPrice } from "@/lib/format";
+import { track } from "@/lib/analytics";
 
 export default function ProductInfo({ product }: { product: Product }) {
   const { addItem } = useCart();
   const router = useRouter();
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
+  const [showStickyBar, setShowStickyBar] = useState(false);
+  const ctaRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const node = ctaRef.current;
+    if (!node) return;
+    const observer = new IntersectionObserver(([entry]) => setShowStickyBar(!entry.isIntersecting), {
+      rootMargin: "0px 0px -10% 0px",
+    });
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    track({ name: "view_product", slug: product.slug, price: product.price, currency: product.currency });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [product.slug]);
 
   function handleAdd() {
     addItem(product, quantity);
@@ -78,7 +96,7 @@ export default function ProductInfo({ product }: { product: Product }) {
         </ul>
       )}
 
-      <div className="mt-8 flex flex-wrap items-center gap-4">
+      <div ref={ctaRef} className="mt-8 flex flex-wrap items-center gap-4">
         <div className="flex items-center rounded-full border border-gold/30">
           <button
             type="button"
@@ -115,8 +133,13 @@ export default function ProductInfo({ product }: { product: Product }) {
         </button>
       </div>
 
-      {/* Sticky mobile add-to-bag */}
-      <div className="fixed inset-x-0 bottom-0 z-40 flex items-center gap-3 border-t border-gold/20 bg-ivory/95 p-4 backdrop-blur-sm lg:hidden">
+      {/* Sticky mobile add-to-bag — appears only once the main purchase
+          controls above have scrolled out of view */}
+      <div
+        className={`fixed inset-x-0 bottom-0 z-40 flex items-center gap-3 border-t border-gold/20 bg-ivory/95 p-4 backdrop-blur-sm transition-transform duration-300 ease-out lg:hidden ${
+          showStickyBar ? "translate-y-0" : "translate-y-full"
+        }`}
+      >
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-medium text-ink">{product.shortName ?? product.name}</p>
           <p className="text-xs text-walnut/70">{formatPrice(product.price, product.currency)}</p>

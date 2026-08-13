@@ -9,7 +9,7 @@ export default function ShopByRitual() {
   return (
     <section className="bg-sand/50 py-20 lg:py-24">
       <div className="mx-auto max-w-7xl px-6 sm:px-8">
-        <SectionHeading eyebrow="Find Your Ritual" title="Shop By Ritual" center />
+        <SectionHeading eyebrow="Shop By Desire" title="What Are You In The Mood For?" center />
 
         <div className="mt-12 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
           {ritualCategories.map((ritual, i) => {

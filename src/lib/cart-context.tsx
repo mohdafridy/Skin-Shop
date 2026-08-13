@@ -11,6 +11,7 @@ import {
 import type { Product } from "@/data/products";
 import type { Combo } from "@/data/combos";
 import { validateCoupon, type CouponCartLine } from "@/data/coupons";
+import { track } from "@/lib/analytics";
 
 const STORAGE_KEY = "the-skin-shop-cart";
 
@@ -145,6 +146,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       ];
     });
     setIsOpen(true);
+    track({ name: "add_to_cart", slug: product.slug, quantity, price: product.price, currency: product.currency });
   }, []);
 
   const addCombo = useCallback<CartContextValue["addCombo"]>((combo, quantity = 1) => {
@@ -170,10 +172,12 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       ];
     });
     setIsOpen(true);
+    track({ name: "combo_add_to_cart", slug: combo.slug, price: combo.price, currency: combo.currency });
   }, []);
 
   const removeItem = useCallback((key: string) => {
     setItems((prev) => prev.filter((i) => i.key !== key));
+    track({ name: "remove_from_cart", key });
   }, []);
 
   const updateQuantity = useCallback((key: string, quantity: number) => {

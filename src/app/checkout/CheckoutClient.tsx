@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useCart } from "@/lib/cart-context";
@@ -8,6 +8,7 @@ import { getProductBySlug } from "@/data/products";
 import { getComboBySlug } from "@/data/combos";
 import { defaultZone } from "@/data/shipping";
 import { getActivePaymentProvider } from "@/lib/payment";
+import { track } from "@/lib/analytics";
 import OrderSummary, { type OrderLine } from "@/components/checkout/OrderSummary";
 
 type FormState = {
@@ -176,6 +177,12 @@ export default function CheckoutClient({ isPaymentConfigured }: { isPaymentConfi
   const subtotal = lines.reduce((sum, l) => sum + l.price * l.quantity, 0);
   const effectiveDiscount = mode === "cart" ? discount : 0;
 
+  useEffect(() => {
+    if (linesError || lines.length === 0) return;
+    track({ name: "begin_checkout", itemCount: lines.reduce((n, l) => n + l.quantity, 0), subtotal, currency });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [linesError, lines.length]);
+
   function update<K extends keyof FormState>(key: K, value: FormState[K]) {
     setForm((prev) => ({ ...prev, [key]: value }));
   }
@@ -202,9 +209,11 @@ export default function CheckoutClient({ isPaymentConfigured }: { isPaymentConfi
       return;
     }
 
+    track({ name: "add_shipping_info" });
     setSubmitting(true);
     setPaymentPending(null);
     const provider = getActivePaymentProvider();
+    track({ name: "add_payment_info" });
     const result = await provider.initiate({
       orderNumber: "PENDING",
       amount: subtotal - effectiveDiscount,

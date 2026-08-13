@@ -77,7 +77,7 @@ export default function ComboDetail({ combo }: { combo: Combo }) {
             onClick={() => addCombo(combo)}
             className="flex-1 rounded-full bg-burgundy px-7 py-3 text-sm font-medium text-ivory transition hover:bg-burgundy-dark sm:flex-none"
           >
-            Add Ritual To Bag
+            Add The Ritual
           </button>
           <button
             type="button"

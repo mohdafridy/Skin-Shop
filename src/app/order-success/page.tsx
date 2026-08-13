@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import { getStripe, isStripeConfigured } from "@/lib/stripe";
+import { track } from "@/lib/analytics";
 import OrderConfirmationView, { type ConfirmedOrder } from "@/components/checkout/OrderConfirmationView";
 import ClearCartOnSuccess from "./ClearCartOnSuccess";
 
@@ -108,6 +109,10 @@ export default async function OrderSuccessPage({
       .join(", "),
     deliveryMethodLabel: "Standard Delivery",
   };
+
+  // Fires only here, after payment has been verified directly with Stripe
+  // above — never on page load, never speculatively.
+  track({ name: "purchase", orderNumber: order.orderNumber, total: order.total, currency: order.currency });
 
   return (
     <>

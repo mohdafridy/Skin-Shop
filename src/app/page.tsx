@@ -1,5 +1,6 @@
 import Hero from "@/components/Hero";
 import BrandPillars from "@/components/BrandPillars";
+import StartHere from "@/components/StartHere";
 import FeaturedProducts from "@/components/FeaturedProducts";
 import StorySection from "@/components/StorySection";
 import ShopByRitual from "@/components/ShopByRitual";
@@ -16,6 +17,8 @@ export default function HomePage() {
       <Hero />
 
       <BrandPillars />
+
+      <StartHere />
 
       <FeaturedProducts />
 

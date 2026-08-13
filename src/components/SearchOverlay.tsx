@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { searchProducts } from "@/lib/search";
 import { formatPrice } from "@/lib/format";
+import { track } from "@/lib/analytics";
 import SmartImage from "./SmartImage";
 
 export default function SearchOverlay({
@@ -22,6 +23,16 @@ export default function SearchOverlay({
     setPrevIsOpen(isOpen);
     if (!isOpen) setQuery("");
   }
+
+  useEffect(() => {
+    const trimmed = query.trim();
+    if (!trimmed) return;
+    const timer = setTimeout(() => {
+      track({ name: "search", query: trimmed, resultCount: results.length });
+    }, 500);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [query]);
 
   useEffect(() => {
     if (!isOpen) return;

@@ -1,6 +1,9 @@
+"use client";
+
 import Link from "next/link";
 import SmartImage from "./SmartImage";
 import { productTagline } from "@/data/navigation";
+import { track } from "@/lib/analytics";
 
 export default function Hero() {
   return (
@@ -39,12 +42,14 @@ export default function Hero() {
         <div className="mt-9 flex flex-col items-center gap-5 sm:flex-row">
           <Link
             href="/shop"
+            onClick={() => track({ name: "hero_cta_click", cta: "Shop All" })}
             className="rounded-full bg-ivory px-8 py-3.5 text-sm font-medium text-ink transition hover:bg-sand"
           >
             Shop All
           </Link>
           <Link
             href="/our-story"
+            onClick={() => track({ name: "hero_cta_click", cta: "Our Story" })}
             className="group flex items-center gap-1.5 text-sm font-medium text-ivory transition hover:text-ivory/80"
           >
             Our Story

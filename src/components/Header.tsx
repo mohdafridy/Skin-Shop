@@ -5,17 +5,19 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { mainNav } from "@/data/navigation";
 import { useCart } from "@/lib/cart-context";
+import { track } from "@/lib/analytics";
 import Logo from "./Logo";
 import SearchOverlay from "./SearchOverlay";
 
 export default function Header() {
   const pathname = usePathname();
   const isHome = pathname === "/";
+  const isCheckout = pathname === "/checkout";
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [accountTip, setAccountTip] = useState(false);
-  const { itemCount, openCart } = useCart();
+  const { itemCount, subtotal, openCart } = useCart();
 
   useEffect(() => {
     if (!isHome) return;
@@ -35,6 +37,30 @@ export default function Header() {
 
   const transparent = isHome && !scrolled;
   const textTone = transparent ? "text-ivory" : "text-ink";
+
+  if (isCheckout) {
+    return (
+      <header className="sticky top-0 z-50 h-20 border-b border-gold/20 bg-ivory/95 backdrop-blur-sm">
+        <div className="mx-auto flex h-full max-w-7xl items-center justify-between px-5 text-ink sm:px-8">
+          <Link href="/" className="flex-shrink-0" aria-label="The Skin Shop, home">
+            <Logo />
+          </Link>
+          <p className="hidden text-xs font-medium uppercase tracking-[0.2em] text-walnut/60 sm:block">
+            Contact <span className="mx-1 text-gold">→</span> Delivery
+            <span className="mx-1 text-gold">→</span> Payment
+            <span className="mx-1 text-gold">→</span> Confirmation
+          </p>
+          <button
+            type="button"
+            onClick={openCart}
+            className="flex-shrink-0 text-sm font-medium text-walnut/70 underline-offset-2 transition hover:text-burgundy hover:underline"
+          >
+            Review Bag{itemCount > 0 ? ` (${itemCount})` : ""}
+          </button>
+        </div>
+      </header>
+    );
+  }
 
   return (
     <header
@@ -116,7 +142,10 @@ export default function Header() {
 
           <button
             type="button"
-            onClick={openCart}
+            onClick={() => {
+              track({ name: "view_cart", itemCount, subtotal });
+              openCart();
+            }}
             aria-label={`Open bag, ${itemCount} item${itemCount === 1 ? "" : "s"}`}
             className="relative flex h-11 w-11 items-center justify-center rounded-full transition hover:opacity-70"
           >

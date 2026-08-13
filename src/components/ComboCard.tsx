@@ -53,7 +53,7 @@ export default function ComboCard({ combo }: { combo: Combo }) {
             onClick={() => addCombo(combo)}
             className="rounded-full bg-burgundy px-4 py-2 text-xs font-medium text-ivory transition hover:bg-burgundy-dark"
           >
-            Add Combo To Cart
+            Add The Ritual
           </button>
           <Link
             href={`/rituals#${combo.slug}`}
