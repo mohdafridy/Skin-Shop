@@ -5,6 +5,7 @@
 export default function Field({
   label,
   id,
+  name,
   type = "text",
   value,
   onChange,
@@ -14,6 +15,10 @@ export default function Field({
 }: {
   label: string;
   id: string;
+  /** Defaults to `id`. Only matters for forms read via FormData (a Server
+   * Action, `<form action={...}>`) — the checkout/account forms read
+   * `value` from state directly and never rely on it. */
+  name?: string;
   type?: string;
   value: string;
   onChange: (value: string) => void;
@@ -29,6 +34,7 @@ export default function Field({
       </span>
       <input
         id={id}
+        name={name ?? id}
         type={type}
         value={value}
         onChange={(e) => onChange(e.target.value)}

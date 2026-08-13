@@ -1,10 +1,17 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { footerColumns, brandLine, productTagline } from "@/data/navigation";
 import { contactEmail, contactPhoneDisplay, whatsappLink } from "@/data/contact";
 import Logo from "./Logo";
 import SectionDivider from "./SectionDivider";
 
 export default function Footer() {
+  const pathname = usePathname();
+  // /admin is an internal tool, not storefront — no footer there.
+  if (pathname.startsWith("/admin")) return null;
+
   return (
     <footer className="mt-28 bg-walnut text-sand">
       <div className="py-10">

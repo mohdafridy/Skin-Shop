@@ -105,7 +105,7 @@ Admin (requires an `x-admin-key` header matching `ADMIN_API_KEY`):
 `POST /api/admin/products`, `PATCH`/`DELETE /api/admin/products/[id]`,
 `GET /api/admin/orders`, `PATCH /api/admin/orders/[id]` (also where manual
 fulfilment updates — status, courier, tracking number/URL — are recorded;
-see "Manual fulfilment" below). Replace the simple API-key guard with real
+see "Admin dashboard" below). Replace the simple API-key guard with real
 staff authentication before relying on these.
 
 ### 4. Customer accounts (optional)
@@ -127,7 +127,42 @@ browsing and guest checkout are unaffected.
 Orders placed while signed in get `Order.userId` set so they appear in
 order history; guest orders leave it null.
 
-### 5. Order confirmation
+### 5. Admin dashboard
+
+`/admin` is the store owner's UI for the order/fulfilment work the raw
+`x-admin-key` API otherwise requires a script or Postman for. It reuses
+`ADMIN_API_KEY` as its password — nothing new to configure. Sign in at
+`/admin/login`; the session is a short-lived (12h), signed httpOnly cookie
+verified server-side on every protected page and Server Action (never via
+proxy/middleware alone, per Next.js's own guidance not to rely on Proxy for
+authorization).
+
+- `/admin` — recent orders with payment/fulfilment status and a filter row.
+- `/admin/orders/[id]` — full order detail: customer, address, items,
+  payment info, event history, and per-channel notification log (sent /
+  skipped / failed, with the reason) — the fastest way to see whether a
+  WhatsApp or email actually went out.
+- Fulfilment form — status, courier, tracking number/URL, internal notes
+  (never shown to the customer). Changing status calls the same
+  `applyFulfilmentStatus` the raw API uses, so it records history and
+  triggers WhatsApp/email identically. Marking **Shipped** without a
+  courier name on file is rejected client-side, before any request is
+  sent — an admin who fixes it and resubmits isn't relying on the browser
+  remembering their dropdown choice through a round-trip.
+- Refund — shown once an order is Paid. Calls Razorpay's refund API
+  directly, then moves the order to `REFUND_PENDING`; the `refund.processed`
+  webhook confirms `REFUNDED` once Razorpay does. Hidden with an honest
+  notice if Razorpay isn't configured yet.
+- Payment status override — collapsed by default, for correcting the
+  record after something was resolved directly in the Razorpay dashboard.
+  Gateway webhooks remain the normal path; this never charges or refunds
+  anything itself.
+
+Customer chrome (header, announcement bar, footer, floating WhatsApp
+button) is hidden on every `/admin` route — it's an internal tool, not
+storefront.
+
+### 6. Order confirmation
 
 `/order-success` reads the order's persisted `paymentStatus` — set by
 `/api/payments/razorpay/verify` (signature-checked) before the redirect
@@ -175,7 +210,8 @@ Product slugs are listed in `src/data/products.ts`; combo slugs in
 ```
 app/            Routes: home, /shop, /products/[slug], /rituals, /our-story,
                 /contact, /checkout, /order-success, /track/[token],
-                /account, /wishlist, /shipping, /returns, /privacy, /terms, api/*
+                /account, /wishlist, /shipping, /returns, /privacy, /terms,
+                /admin (store-owner dashboard), api/*
 components/     Reusable UI (Header, ProductCard, CartDrawer, SmartImage, ...)
 data/           Product, combo, ingredient, navigation, shipping, tax, coupon data
 lib/            Cart context, search, formatting, payment provider abstraction
@@ -183,6 +219,7 @@ lib/payment/    PaymentProvider interface + the Razorpay Checkout implementation
 lib/notifications/  WhatsApp + email dispatch, shared by webhook and admin routes
 lib/orders/     applyPaymentStatus/applyFulfilmentStatus — the only place
                 order status transitions and history are written
+lib/admin-auth.ts   /admin dashboard session (reuses ADMIN_API_KEY)
 prisma/         schema.prisma + seed.ts for the optional commerce backend
 ```
 

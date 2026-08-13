@@ -13,6 +13,7 @@ import SearchOverlay from "./SearchOverlay";
 
 export default function Header() {
   const pathname = usePathname();
+  const isAdmin = pathname.startsWith("/admin");
   const isHome = pathname === "/";
   const isCheckout = pathname === "/checkout";
   const [scrolled, setScrolled] = useState(false);
@@ -39,6 +40,10 @@ export default function Header() {
 
   const transparent = isHome && !scrolled;
   const textTone = transparent ? "text-ivory" : "text-ink";
+
+  // /admin has its own header (AdminHeader) — the storefront chrome doesn't
+  // belong on an internal tool.
+  if (isAdmin) return null;
 
   if (isCheckout) {
     return (

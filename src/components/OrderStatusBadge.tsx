@@ -6,7 +6,7 @@ import type { FulfilmentStatus, PaymentStatus } from "@prisma/client";
  * differently in two places.
  */
 
-type Tone = "positive" | "pending" | "problem" | "neutral";
+export type Tone = "positive" | "pending" | "problem" | "neutral";
 
 const toneClass: Record<Tone, string> = {
   positive: "bg-olive/15 text-olive",
@@ -33,7 +33,12 @@ const fulfilmentLabels: Record<FulfilmentStatus, { label: string; tone: Tone }> 
   CANCELLED: { label: "Cancelled", tone: "problem" },
 };
 
-function Pill({ label, tone }: { label: string; tone: Tone }) {
+/** The shared visual primitive both the customer-facing badges below and
+ * the /admin dashboard's status pills render through, so tone colors never
+ * drift between the two. Admin composes its own (more literal) label text
+ * with this rather than the customer-friendly copy in paymentLabels/
+ * fulfilmentLabels below. */
+export function StatusPill({ label, tone }: { label: string; tone: Tone }) {
   return (
     <span
       className={`inline-block rounded-full px-3 py-1 text-xs font-medium ${toneClass[tone]}`}
@@ -45,7 +50,7 @@ function Pill({ label, tone }: { label: string; tone: Tone }) {
 
 export function PaymentStatusBadge({ status }: { status: PaymentStatus }) {
   const { label, tone } = paymentLabels[status];
-  return <Pill label={label} tone={tone} />;
+  return <StatusPill label={label} tone={tone} />;
 }
 
 /** Fulfilment is only meaningful once payment succeeded — showing "Preparing
@@ -59,7 +64,7 @@ export function FulfilmentStatusBadge({
 }) {
   if (paymentStatus !== "PAID" && status === "UNFULFILLED") return null;
   const { label, tone } = fulfilmentLabels[status];
-  return <Pill label={label} tone={tone} />;
+  return <StatusPill label={label} tone={tone} />;
 }
 
 export { paymentLabels, fulfilmentLabels };

@@ -45,6 +45,13 @@ const fulfilmentEvent: Record<FulfilmentStatus, OrderEventType | null> = {
   CANCELLED: "CANCELLED",
 };
 
+/** SHIPPED without courier details leaves the customer with a shipped
+ * notification they can't act on — enforced identically by the raw API
+ * (src/app/api/admin/orders/[id]/route.ts) and the /admin dashboard. */
+export function fulfilmentRequiresCourier(status: FulfilmentStatus): boolean {
+  return status === "SHIPPED";
+}
+
 const paymentEvent: Record<PaymentStatus, OrderEventType | null> = {
   PENDING: "PAYMENT_PENDING",
   PAID: "PAYMENT_SUCCESSFUL",

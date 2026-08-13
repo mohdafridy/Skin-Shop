@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { isAdminRequest } from "@/lib/backend";
-import { applyFulfilmentStatus, applyPaymentStatus } from "@/lib/orders/events";
+import { applyFulfilmentStatus, applyPaymentStatus, fulfilmentRequiresCourier } from "@/lib/orders/events";
 
 /**
  * Store-owner order management. Guarded by isAdminRequest (x-admin-key), the
@@ -57,7 +57,7 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
 
     // Marking an order shipped without tracking details leaves the customer
     // with a notification they can't act on — require them together.
-    if (fulfilmentStatus === "SHIPPED") {
+    if (fulfilmentStatus && fulfilmentRequiresCourier(fulfilmentStatus)) {
       const willHaveCourier = courierName ?? (await prisma.order.findUnique({ where: { id }, select: { courierName: true } }))?.courierName;
       if (!willHaveCourier) {
         return NextResponse.json(

@@ -6,10 +6,11 @@ import { track } from "@/lib/analytics";
 import { WhatsAppIcon } from "./icons";
 
 /** Hidden during checkout, matching AnnouncementBar/Header's "quiet mode" —
- * once a shopper commits to paying, nothing should invite them away. */
+ * once a shopper commits to paying, nothing should invite them away. Also
+ * hidden on /admin, which isn't storefront. */
 export default function WhatsAppButton() {
   const pathname = usePathname();
-  if (pathname === "/checkout") return null;
+  if (pathname === "/checkout" || pathname.startsWith("/admin")) return null;
 
   return (
     <a
