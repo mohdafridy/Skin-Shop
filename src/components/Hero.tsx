@@ -10,8 +10,8 @@ export default function Hero() {
     <section className="relative -mt-20 h-[92vh] min-h-[560px] w-full overflow-hidden">
       <div className="absolute inset-0">
         <SmartImage
-          src="/images/kashmir/hero-landscape.jpg"
-          alt="A selection of The Skin Shop's botanical skincare arranged on a rock, set against the snow-capped mountains of Kashmir"
+          src="/images/kashmir/hero-landscape-new.png"
+          alt="The Skin Shop's botanical skincare products displayed on a moss-covered rock against the Kashmir mountains"
           label="The Skin Shop collection in Kashmir"
           priority
           labelPosition="corner"
