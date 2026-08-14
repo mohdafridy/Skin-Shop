@@ -37,7 +37,7 @@ export default function ProductGallery({
             >
               <SmartImage
                 src={src}
-                alt=""
+                alt={`${productName} — view ${i + 1}`}
                 label={`${i + 1}`}
                 className="h-20 w-20"
                 sizes="80px"

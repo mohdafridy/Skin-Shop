@@ -4,11 +4,13 @@ import ShopByRitual from "@/components/ShopByRitual";
 import ComboDetail from "@/components/ComboDetail";
 import SectionHeading from "@/components/SectionHeading";
 import Reveal from "@/components/Reveal";
+import { canonical } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: "Rituals",
   description:
     "Find your ritual — shop by cleanse, treat, hydrate and more, or explore The Skin Shop's curated combos.",
+  alternates: canonical("/rituals"),
 };
 
 export default function RitualsPage() {

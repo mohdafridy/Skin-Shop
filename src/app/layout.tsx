@@ -8,7 +8,16 @@ import CartDrawer from "@/components/CartDrawer";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import { CartProvider } from "@/lib/cart-context";
 import { WishlistProvider } from "@/lib/wishlist-context";
-import { brandLine } from "@/data/navigation";
+import {
+  SITE_NAME,
+  SITE_URL,
+  DEFAULT_TITLE,
+  DEFAULT_DESCRIPTION,
+  DEFAULT_OG_IMAGE,
+  GOOGLE_SITE_VERIFICATION,
+  organizationJsonLd,
+  websiteJsonLd,
+} from "@/lib/seo";
 
 const cormorant = Cormorant_Garamond({
   variable: "--font-cormorant",
@@ -22,20 +31,30 @@ const manrope = Manrope({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://theskinshop.example.com"),
+  metadataBase: new URL(SITE_URL),
   title: {
-    default: `The Skin Shop — ${brandLine}`,
-    template: "%s | The Skin Shop",
+    default: DEFAULT_TITLE,
+    template: `%s | ${SITE_NAME}`,
   },
-  description:
-    "Organic, botanical skincare handcrafted in Kashmir. Discover The Skin Shop's collection of cleansers, serums, creams and rituals rooted in traditional craftsmanship and result-oriented, cruelty-free formulations. Ships across India.",
+  description: DEFAULT_DESCRIPTION,
+  robots: { index: true, follow: true },
   openGraph: {
-    siteName: "The Skin Shop",
-    title: `The Skin Shop — ${brandLine}`,
+    siteName: SITE_NAME,
+    title: DEFAULT_TITLE,
     description:
       "Organic, botanical skincare handcrafted in Kashmir — cruelty-free, plant-based, result-oriented. Ships across India.",
     type: "website",
+    url: "/",
+    images: [{ url: DEFAULT_OG_IMAGE }],
   },
+  twitter: {
+    card: "summary_large_image",
+    title: DEFAULT_TITLE,
+    description:
+      "Organic, botanical skincare handcrafted in Kashmir — cruelty-free, plant-based, result-oriented. Ships across India.",
+    images: [DEFAULT_OG_IMAGE],
+  },
+  ...(GOOGLE_SITE_VERIFICATION ? { verification: { google: GOOGLE_SITE_VERIFICATION } } : {}),
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -45,6 +64,14 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${cormorant.variable} ${manrope.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-ivory text-ink">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd()) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd()) }}
+        />
         <CartProvider>
           <WishlistProvider>
             <a

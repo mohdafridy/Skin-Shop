@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import WishlistClient from "./WishlistClient";
+import { noIndex } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: "Wishlist",
   description: "The products you've saved for later at The Skin Shop.",
+  robots: noIndex,
 };
 
 export default function WishlistPage() {

@@ -1,7 +1,12 @@
 import type { Metadata } from "next";
 import PolicyPage from "@/components/PolicyPage";
+import { canonical } from "@/lib/seo";
 
-export const metadata: Metadata = { title: "Returns" };
+export const metadata: Metadata = {
+  title: "Returns",
+  description: "The Skin Shop's return and refund policy.",
+  alternates: canonical("/returns"),
+};
 
 export default function ReturnsPage() {
   return (

@@ -7,6 +7,7 @@ import ProductInfo from "@/components/ProductInfo";
 import Accordion from "@/components/Accordion";
 import ProductGrid from "@/components/ProductGrid";
 import SectionHeading from "@/components/SectionHeading";
+import { absoluteUrl, breadcrumbJsonLd, productJsonLd } from "@/lib/seo";
 
 export function generateStaticParams() {
   return products.map((product) => ({ slug: product.slug }));
@@ -21,13 +22,25 @@ export async function generateMetadata({
   const product = getProductBySlug(slug);
   if (!product) return {};
 
+  const url = absoluteUrl(`/products/${product.slug}`);
+  const image = absoluteUrl(product.image);
+
   return {
     title: product.name,
     description: product.shortDescription,
+    alternates: { canonical: `/products/${product.slug}` },
     openGraph: {
       title: product.name,
       description: product.shortDescription,
-      images: [product.image],
+      url,
+      images: [{ url: image }],
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: product.name,
+      description: product.shortDescription,
+      images: [image],
     },
   };
 }
@@ -44,26 +57,22 @@ export default async function ProductPage({
   const related = getRelatedProducts(product);
   const gallery = product.gallery ?? [product.image];
 
-  const jsonLd: Record<string, unknown> = {
-    "@context": "https://schema.org",
-    "@type": "Product",
-    name: product.name,
-    description: product.shortDescription,
-    image: product.image,
-    category: product.category,
-    offers: {
-      "@type": "Offer",
-      price: product.price,
-      priceCurrency: product.currency,
-      availability: "https://schema.org/InStock",
-    },
-  };
+  const jsonLd = productJsonLd(product);
+  const breadcrumbs = breadcrumbJsonLd([
+    { name: "Home", path: "/" },
+    { name: "Shop", path: "/shop" },
+    { name: product.shortName ?? product.name, path: `/products/${product.slug}` },
+  ]);
 
   return (
     <div className="mx-auto max-w-7xl px-6 pb-24 pt-10 sm:px-8 lg:pb-16 lg:pt-14">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbs) }}
       />
 
       <nav className="mb-8 text-sm text-walnut/70" aria-label="Breadcrumb">

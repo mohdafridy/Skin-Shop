@@ -4,6 +4,7 @@ import SectionDivider from "@/components/SectionDivider";
 import Reveal from "@/components/Reveal";
 import { brandLine, founderName, founderQuote, brandPillars } from "@/data/navigation";
 import { HUSN_E_YUSUF, ARK_E_GULAAB } from "@/lib/proper-nouns";
+import { canonical } from "@/lib/seo";
 
 const philosophyPoints = [
   "Raw and organic botanical ingredients",
@@ -17,6 +18,7 @@ export const metadata: Metadata = {
   title: "Our Story",
   description:
     "The Skin Shop was created to bring ingredients and rituals that feel familiar, treasured and timeless into the way people care for themselves today.",
+  alternates: canonical("/our-story"),
 };
 
 const transformations = [

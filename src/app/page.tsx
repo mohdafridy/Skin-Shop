@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Hero from "@/components/Hero";
 import BrandPillars from "@/components/BrandPillars";
 import StartHere from "@/components/StartHere";
@@ -10,6 +11,11 @@ import CustomerExperience from "@/components/CustomerExperience";
 import EditorialSection from "@/components/EditorialSection";
 import Newsletter from "@/components/Newsletter";
 import { HUSN_E_YUSUF } from "@/lib/proper-nouns";
+import { canonical } from "@/lib/seo";
+
+export const metadata: Metadata = {
+  alternates: canonical("/"),
+};
 
 export default function HomePage() {
   return (

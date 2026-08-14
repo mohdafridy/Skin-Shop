@@ -1,7 +1,12 @@
 import type { Metadata } from "next";
 import PolicyPage from "@/components/PolicyPage";
+import { canonical } from "@/lib/seo";
 
-export const metadata: Metadata = { title: "Shipping" };
+export const metadata: Metadata = {
+  title: "Shipping",
+  description: "Shipping options and delivery information for The Skin Shop orders across India.",
+  alternates: canonical("/shipping"),
+};
 
 export default function ShippingPage() {
   return (

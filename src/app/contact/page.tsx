@@ -2,10 +2,12 @@ import type { Metadata } from "next";
 import ContactForm from "./ContactForm";
 import { contactEmail, contactPhoneDisplay, whatsappLink } from "@/data/contact";
 import { WhatsAppIcon } from "@/components/icons";
+import { canonical } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: "Contact",
   description: "Get in touch with The Skin Shop.",
+  alternates: canonical("/contact"),
 };
 
 export default function ContactPage() {

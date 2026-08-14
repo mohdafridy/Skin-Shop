@@ -6,10 +6,12 @@ import { formatPrice } from "@/lib/format";
 import { FulfilmentStatusBadge, PaymentStatusBadge } from "@/components/OrderStatusBadge";
 import AccountAuthForm from "./AccountAuthForm";
 import SignOutButton from "./SignOutButton";
+import { noIndex } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: "Account",
   description: "Sign in to see your order history at The Skin Shop.",
+  robots: noIndex,
 };
 
 // Always per-request. Without this the page prerenders static whenever

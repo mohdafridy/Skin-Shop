@@ -1,7 +1,12 @@
 import type { Metadata } from "next";
 import PolicyPage from "@/components/PolicyPage";
+import { canonical } from "@/lib/seo";
 
-export const metadata: Metadata = { title: "Privacy Policy" };
+export const metadata: Metadata = {
+  title: "Privacy Policy",
+  description: "How The Skin Shop collects, uses and protects your information.",
+  alternates: canonical("/privacy"),
+};
 
 export default function PrivacyPage() {
   return (

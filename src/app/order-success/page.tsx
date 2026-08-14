@@ -3,8 +3,12 @@ import { prisma } from "@/lib/prisma";
 import { track } from "@/lib/analytics";
 import OrderConfirmationView, { type ConfirmedOrder } from "@/components/checkout/OrderConfirmationView";
 import ClearCartOnSuccess from "./ClearCartOnSuccess";
+import { noIndex } from "@/lib/seo";
 
-export const metadata: Metadata = { title: "Order Confirmed" };
+export const metadata: Metadata = {
+  title: "Order Confirmed",
+  robots: noIndex,
+};
 
 // Per-request: payment confirmation must never come from a cached render.
 export const dynamic = "force-dynamic";

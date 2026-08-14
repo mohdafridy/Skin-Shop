@@ -1,7 +1,12 @@
 import type { Metadata } from "next";
 import PolicyPage from "@/components/PolicyPage";
+import { canonical } from "@/lib/seo";
 
-export const metadata: Metadata = { title: "Terms of Service" };
+export const metadata: Metadata = {
+  title: "Terms of Service",
+  description: "The terms of service for shopping with The Skin Shop.",
+  alternates: canonical("/terms"),
+};
 
 export default function TermsPage() {
   return (
