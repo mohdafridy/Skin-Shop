@@ -88,13 +88,6 @@ export const ingredientStories: IngredientStory[] = [
     relatedProductSlugs: ["vitamin-c-serum"],
   },
   {
-    id: "husn-e-yusuf",
-    name: HUSN_E_YUSUF,
-    story:
-      `${HUSN_E_YUSUF} is a name carried through generations of South Asian beauty ritual, built around rose and softness. It appears across the collection in both a cleansing soap and a gentle exfoliator.`,
-    relatedProductSlugs: ["husn-e-yusuf-whitening-soap-cleanser", "husn-e-yusuf-exfoliator"],
-  },
-  {
     id: "solar-infusion",
     name: "Solar Infusion",
     story:
