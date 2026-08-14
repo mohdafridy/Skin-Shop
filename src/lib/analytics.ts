@@ -11,6 +11,7 @@ export type AnalyticsEvent =
   | { name: "search"; query: string; resultCount: number }
   | { name: "hero_cta_click"; cta: string }
   | { name: "ingredient_product_click"; ingredient: string; productSlug: string }
+  | { name: "whatsapp_consultation_clicked"; productSlug: string; productName: string; pagePath: string }
   | { name: "add_to_cart"; slug: string; quantity: number; price: number; currency: string }
   | { name: "combo_add_to_cart"; slug: string; price: number; currency: string }
   | { name: "remove_from_cart"; key: string }

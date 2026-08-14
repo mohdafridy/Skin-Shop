@@ -9,6 +9,7 @@ import { formatPrice } from "@/lib/format";
 import { track } from "@/lib/analytics";
 import { useAddedFeedback } from "@/lib/use-added-feedback";
 import { HeartIcon } from "./icons";
+import ConsultationCTA from "./ConsultationCTA";
 
 export default function ProductInfo({ product }: { product: Product }) {
   const { addItem } = useCart();
@@ -150,6 +151,13 @@ export default function ProductInfo({ product }: { product: Product }) {
           />
         </button>
       </div>
+
+      <ConsultationCTA
+        productSlug={product.slug}
+        productName={product.name}
+        price={product.price}
+        currency={product.currency}
+      />
 
       {/* Sticky mobile add-to-bag — appears only once the main purchase
           controls above have scrolled out of view */}

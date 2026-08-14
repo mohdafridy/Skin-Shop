@@ -1,5 +1,7 @@
 import type { OrderLine } from "./OrderSummary";
 import { formatPrice } from "@/lib/format";
+import { whatsappLink } from "@/data/contact";
+import { WhatsAppIcon } from "@/components/icons";
 
 /**
  * Presentational only — not wired to a route yet. There is currently no
@@ -84,6 +86,21 @@ export default function OrderConfirmationView({ order }: { order: ConfirmedOrder
 
       <p className="mt-8 text-sm text-walnut/70">
         We&apos;ll email you as soon as your order ships.
+      </p>
+
+      <p className="mt-6 text-sm text-walnut/60">
+        Need help using your new products? Your complimentary skincare consultation is still
+        available —{" "}
+        <a
+          href={whatsappLink("Hi! I'd like some help using the products from my recent order.")}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1 font-medium text-burgundy underline-offset-2 hover:underline"
+        >
+          <WhatsAppIcon className="h-3.5 w-3.5" />
+          chat with our consultant
+        </a>
+        .
       </p>
     </div>
   );
