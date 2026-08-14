@@ -130,7 +130,7 @@ export default function ShopClient() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search…"
-            className="w-full min-w-0 flex-1 rounded-full border border-gold/30 bg-white/60 px-4 py-2 text-sm text-ink placeholder:text-walnut/40 focus:outline-none sm:w-48"
+            className="w-full min-w-0 flex-1 rounded-full border border-gold/30 bg-white/60 px-4 py-2 text-sm text-ink placeholder:text-walnut/40 focus:outline-none focus:ring-2 focus:ring-burgundy/50 sm:w-48"
           />
           <label htmlFor="shop-sort" className="sr-only">
             Sort products
@@ -139,7 +139,7 @@ export default function ShopClient() {
             id="shop-sort"
             value={sort}
             onChange={(e) => setSort(e.target.value as SortOption)}
-            className="rounded-full border border-gold/30 bg-white/60 px-4 py-2 text-sm text-ink focus:outline-none"
+            className="rounded-full border border-gold/30 bg-white/60 px-4 py-2 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-burgundy/50"
           >
             {Object.entries(sortLabels).map(([value, label]) => (
               <option key={value} value={value}>

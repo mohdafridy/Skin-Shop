@@ -6,6 +6,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import CartDrawer from "@/components/CartDrawer";
 import WhatsAppButton from "@/components/WhatsAppButton";
+import ScrollProgress from "@/components/ScrollProgress";
 import { CartProvider } from "@/lib/cart-context";
 import { WishlistProvider } from "@/lib/wishlist-context";
 import {
@@ -80,6 +81,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             >
               Skip to content
             </a>
+            <ScrollProgress />
             <AnnouncementBar />
             <Header />
             <main id="main-content" className="flex-1">

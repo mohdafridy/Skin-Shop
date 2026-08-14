@@ -6,28 +6,36 @@ import { getComboPricing } from "@/data/combos";
 import { useCart } from "@/lib/cart-context";
 import { formatPrice } from "@/lib/format";
 import { useAddedFeedback } from "@/lib/use-added-feedback";
+import { ritualHoverTreatment, defaultRitualTreatment } from "@/lib/ritual-treatment";
 import SmartImage from "./SmartImage";
 
 export default function ComboCard({ combo }: { combo: Combo }) {
   const { addCombo } = useCart();
   const [added, triggerAdded] = useAddedFeedback();
   const { individualValue, price, savings, currency } = getComboPricing(combo);
+  const treatment = ritualHoverTreatment[combo.id] ?? defaultRitualTreatment;
 
   return (
-    <div className="group flex flex-col overflow-hidden rounded-2xl border border-gold/15 bg-white/40 transition hover:-translate-y-1">
-      <Link href={`/rituals#${combo.slug}`} className="block overflow-hidden">
+    <div className="group flex flex-col overflow-hidden rounded-2xl border border-gold/15 bg-white/40 transition-[transform,box-shadow] duration-[280ms] ease-premium hover:-translate-y-1 hover:shadow-[0_16px_45px_rgba(42,32,28,0.1)]">
+      <Link href={`/rituals#${combo.slug}`} className="relative block overflow-hidden">
         <SmartImage
           src={combo.image}
           alt={`${combo.name} — ${combo.mood}`}
           label={combo.name}
           className="aspect-[4/5]"
           sizes="(min-width: 1024px) 30vw, 90vw"
-          imageClassName="transition duration-700 ease-out group-hover:scale-105"
+          imageClassName={`transition-transform duration-[500ms] ease-premium ${treatment.scale}`}
         />
+        {treatment.overlay && (
+          <div
+            aria-hidden="true"
+            className={`pointer-events-none absolute inset-0 transition-opacity duration-500 ease-premium ${treatment.overlay}`}
+          />
+        )}
       </Link>
       <div className="flex flex-1 flex-col p-6">
         <Link href={`/rituals#${combo.slug}`}>
-          <h3 className="text-balance font-display text-xl text-ink transition group-hover:text-burgundy">
+          <h3 className="text-balance font-display text-2xl text-ink transition-colors duration-[200ms] ease-premium group-hover:text-burgundy">
             {combo.name}
           </h3>
         </Link>
@@ -56,13 +64,13 @@ export default function ComboCard({ combo }: { combo: Combo }) {
               addCombo(combo);
               triggerAdded();
             }}
-            className="rounded-full bg-burgundy px-4 py-2 text-xs font-medium text-ivory transition hover:bg-burgundy-dark"
+            className="rounded-full bg-burgundy px-4 py-2 text-xs font-medium text-ivory transition-[background-color,transform] duration-[200ms] ease-premium hover:bg-burgundy-dark active:scale-95"
           >
             {added ? "Added ✓" : "Add The Ritual"}
           </button>
           <Link
             href={`/rituals#${combo.slug}`}
-            className="text-xs font-medium text-walnut/70 underline-offset-2 transition hover:text-burgundy hover:underline"
+            className="text-xs font-medium text-walnut/70 underline-offset-2 transition-colors duration-[200ms] ease-premium hover:text-burgundy hover:underline"
           >
             View Ritual
           </Link>

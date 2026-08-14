@@ -16,7 +16,7 @@ export default function ProductCard({ product }: { product: Product }) {
   const wishlisted = isWishlisted(product.slug);
 
   return (
-    <div className="group relative flex flex-col">
+    <div className="group relative flex flex-col transition-[transform,box-shadow] duration-[280ms] ease-premium hover:-translate-y-1 hover:shadow-[0_16px_45px_rgba(42,32,28,0.08)]">
       <Link
         href={`/products/${product.slug}`}
         className="block overflow-hidden rounded-2xl"
@@ -28,7 +28,7 @@ export default function ProductCard({ product }: { product: Product }) {
           label={product.shortName ?? product.name}
           className="aspect-[4/5]"
           sizes="(min-width: 1024px) 23vw, (min-width: 640px) 45vw, 48vw"
-          imageClassName="transition duration-700 ease-out group-hover:scale-105"
+          imageClassName="transition-transform duration-[450ms] ease-premium group-hover:scale-[1.03]"
         />
       </Link>
 
@@ -37,7 +37,7 @@ export default function ProductCard({ product }: { product: Product }) {
         onClick={() => toggle(product.slug)}
         aria-label={wishlisted ? `Remove ${product.name} from wishlist` : `Add ${product.name} to wishlist`}
         aria-pressed={wishlisted}
-        className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-ivory/90 text-ink shadow-sm transition hover:scale-105"
+        className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-ivory/90 text-ink shadow-sm transition-transform duration-[180ms] ease-premium hover:scale-105 active:scale-95"
       >
         <HeartIcon
           filled={wishlisted}
@@ -64,13 +64,13 @@ export default function ProductCard({ product }: { product: Product }) {
               addItem(product);
               triggerAdded();
             }}
-            className="rounded-full border border-burgundy px-4 py-2 text-xs font-medium text-burgundy transition hover:bg-burgundy hover:text-ivory"
+            className="rounded-full border border-burgundy px-4 py-2 text-xs font-medium text-burgundy transition-[background-color,color,transform] duration-[200ms] ease-premium hover:bg-burgundy hover:text-ivory active:scale-95"
           >
             {added ? "Added ✓" : "Quick Add"}
           </button>
           <Link
             href={`/products/${product.slug}`}
-            className="text-xs font-medium text-walnut/70 underline-offset-2 transition hover:text-burgundy hover:underline"
+            className="text-xs font-medium text-walnut/70 underline-offset-2 transition-colors duration-[200ms] ease-premium hover:text-burgundy hover:underline"
           >
             View Product
           </Link>

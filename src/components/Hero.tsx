@@ -28,32 +28,49 @@ export default function Hero() {
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_58%_at_50%_50%,rgba(32,29,26,0.5),transparent_72%)] lg:bg-[radial-gradient(ellipse_50%_62%_at_27%_48%,rgba(32,29,26,0.5),transparent_72%)]" />
 
       <div className="relative mx-auto flex h-full w-full max-w-7xl flex-col items-center justify-center px-6 pt-20 text-center sm:px-8 lg:items-start lg:justify-start lg:px-8 lg:pt-32 lg:text-left">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold">{productTagline}</p>
+        <p
+          className="stagger-in text-xs font-semibold uppercase tracking-[0.2em] text-gold"
+          style={{ "--stagger-rise": "6px", "--stagger-delay": "0ms" } as React.CSSProperties}
+        >
+          {productTagline}
+        </p>
 
-        <h1 className="mt-4 max-w-2xl text-balance font-display text-4xl font-medium leading-[1.15] tracking-tight text-ivory sm:text-5xl lg:max-w-3xl lg:text-7xl">
+        <h1
+          className="stagger-in mt-4 max-w-2xl text-balance font-display text-4xl font-medium leading-[1.15] tracking-tight text-ivory sm:text-5xl lg:max-w-3xl lg:text-7xl"
+          style={{ "--stagger-rise": "10px", "--stagger-delay": "80ms" } as React.CSSProperties}
+        >
           Rooted in Kashmir.<br className="hidden lg:block" /> Made for Your Ritual.
         </h1>
 
-        <p className="mt-5 max-w-sm text-balance text-base leading-relaxed text-ivory/90 sm:text-lg">
+        <p
+          className="stagger-in mt-5 max-w-sm text-balance text-base leading-relaxed text-ivory/90 sm:text-lg"
+          style={{ "--stagger-rise": "8px", "--stagger-delay": "160ms" } as React.CSSProperties}
+        >
           Botanical beauty inspired by ritual, ingredients, and a remarkable sense of
           place.
         </p>
 
-        <div className="mt-9 flex flex-col items-center gap-5 sm:flex-row">
+        <div
+          className="stagger-in mt-9 flex flex-col items-center gap-5 sm:flex-row"
+          style={{ "--stagger-rise": "0px", "--stagger-delay": "240ms" } as React.CSSProperties}
+        >
           <Link
             href="/shop"
             onClick={() => track({ name: "hero_cta_click", cta: "Shop All" })}
-            className="rounded-full bg-ivory px-8 py-3.5 text-sm font-medium text-ink transition hover:bg-sand"
+            className="rounded-full bg-ivory px-8 py-3.5 text-sm font-medium text-ink transition-[background-color,transform] duration-[180ms] ease-premium hover:-translate-y-px hover:bg-sand"
           >
             Shop All
           </Link>
           <Link
             href="/our-story"
             onClick={() => track({ name: "hero_cta_click", cta: "Our Story" })}
-            className="group flex items-center gap-1.5 text-sm font-medium text-ivory transition hover:text-ivory/80"
+            className="group flex items-center gap-1.5 text-sm font-medium text-ivory transition-colors duration-[180ms] ease-premium hover:text-ivory/80"
           >
             Our Story
-            <span aria-hidden="true" className="transition group-hover:translate-x-0.5">
+            <span
+              aria-hidden="true"
+              className="transition-transform duration-[180ms] ease-premium group-hover:translate-x-1"
+            >
               →
             </span>
           </Link>

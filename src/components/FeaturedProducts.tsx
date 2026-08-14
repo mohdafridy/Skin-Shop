@@ -14,7 +14,7 @@ function BestsellerCard({ product }: { product: Product }) {
   const [added, triggerAdded] = useAddedFeedback();
 
   return (
-    <div className="flex flex-col">
+    <div className="group flex flex-col">
       <Link
         href={`/products/${product.slug}`}
         className="block overflow-hidden rounded-2xl"
@@ -26,11 +26,11 @@ function BestsellerCard({ product }: { product: Product }) {
           label={product.shortName ?? product.name}
           className="aspect-square"
           sizes="(min-width: 1024px) 22vw, 44vw"
-          imageClassName="transition duration-700 ease-out hover:scale-105"
+          imageClassName="transition-transform duration-[450ms] ease-premium group-hover:scale-[1.03]"
         />
       </Link>
       <Link href={`/products/${product.slug}`} className="mt-4">
-        <h3 className="text-balance font-display text-base leading-snug text-ink transition hover:text-burgundy">
+        <h3 className="text-balance font-display text-base leading-snug text-ink transition-colors duration-[200ms] ease-premium group-hover:text-burgundy">
           {product.shortName ?? product.name}
         </h3>
       </Link>
@@ -41,7 +41,7 @@ function BestsellerCard({ product }: { product: Product }) {
           addItem(product);
           triggerAdded();
         }}
-        className="mt-3 w-full rounded-full bg-ink px-5 py-2.5 text-xs font-medium text-ivory transition hover:bg-burgundy"
+        className="mt-3 w-full rounded-full bg-ink px-5 py-2.5 text-xs font-medium text-ivory transition-[background-color,transform] duration-[200ms] ease-premium hover:bg-burgundy active:scale-[0.98]"
       >
         {added ? "Added ✓" : "Add to Bag"}
       </button>
@@ -60,9 +60,9 @@ export default function FeaturedProducts() {
   }
 
   return (
-    <section className="mx-auto max-w-7xl px-6 py-20 sm:px-8 lg:py-24">
-      <div className="grid gap-10 lg:grid-cols-[1fr_2.3fr] lg:items-end lg:gap-10">
-        <div>
+    <section className="mx-auto max-w-7xl px-6 py-20 sm:px-8 lg:py-28">
+      <div className="grid min-w-0 gap-10 lg:grid-cols-[1fr_2.3fr] lg:items-end lg:gap-10">
+        <div className="min-w-0">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-burgundy">Our Bestsellers</p>
           <h2 className="mt-3 text-balance font-display text-3xl leading-tight text-ink sm:text-4xl">
             Discover what your skin will love
@@ -79,7 +79,7 @@ export default function FeaturedProducts() {
           </Link>
         </div>
 
-        <div>
+        <div className="min-w-0">
           <div
             ref={scrollerRef}
             className="flex snap-x snap-mandatory gap-6 overflow-x-auto scroll-smooth pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"

@@ -44,8 +44,11 @@ export default function IngredientCard({ ingredient }: { ingredient: IngredientS
             }
             className="group mt-4 inline-flex items-center gap-1.5 text-xs font-medium text-burgundy underline-offset-2 hover:underline"
           >
-            Discover The Ritual
-            <span aria-hidden="true" className="transition group-hover:translate-x-0.5">
+            Discover {primaryProduct.shortName ?? primaryProduct.name}
+            <span
+              aria-hidden="true"
+              className="transition-transform duration-[180ms] ease-premium group-hover:translate-x-1"
+            >
               →
             </span>
           </Link>

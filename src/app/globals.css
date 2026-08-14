@@ -27,6 +27,10 @@
   --color-ink: var(--color-ink);
   --font-display: var(--font-cormorant);
   --font-sans: var(--font-manrope);
+  /* Shared premium ease — used across hover, drawer and reveal motion so
+     the whole site moves with one consistent hand. Available as the
+     `ease-premium` Tailwind utility. */
+  --ease-premium: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -73,16 +77,72 @@ p {
     transform: scale(1);
   }
   to {
-    transform: scale(1.08);
+    /* Nearly imperceptible — depth, not a demonstration. */
+    transform: scale(1.025);
   }
 }
 
 .animate-slow-zoom {
-  animation: slow-zoom 18s ease-out forwards;
+  animation: slow-zoom 14s ease-out forwards;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .animate-slow-zoom {
+    animation: none;
+  }
+}
+
+/* Restrained, one-time entrance for hero copy on first paint only (Hero.tsx
+   gates this to first mount — it never replays on scroll re-entry). */
+@keyframes stagger-in {
+  from {
+    opacity: 0;
+    transform: translateY(var(--stagger-rise, 8px));
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.stagger-in {
+  animation: stagger-in 0.6s var(--ease-premium) both;
+  animation-delay: var(--stagger-delay, 0ms);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stagger-in {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Fade-up used by the image-reveal treatment on select editorial photos
+   (IngredientStorytelling, StorySection) — distinct from .reveal's card
+   pop-in, slower and paired with overflow-hidden clipping on the wrapper. */
+@keyframes image-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(1.02);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.image-reveal {
+  opacity: 0;
+}
+
+.image-reveal.in-view {
+  animation: image-reveal 0.6s var(--ease-premium) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .image-reveal {
+    opacity: 1;
     animation: none;
   }
 }
@@ -109,6 +169,28 @@ p {
 @media (prefers-reduced-motion: reduce) {
   .reveal {
     opacity: 1;
+    animation: none;
+  }
+}
+
+/* Brief pulse when a cart line's quantity/total updates — remounted via a
+   `key` change, not a reload. Subtle, not a "number animation". */
+@keyframes qty-pulse {
+  from {
+    opacity: 0.5;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.qty-pulse {
+  display: inline-block;
+  animation: qty-pulse 150ms var(--ease-premium);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .qty-pulse {
     animation: none;
   }
 }

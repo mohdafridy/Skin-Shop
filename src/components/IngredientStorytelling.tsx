@@ -1,18 +1,27 @@
 import { ingredientStories } from "@/data/ingredients";
 import SectionHeading from "./SectionHeading";
 import IngredientCard from "./IngredientCard";
+import IngredientScrollytelling from "./IngredientScrollytelling";
 import Reveal from "./Reveal";
 
 export default function IngredientStorytelling() {
   return (
-    <section className="mx-auto max-w-7xl px-6 py-20 sm:px-8 lg:py-24">
+    <section className="mx-auto max-w-7xl px-6 py-20 sm:px-8 lg:py-32">
       <SectionHeading
         eyebrow="Botanical Roots"
         title="Ingredients With A Story"
         subtitle="The names behind the collection — familiar botanicals, carried into contemporary format."
         center
       />
-      <div className="mt-12 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+
+      <div className="mt-16">
+        <IngredientScrollytelling />
+      </div>
+
+      {/* Mobile/tablet: a sticky-scroll pairing doesn't translate below lg,
+          so every ingredient gets its own stacked card instead — same
+          image, name, story and product link, none of it dropped. */}
+      <div className="mt-12 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:hidden">
         {ingredientStories.map((ingredient, i) => (
           <Reveal key={ingredient.id} delay={(i % 4) * 60}>
             <IngredientCard ingredient={ingredient} />

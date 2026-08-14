@@ -23,13 +23,13 @@ export default function StorySection({
   reverse = false,
 }: StorySectionProps) {
   return (
-    <section className="mx-auto max-w-7xl px-6 py-20 sm:px-8 lg:py-28">
+    <section className="mx-auto max-w-7xl px-6 py-20 sm:px-8 lg:py-36">
       <div
         className={`grid items-center gap-12 lg:grid-cols-2 lg:gap-16 ${
           reverse ? "lg:[&>*:first-child]:order-2" : ""
         }`}
       >
-        <Reveal>
+        <Reveal variant="image" className="overflow-hidden rounded-2xl">
           <SmartImage
             src={image}
             alt={imageLabel}
@@ -50,10 +50,13 @@ export default function StorySection({
           {cta && (
             <Link
               href={cta.href}
-              className="group mt-7 inline-flex items-center gap-1.5 text-sm font-medium text-burgundy hover:underline"
+              className="group mt-7 inline-flex items-center gap-1.5 text-sm font-medium text-burgundy transition-colors duration-[180ms] ease-premium hover:underline"
             >
               {cta.label}
-              <span aria-hidden="true" className="transition group-hover:translate-x-0.5">
+              <span
+                aria-hidden="true"
+                className="transition-transform duration-[180ms] ease-premium group-hover:translate-x-1"
+              >
                 →
               </span>
             </Link>

@@ -75,14 +75,14 @@ export default function ComboDetail({ combo }: { combo: Combo }) {
           <button
             type="button"
             onClick={() => addCombo(combo)}
-            className="flex-1 rounded-full bg-burgundy px-7 py-3 text-sm font-medium text-ivory transition hover:bg-burgundy-dark sm:flex-none"
+            className="flex-1 rounded-full bg-burgundy px-7 py-3 text-sm font-medium text-ivory transition-[background-color,transform] duration-[200ms] ease-premium hover:bg-burgundy-dark active:scale-[0.98] sm:flex-none"
           >
             Add The Ritual
           </button>
           <button
             type="button"
             onClick={handleBuyNow}
-            className="flex-1 rounded-full border border-ink px-7 py-3 text-sm font-medium text-ink transition hover:bg-ink hover:text-ivory sm:flex-none"
+            className="flex-1 rounded-full border border-ink px-7 py-3 text-sm font-medium text-ink transition-[background-color,color,transform] duration-[200ms] ease-premium hover:bg-ink hover:text-ivory active:scale-[0.98] sm:flex-none"
           >
             Buy Now
           </button>

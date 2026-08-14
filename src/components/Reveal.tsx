@@ -7,9 +7,21 @@ type RevealProps = {
   className?: string;
   delay?: number;
   as?: "div" | "li";
+  /** "fade" (default) is the shared card/section reveal used everywhere.
+   * "image" is reserved for major story photography — a slightly slower,
+   * more photographic clip+scale reveal (see .image-reveal in globals.css).
+   * Use "image" sparingly, per the site's own restraint about not
+   * animating every element differently. */
+  variant?: "fade" | "image";
 };
 
-export default function Reveal({ children, className = "", delay = 0, as = "div" }: RevealProps) {
+export default function Reveal({
+  children,
+  className = "",
+  delay = 0,
+  as = "div",
+  variant = "fade",
+}: RevealProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [inView, setInView] = useState(false);
 
@@ -31,11 +43,12 @@ export default function Reveal({ children, className = "", delay = 0, as = "div"
   }, []);
 
   const Tag = as;
+  const base = variant === "image" ? "image-reveal" : "reveal";
 
   return (
     <Tag
       ref={ref as never}
-      className={`reveal ${inView ? "in-view" : ""} ${className}`}
+      className={`${base} ${inView ? "in-view" : ""} ${className}`}
       style={{ animationDelay: inView ? `${delay}ms` : undefined }}
     >
       {children}

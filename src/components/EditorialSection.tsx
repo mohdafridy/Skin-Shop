@@ -11,7 +11,7 @@ const tiles = [
 
 export default function EditorialSection() {
   return (
-    <section className="mx-auto max-w-7xl px-6 py-20 sm:px-8 lg:py-24">
+    <section className="mx-auto max-w-7xl px-6 py-20 sm:px-8 lg:py-32">
       <SectionHeading
         eyebrow="A World, Not Just A Product"
         title="Ritual, Material, Place"
@@ -21,8 +21,9 @@ export default function EditorialSection() {
         {tiles.map((tile, i) => (
           <Reveal
             key={tile.src}
+            variant="image"
             delay={i * 70}
-            className={i === 0 || i === 3 ? "lg:col-span-2" : ""}
+            className={`overflow-hidden rounded-2xl ${i === 0 || i === 3 ? "lg:col-span-2" : ""}`}
           >
             <SmartImage
               src={tile.src}

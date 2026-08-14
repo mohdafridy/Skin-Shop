@@ -49,12 +49,25 @@ export default function SearchOverlay({
     };
   }, [isOpen, onClose]);
 
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 z-[70]" role="dialog" aria-modal="true" aria-label="Search">
-      <div className="absolute inset-0 bg-ink/40" onClick={onClose} />
-      <div className="relative mx-auto mt-24 w-[92%] max-w-2xl rounded-2xl bg-ivory p-6 shadow-2xl sm:p-8">
+    <div
+      className={`fixed inset-0 z-[70] ${isOpen ? "" : "pointer-events-none"}`}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Search"
+      aria-hidden={!isOpen}
+    >
+      <div
+        className={`absolute inset-0 bg-[rgba(30,22,18,0.28)] transition-opacity duration-300 ease-premium ${
+          isOpen ? "opacity-100" : "opacity-0"
+        }`}
+        onClick={onClose}
+      />
+      <div
+        className={`relative mx-auto mt-24 w-[92%] max-w-2xl rounded-2xl bg-ivory p-6 shadow-2xl transition-[opacity,transform] duration-300 ease-premium sm:p-8 ${
+          isOpen ? "translate-y-0 opacity-100" : "-translate-y-2 opacity-0"
+        }`}
+      >
         <div className="flex items-center gap-3 border-b border-gold/25 pb-4">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -78,7 +91,7 @@ export default function SearchOverlay({
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search products, ingredients, rituals…"
-            className="w-full bg-transparent font-display text-xl text-ink placeholder:text-walnut/40 focus:outline-none"
+            className="w-full rounded-md bg-transparent font-display text-xl text-ink placeholder:text-walnut/40 focus:outline-none focus:ring-2 focus:ring-burgundy/40"
           />
           <button
             type="button"

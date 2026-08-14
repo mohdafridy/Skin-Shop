@@ -22,15 +22,17 @@ export default function Header() {
   const { itemCount, subtotal, openCart } = useCart();
   const { count: wishlistCount } = useWishlist();
 
+  // Tracked on every storefront page (not just home) so the header can
+  // compact itself slightly on scroll everywhere — it never hides, cart and
+  // search stay reachable throughout, only its height/background settle.
   useEffect(() => {
-    if (!isHome) return;
     function onScroll() {
       setScrolled(window.scrollY > 40);
     }
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
-  }, [isHome]);
+  }, []);
 
   const [prevPathname, setPrevPathname] = useState(pathname);
   if (pathname !== prevPathname) {
@@ -71,10 +73,12 @@ export default function Header() {
 
   return (
     <header
-      className={`sticky top-0 z-50 h-20 transition-colors duration-300 ${
+      className={`sticky top-0 z-50 transition-[height,background-color,border-color,backdrop-filter] duration-300 ease-premium ${
+        scrolled ? "h-16" : "h-20"
+      } ${
         transparent
           ? "bg-transparent"
-          : "border-b border-gold/20 bg-ivory/95 backdrop-blur-sm"
+          : "border-b border-[rgba(69,48,42,0.08)] bg-[rgba(247,242,233,0.94)] backdrop-blur-[12px]"
       }`}
     >
       <div className={`mx-auto flex h-full max-w-7xl items-center justify-between px-5 sm:px-8 ${textTone}`}>
@@ -87,9 +91,13 @@ export default function Header() {
             <Link
               key={item.label}
               href={item.href}
-              className="font-sans text-[0.9rem] font-medium tracking-wide transition hover:opacity-70"
+              className="group relative py-1 font-sans text-[0.9rem] font-medium tracking-wide"
             >
               {item.label}
+              <span
+                aria-hidden="true"
+                className="absolute inset-x-0 -bottom-0.5 h-px origin-left scale-x-0 bg-gold transition-transform duration-[180ms] ease-premium group-hover:scale-x-100"
+              />
             </Link>
           ))}
         </nav>
@@ -206,13 +214,17 @@ export default function Header() {
       </div>
 
       {menuOpen && (
-        <div className="absolute inset-x-0 top-20 border-b border-gold/20 bg-ivory px-6 py-6 text-ink shadow-lg lg:hidden">
-          <nav className="flex flex-col gap-1" aria-label="Mobile">
+        <div
+          className={`absolute inset-x-0 border-b border-[rgba(69,48,42,0.08)] bg-ivory px-6 py-7 text-ink shadow-lg transition-[top] duration-300 ease-premium lg:hidden ${
+            scrolled ? "top-16" : "top-20"
+          }`}
+        >
+          <nav className="flex flex-col gap-2" aria-label="Mobile">
             {mainNav.map((item) => (
               <Link
                 key={item.label}
                 href={item.href}
-                className="rounded-lg px-2 py-3 font-display text-xl transition hover:bg-sand"
+                className="rounded-lg px-2 py-3.5 font-display text-xl transition hover:bg-sand"
               >
                 {item.label}
               </Link>

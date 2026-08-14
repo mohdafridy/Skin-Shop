@@ -105,16 +105,18 @@ export default function ProductInfo({ product }: { product: Product }) {
           <button
             type="button"
             onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-            className="flex h-12 w-12 items-center justify-center text-lg text-ink transition hover:text-burgundy"
+            className="flex h-12 w-12 items-center justify-center text-lg text-ink transition-colors duration-150 ease-premium hover:text-burgundy active:scale-90"
             aria-label="Decrease quantity"
           >
             &minus;
           </button>
-          <span className="w-8 text-center text-sm font-medium">{quantity}</span>
+          <span key={quantity} className="qty-pulse w-8 text-center text-sm font-medium">
+            {quantity}
+          </span>
           <button
             type="button"
             onClick={() => setQuantity((q) => q + 1)}
-            className="flex h-12 w-12 items-center justify-center text-lg text-ink transition hover:text-burgundy"
+            className="flex h-12 w-12 items-center justify-center text-lg text-ink transition-colors duration-150 ease-premium hover:text-burgundy active:scale-90"
             aria-label="Increase quantity"
           >
             +
@@ -124,7 +126,7 @@ export default function ProductInfo({ product }: { product: Product }) {
         <button
           type="button"
           onClick={handleAdd}
-          className="flex-1 rounded-full bg-burgundy px-8 py-3.5 text-sm font-medium text-ivory transition hover:bg-burgundy-dark sm:flex-none"
+          className="flex-1 rounded-full bg-burgundy px-8 py-3.5 text-sm font-medium text-ivory transition-[background-color,transform] duration-[200ms] ease-premium hover:bg-burgundy-dark active:scale-[0.98] sm:flex-none"
         >
           {added ? "Added ✓" : "Add to Bag"}
         </button>

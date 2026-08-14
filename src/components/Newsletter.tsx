@@ -40,7 +40,7 @@ export default function Newsletter() {
               type="email"
               required
               placeholder="Your email address"
-              className="w-full flex-1 rounded-full border border-gold/30 bg-ivory px-5 py-3 text-sm text-ink placeholder:text-walnut/40 focus:outline-none"
+              className="w-full flex-1 rounded-full border border-gold/30 bg-ivory px-5 py-3 text-sm text-ink placeholder:text-walnut/40 focus:outline-none focus:ring-2 focus:ring-burgundy/50"
             />
             <button
               type="submit"

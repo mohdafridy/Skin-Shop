@@ -512,7 +512,7 @@ export default function CheckoutClient({ isPaymentConfigured }: { isPaymentConfi
                       setCouponError(null);
                     }}
                     placeholder="Coupon code"
-                    className="w-full min-w-0 rounded-full border border-gold/30 bg-white/60 px-4 py-2.5 text-sm text-ink placeholder:text-walnut/40 focus:outline-none"
+                    className="w-full min-w-0 rounded-full border border-gold/30 bg-white/60 px-4 py-2.5 text-sm text-ink placeholder:text-walnut/40 focus:outline-none focus:ring-2 focus:ring-burgundy/50"
                   />
                   <button
                     type="button"

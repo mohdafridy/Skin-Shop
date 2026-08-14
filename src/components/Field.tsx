@@ -41,7 +41,7 @@ export default function Field({
         autoComplete={autoComplete}
         aria-invalid={Boolean(error)}
         aria-describedby={error ? `${id}-error` : undefined}
-        className={`w-full rounded-xl border bg-white px-4 py-2.5 text-ink outline-none transition focus:border-burgundy ${
+        className={`w-full rounded-xl border bg-white px-4 py-2.5 text-ink outline-none transition focus:border-burgundy focus:ring-2 focus:ring-burgundy/50 ${
           error ? "border-burgundy" : "border-gold/30"
         }`}
       />

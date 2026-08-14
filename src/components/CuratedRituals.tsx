@@ -5,7 +5,7 @@ import Reveal from "./Reveal";
 
 export default function CuratedRituals() {
   return (
-    <section className="bg-walnut py-20 lg:py-24">
+    <section className="bg-walnut py-20 lg:py-32">
       <div className="mx-auto max-w-7xl px-6 sm:px-8">
         <SectionHeading
           eyebrow="Together"

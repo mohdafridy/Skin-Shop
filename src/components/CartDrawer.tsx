@@ -82,7 +82,7 @@ export default function CartDrawer() {
       aria-hidden={!isOpen}
     >
       <div
-        className={`absolute inset-0 bg-ink/40 transition-opacity duration-300 ${
+        className={`absolute inset-0 bg-[rgba(30,22,18,0.28)] transition-opacity duration-300 ease-premium ${
           isOpen ? "opacity-100" : "opacity-0"
         }`}
         onClick={closeCart}
@@ -91,7 +91,7 @@ export default function CartDrawer() {
         role="dialog"
         aria-modal="true"
         aria-label="Shopping bag"
-        className={`absolute right-0 top-0 flex h-full w-full max-w-md flex-col bg-ivory shadow-2xl transition-transform duration-300 ease-out ${
+        className={`absolute right-0 top-0 flex h-full w-full max-w-md flex-col bg-ivory shadow-2xl transition-transform duration-300 ease-premium ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
@@ -153,22 +153,24 @@ export default function CartDrawer() {
                         <button
                           type="button"
                           onClick={() => updateQuantity(item.key, item.quantity - 1)}
-                          className="flex h-8 w-8 items-center justify-center text-ink transition hover:text-burgundy"
+                          className="flex h-8 w-8 items-center justify-center text-ink transition-colors duration-150 ease-premium hover:text-burgundy active:scale-90"
                           aria-label={`Decrease quantity of ${item.name}`}
                         >
                           &minus;
                         </button>
-                        <span className="w-5 text-center text-sm">{item.quantity}</span>
+                        <span key={item.quantity} className="qty-pulse w-5 text-center text-sm">
+                          {item.quantity}
+                        </span>
                         <button
                           type="button"
                           onClick={() => updateQuantity(item.key, item.quantity + 1)}
-                          className="flex h-8 w-8 items-center justify-center text-ink transition hover:text-burgundy"
+                          className="flex h-8 w-8 items-center justify-center text-ink transition-colors duration-150 ease-premium hover:text-burgundy active:scale-90"
                           aria-label={`Increase quantity of ${item.name}`}
                         >
                           +
                         </button>
                       </div>
-                      <span className="text-sm font-medium text-ink">
+                      <span key={item.quantity} className="qty-pulse text-sm font-medium text-ink">
                         {formatPrice(item.price * item.quantity, item.currency)}
                       </span>
                     </div>
@@ -277,7 +279,7 @@ export default function CartDrawer() {
                       setCouponError(null);
                     }}
                     placeholder="Coupon code"
-                    className="w-full min-w-0 rounded-full border border-gold/30 bg-white/60 px-4 py-2 text-sm text-ink placeholder:text-walnut/40 focus:outline-none"
+                    className="w-full min-w-0 rounded-full border border-gold/30 bg-white/60 px-4 py-2 text-sm text-ink placeholder:text-walnut/40 focus:outline-none focus:ring-2 focus:ring-burgundy/50"
                   />
                   <button
                     type="submit"
