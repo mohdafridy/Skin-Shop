@@ -48,7 +48,7 @@ export default function ProductCard({ product }: { product: Product }) {
       <div className="flex flex-1 flex-col px-5 pb-5 pt-4 sm:px-6">
         <p className="text-[11px] uppercase tracking-[0.14em] text-walnut/55">{product.category}</p>
         <Link href={`/products/${product.slug}`} className="mt-2">
-          <h3 className="text-balance font-display text-xl leading-[1.35] text-ink transition-colors duration-300 ease-premium group-hover:text-burgundy">
+          <h3 className="text-balance font-display text-xl font-semibold leading-[1.2] tracking-tight text-ink transition-colors duration-300 ease-premium group-hover:text-burgundy">
             {product.shortName ?? product.name}
           </h3>
         </Link>

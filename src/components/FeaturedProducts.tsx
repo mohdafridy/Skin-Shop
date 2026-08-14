@@ -30,7 +30,7 @@ function BestsellerCard({ product }: { product: Product }) {
         />
       </Link>
       <Link href={`/products/${product.slug}`} className="mt-4">
-        <h3 className="text-balance font-display text-base leading-snug text-ink transition-colors duration-[200ms] ease-premium group-hover:text-burgundy">
+        <h3 className="text-balance font-display text-base font-semibold leading-[1.2] tracking-tight text-ink transition-colors duration-[200ms] ease-premium group-hover:text-burgundy">
           {product.shortName ?? product.name}
         </h3>
       </Link>

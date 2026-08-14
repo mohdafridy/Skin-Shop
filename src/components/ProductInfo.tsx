@@ -50,7 +50,7 @@ export default function ProductInfo({ product }: { product: Product }) {
   return (
     <div>
       <p className="text-xs uppercase tracking-wide text-walnut/70">{product.category}</p>
-      <h1 className="mt-2 text-balance font-display text-3xl leading-tight text-ink sm:text-4xl">
+      <h1 className="mt-2 text-balance font-display text-3xl font-semibold leading-[1.2] tracking-tight text-ink sm:text-4xl">
         {product.name}
       </h1>
 

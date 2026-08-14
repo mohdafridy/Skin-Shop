@@ -68,6 +68,15 @@ h4,
   text-wrap: balance;
 }
 
+/* Layered (not global) so a `font-semibold` utility on an individual
+   heading — product names, ritual names — can still win over this
+   default, per Tailwind's base < utilities layer order. */
+@layer base {
+  .font-display {
+    font-weight: 500;
+  }
+}
+
 p {
   text-wrap: pretty;
 }

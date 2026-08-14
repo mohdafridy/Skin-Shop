@@ -35,7 +35,7 @@ export default function ComboCard({ combo }: { combo: Combo }) {
       </Link>
       <div className="flex flex-1 flex-col p-6">
         <Link href={`/rituals#${combo.slug}`}>
-          <h3 className="text-balance font-display text-2xl text-ink transition-colors duration-[200ms] ease-premium group-hover:text-burgundy">
+          <h3 className="text-balance font-display text-2xl font-semibold leading-[1.2] tracking-tight text-ink transition-colors duration-[200ms] ease-premium group-hover:text-burgundy">
             {combo.name}
           </h3>
         </Link>

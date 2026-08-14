@@ -38,7 +38,7 @@ export default function ComboDetail({ combo }: { combo: Combo }) {
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-burgundy">
           {combo.mood}
         </p>
-        <h3 className="mt-3 text-balance font-display text-3xl text-ink">{combo.name}</h3>
+        <h3 className="mt-3 text-balance font-display text-3xl font-semibold leading-[1.2] tracking-tight text-ink">{combo.name}</h3>
         <p className="mt-3 text-balance leading-relaxed text-walnut/80">{combo.description}</p>
 
         <div className="mt-5 flex flex-wrap items-baseline gap-x-3 gap-y-1">
