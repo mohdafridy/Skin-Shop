@@ -78,6 +78,7 @@ export const ingredientStories: IngredientStory[] = [
     story:
       "Known for its gentle character, jojoba is formulated with a lighter touch for the smallest members of the family, in a soap designed for children's daily wash routines.",
     relatedProductSlugs: ["jojoba-kids-soap"],
+    image: "/images/ingredients/jojoba.jpg",
   },
   {
     id: "shea",
@@ -85,6 +86,7 @@ export const ingredientStories: IngredientStory[] = [
     story:
       "Reached for again and again, shea is the quiet workhorse of body and lip care tradition — the foundation of a lip balm designed to travel everywhere with you.",
     relatedProductSlugs: ["shea-lip-balm"],
+    image: "/images/ingredients/shea.jpg",
   },
   {
     id: "vitamin-c",
@@ -92,6 +94,7 @@ export const ingredientStories: IngredientStory[] = [
     story:
       "A familiar name in contemporary skincare, Vitamin C is formulated here into a lightweight serum designed to sit at the start of a brightening morning routine.",
     relatedProductSlugs: ["vitamin-c-serum"],
+    image: "/images/ingredients/vitamin-c.jpg",
   },
   {
     id: "solar-infusion",
