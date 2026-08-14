@@ -102,5 +102,6 @@ export const ingredientStories: IngredientStory[] = [
     story:
       "Some herbal formulations are prepared using a traditional solar-infusion process: jars set outdoors in sunlight through the day and brought back in each evening, repeated for around 40 days — a slow, hands-on part of how the collection is made.",
     relatedProductSlugs: [],
+    image: "/images/ingredients/solar-infusion.jpg",
   },
 ];
