@@ -30,6 +30,7 @@ export const ingredientStories: IngredientStory[] = [
       "husn-e-yusuf-whitening-soap-cleanser",
       "husn-e-yusuf-exfoliator",
     ],
+    image: "/images/ingredients/rose.jpg",
   },
   {
     id: "hibiscus",
@@ -45,6 +46,7 @@ export const ingredientStories: IngredientStory[] = [
     story:
       "A herb long kept in kitchen gardens and passed down through hair care tradition, rosemary finds a modern format in our hair serum — worked through the scalp and lengths as part of a weekly ritual.",
     relatedProductSlugs: ["rosemary-hair-serum"],
+    image: "/images/ingredients/rosemary.jpg",
   },
   {
     id: "moringa",
@@ -52,6 +54,7 @@ export const ingredientStories: IngredientStory[] = [
     story:
       "Valued across generations for its fresh, green character, moringa lends the Moringa Cleanser its distinctive botanical note — a bright start to the daily routine.",
     relatedProductSlugs: ["moringa-whitening-soap-cleanser"],
+    image: "/images/ingredients/moringa.jpg",
   },
   {
     id: "argan",
@@ -59,6 +62,7 @@ export const ingredientStories: IngredientStory[] = [
     story:
       "Long prized in body care tradition for its rich, warming texture, argan is the foundation of our body cream — a generous formula built for daily use.",
     relatedProductSlugs: ["argan-body-whitening-cream"],
+    image: "/images/ingredients/argan.jpg",
   },
   {
     id: "coffee",
@@ -66,6 +70,7 @@ export const ingredientStories: IngredientStory[] = [
     story:
       "Coffee's deep, earthy character has a history beyond the cup, gathered here into a weekly mask ritual — a short, grounding pause in a busy week.",
     relatedProductSlugs: ["coffee-detox-facemask"],
+    image: "/images/ingredients/coffee.jpg",
   },
   {
     id: "jojoba",
