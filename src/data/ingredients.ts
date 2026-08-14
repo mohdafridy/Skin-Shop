@@ -5,6 +5,10 @@ export type IngredientStory = {
   name: string;
   story: string;
   relatedProductSlugs: string[];
+  /** Dedicated raw-material photo, for ingredients with no linked product
+   * to borrow an image from. Optional — falls back to the first related
+   * product's image, then to the BotanicalMark placeholder. */
+  image?: string;
 };
 
 export const ingredientStories: IngredientStory[] = [
@@ -32,6 +36,7 @@ export const ingredientStories: IngredientStory[] = [
     story:
       "Sun-dried hibiscus flowers are prepared alongside rose and saffron as part of The Skin Shop's botanical raw materials — a bloom with its own long-standing place in skin and hair care tradition.",
     relatedProductSlugs: [],
+    image: "/images/ingredients/hibiscus.jpg",
   },
   {
     id: "rosemary",

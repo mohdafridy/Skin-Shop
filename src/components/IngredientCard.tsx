@@ -11,12 +11,13 @@ export default function IngredientCard({ ingredient }: { ingredient: IngredientS
   const primaryProduct = ingredient.relatedProductSlugs[0]
     ? getProductBySlug(ingredient.relatedProductSlugs[0])
     : undefined;
+  const imageSrc = ingredient.image ?? primaryProduct?.image;
 
   return (
     <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-gold/20 bg-white/40">
-      {primaryProduct ? (
+      {imageSrc ? (
         <SmartImage
-          src={primaryProduct.image}
+          src={imageSrc}
           alt={ingredient.name}
           label={ingredient.name}
           className="aspect-[4/3]"

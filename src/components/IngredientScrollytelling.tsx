@@ -47,6 +47,7 @@ export default function IngredientScrollytelling() {
             const product = ingredient.relatedProductSlugs[0]
               ? getProductBySlug(ingredient.relatedProductSlugs[0])
               : undefined;
+            const imageSrc = ingredient.image ?? product?.image;
             const isActive = activeId === ingredient.id;
 
             return (
@@ -57,9 +58,9 @@ export default function IngredientScrollytelling() {
                   isActive ? "opacity-100" : "opacity-0"
                 }`}
               >
-                {product ? (
+                {imageSrc ? (
                   <SmartImage
-                    src={product.image}
+                    src={imageSrc}
                     alt={ingredient.name}
                     label={ingredient.name}
                     className="h-full w-full"
