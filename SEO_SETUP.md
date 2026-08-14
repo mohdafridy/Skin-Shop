@@ -76,11 +76,9 @@ public storefront; disallows `/admin`, `/account`, `/checkout`,
 ## 7. Structured data implementation
 
 - `Organization` + `WebSite` — sitewide, in `src/app/layout.tsx`. Uses the
-  real business email/phone from `src/data/contact.ts`, founding year, and
-  `sameAs: [instagramUrl]` (real Instagram profile). **No `logo` field** —
-  the brand logo is still a placeholder (see README's "Still placeholder"
-  table), so nothing exists to reference honestly yet. Add it to
-  `organizationJsonLd()` in `src/lib/seo.ts` once it's real.
+  real business email/phone from `src/data/contact.ts`, founding year,
+  `logo` (the real brand mark), and `sameAs: [instagramUrl]` (real
+  Instagram profile).
 - `Product` + `BreadcrumbList` — every `/products/[slug]` page.
 - No `aggregateRating`/`review` anywhere — there's no real review data in
   the app, and the instructions were explicit not to fabricate any.
@@ -102,8 +100,6 @@ No value is set by default; nothing was invented.
   canonical URL, OG/Twitter URL, sitemap entry and JSON-LD `url` is derived
   from this.
 - `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` — see above, optional.
-- A real logo file at `public/images/brand/logo.svg` (see README) — once it
-  exists, add it to `organizationJsonLd()`.
 
 ## 10. Verifying after deployment
 

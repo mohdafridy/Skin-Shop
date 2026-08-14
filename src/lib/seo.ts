@@ -39,6 +39,7 @@ export function organizationJsonLd() {
     "@type": "Organization",
     name: SITE_NAME,
     url: SITE_URL,
+    logo: absoluteUrl("/images/brand/logo.png"),
     email: contactEmail,
     telephone: contactPhoneDisplay,
     foundingDate: String(foundedYear),

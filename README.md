@@ -193,12 +193,15 @@ Any image slot without a real file renders a deliberate botanical placeholder
 image or an invented photo — drop a real file in at the expected path and it
 appears with no code changes.
 
+The real logo (`public/images/brand/logo.png`, also used for `logo-dark.png`,
+`src/app/icon.png` and `src/app/apple-icon.png`) is supplied — it's a
+self-contained circular badge, so one file works over both light and dark
+backgrounds.
+
 **Still placeholder:**
 
 | What | Path |
 | --- | --- |
-| Logo (on ivory/light backgrounds) | `public/images/brand/logo.svg` |
-| Logo (on dark/transparent header) | `public/images/brand/logo-dark.svg` |
 | Additional product angles | `public/images/products/<slug>-2.jpg`, `-3.jpg` |
 | Our Story editorial photo | `public/images/kashmir/story-editorial.jpg` |
 
