@@ -18,6 +18,7 @@ export const ingredientStories: IngredientStory[] = [
     story:
       "Grown in the fields of Kashmir and gathered by hand, saffron is one of the region's most treasured blooms — prized for generations in beauty ritual for its warmth, colour and scent. In the Saffron Gel, it becomes a golden, everyday indulgence.",
     relatedProductSlugs: ["saffron-gel"],
+    image: "/images/ingredients/saffron.jpg",
   },
   {
     id: "rose",
