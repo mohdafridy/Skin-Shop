@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { siteUrl, storeName } from "@/lib/notifications/templates";
 import { brandLine, foundedYear } from "@/data/navigation";
-import { contactEmail, contactPhoneDisplay } from "@/data/contact";
+import { contactEmail, contactPhoneDisplay, instagramUrl } from "@/data/contact";
 
 /**
  * Central, non-visual SEO configuration. Reuses siteUrl()/storeName from
@@ -42,6 +42,7 @@ export function organizationJsonLd() {
     email: contactEmail,
     telephone: contactPhoneDisplay,
     foundingDate: String(foundedYear),
+    sameAs: [instagramUrl],
   };
 }
 

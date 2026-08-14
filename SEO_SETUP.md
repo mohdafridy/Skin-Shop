@@ -76,11 +76,11 @@ public storefront; disallows `/admin`, `/account`, `/checkout`,
 ## 7. Structured data implementation
 
 - `Organization` + `WebSite` — sitewide, in `src/app/layout.tsx`. Uses the
-  real business email/phone from `src/data/contact.ts`. **No `logo` or
-  `sameAs` (social profile) fields** — the brand logo is still a placeholder
-  (see README's "Still placeholder" table) and the footer's Instagram link
-  is a `#` placeholder, so neither exists to reference honestly yet. Add
-  both to `organizationJsonLd()` in `src/lib/seo.ts` once they're real.
+  real business email/phone from `src/data/contact.ts`, founding year, and
+  `sameAs: [instagramUrl]` (real Instagram profile). **No `logo` field** —
+  the brand logo is still a placeholder (see README's "Still placeholder"
+  table), so nothing exists to reference honestly yet. Add it to
+  `organizationJsonLd()` in `src/lib/seo.ts` once it's real.
 - `Product` + `BreadcrumbList` — every `/products/[slug]` page.
 - No `aggregateRating`/`review` anywhere — there's no real review data in
   the app, and the instructions were explicit not to fabricate any.
@@ -104,8 +104,6 @@ No value is set by default; nothing was invented.
 - `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` — see above, optional.
 - A real logo file at `public/images/brand/logo.svg` (see README) — once it
   exists, add it to `organizationJsonLd()`.
-- A real Instagram/social URL in `src/data/navigation.ts`'s footer
-  columns — once it exists, add it to `organizationJsonLd()`'s `sameAs`.
 
 ## 10. Verifying after deployment
 

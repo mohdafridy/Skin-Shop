@@ -12,3 +12,7 @@ export function whatsappLink(message?: string): string {
   const base = `https://wa.me/${whatsappNumber}`;
   return message ? `${base}?text=${encodeURIComponent(message)}` : base;
 }
+
+// As supplied by the business.
+export const instagramHandle = "@skinshopofficial";
+export const instagramUrl = "https://www.instagram.com/skinshopofficial";

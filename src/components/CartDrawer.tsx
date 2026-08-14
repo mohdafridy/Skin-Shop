@@ -6,10 +6,10 @@ import { useCart } from "@/lib/cart-context";
 import { formatPrice } from "@/lib/format";
 import { getCartSuggestion, getComboPricing } from "@/data/combos";
 import { getProductBySlug } from "@/data/products";
-import { whatsappLink } from "@/data/contact";
+import { whatsappLink, instagramUrl } from "@/data/contact";
 import { buildWhatsAppOrderMessage } from "@/lib/whatsapp-order";
 import { track } from "@/lib/analytics";
-import { WhatsAppIcon } from "./icons";
+import { WhatsAppIcon, InstagramIcon } from "./icons";
 import SmartImage from "./SmartImage";
 
 export default function CartDrawer() {
@@ -330,6 +330,16 @@ export default function CartDrawer() {
               >
                 <WhatsAppIcon className="h-4 w-4" />
                 Order via WhatsApp
+              </a>
+              <a
+                href={instagramUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => track({ name: "instagram_click", source: "cart_order" })}
+                className="mt-2.5 flex w-full items-center justify-center gap-2 rounded-full border border-gold/30 px-6 py-3 text-center text-sm font-medium text-ink transition hover:border-burgundy hover:text-burgundy"
+              >
+                <InstagramIcon className="h-4 w-4" />
+                Order via Instagram
               </a>
               <button
                 type="button"

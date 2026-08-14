@@ -15,6 +15,24 @@ export function WhatsAppIcon({ className = "h-5 w-5" }: { className?: string }) 
   );
 }
 
+export function InstagramIcon({ className = "h-5 w-5" }: { className?: string }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      className={`flex-shrink-0 ${className}`}
+      aria-hidden="true"
+    >
+      <rect x="2.5" y="2.5" width="19" height="19" rx="5" />
+      <circle cx="12" cy="12" r="4.3" />
+      <circle cx="17.3" cy="6.7" r="0.6" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
 export function HeartIcon({
   filled = false,
   className = "h-5 w-5",

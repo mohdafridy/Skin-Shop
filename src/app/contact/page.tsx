@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import ContactForm from "./ContactForm";
-import { contactEmail, contactPhoneDisplay, whatsappLink } from "@/data/contact";
-import { WhatsAppIcon } from "@/components/icons";
+import { contactEmail, contactPhoneDisplay, whatsappLink, instagramHandle, instagramUrl } from "@/data/contact";
+import { WhatsAppIcon, InstagramIcon } from "@/components/icons";
 import { canonical } from "@/lib/seo";
 
 export const metadata: Metadata = {
@@ -39,6 +39,15 @@ export default function ContactPage() {
         >
           <WhatsAppIcon className="h-4 w-4" />
           {contactPhoneDisplay}
+        </a>
+        <a
+          href={instagramUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 text-sm font-medium text-ink transition hover:text-burgundy"
+        >
+          <InstagramIcon className="h-4 w-4" />
+          {instagramHandle}
         </a>
       </div>
 

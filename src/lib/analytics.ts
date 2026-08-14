@@ -20,6 +20,7 @@ export type AnalyticsEvent =
   | { name: "add_payment_info" }
   | { name: "purchase"; orderNumber: string; total: number; currency: string }
   | { name: "whatsapp_click"; source: "floating" | "footer" | "contact" | "cart_order" }
+  | { name: "instagram_click"; source: "footer" | "contact" | "cart_order" }
   | { name: "wishlist_add"; slug: string }
   | { name: "wishlist_remove"; slug: string };
 

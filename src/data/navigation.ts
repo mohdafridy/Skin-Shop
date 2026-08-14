@@ -42,7 +42,7 @@ export const footerColumns: { title: string; links: NavLink[] }[] = [
   },
   {
     title: "Follow",
-    links: [{ label: "Instagram", href: "#" }],
+    links: [{ label: "Instagram", href: "https://www.instagram.com/skinshopofficial" }],
   },
 ];
 
