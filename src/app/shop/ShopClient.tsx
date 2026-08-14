@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { products, collections, categories, type Product } from "@/data/products";
+import { products, collections, type Product } from "@/data/products";
 import type { RitualTag } from "@/data/products";
 import ProductGrid from "@/components/ProductGrid";
 
@@ -16,7 +16,13 @@ const sortLabels: Record<SortOption, string> = {
   "price-desc": "Price: High to Low",
 };
 
-const filterChips = [...collections, ...categories];
+// Collections only. Per-product `category` values are mostly 1 product
+// each (e.g. only "Face Cleanser" has 2) — listing all of them as separate
+// chips alongside collections just duplicated the same handful of Skin
+// products across many near-identical single-item filters. `category`
+// still filters correctly via a direct link/query param and still shows on
+// each product card; it's just not a top-level chip anymore.
+const filterChips = [...collections];
 
 function sortProducts(list: Product[], sort: SortOption): Product[] {
   const copy = [...list];
