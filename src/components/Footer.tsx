@@ -70,8 +70,12 @@ export default function Footer() {
             </div>
           ))}
         </div>
+      </div>
 
-        <div className="mt-14 flex flex-col items-start gap-3 border-t border-sand/15 pt-6 text-xs text-sand/60 sm:flex-row sm:items-center sm:justify-between">
+      <div className="pashmina-footer-border" aria-hidden="true" />
+
+      <div className="border-t border-sand/15 bg-walnut">
+        <div className="mx-auto flex max-w-7xl flex-col items-start gap-3 px-6 py-6 text-xs text-sand/60 sm:flex-row sm:items-center sm:justify-between sm:px-8">
           <p className="font-display text-sm text-sand/80">{brandLine}</p>
           <p>&copy; {new Date().getFullYear()} The Skin Shop. All rights reserved.</p>
         </div>

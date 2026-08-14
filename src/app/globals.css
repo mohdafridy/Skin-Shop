@@ -112,3 +112,25 @@ p {
     animation: none;
   }
 }
+
+/* Decorative Kashmiri pashmina border used only in the storefront footer. */
+.pashmina-footer-border {
+  position: relative;
+  width: 100%;
+  height: clamp(120px, 18vw, 230px);
+  overflow: hidden;
+  background-image:
+    linear-gradient(to bottom, rgba(69, 48, 42, 0.08), transparent 18%),
+    url("/images/pashmina-footer-border.webp");
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  border-top: 1px solid rgba(184, 139, 75, 0.35);
+  border-bottom: 1px solid rgba(184, 139, 75, 0.28);
+}
+
+@media (max-width: 640px) {
+  .pashmina-footer-border {
+    height: 112px;
+  }
+}
