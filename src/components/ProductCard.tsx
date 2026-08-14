@@ -16,7 +16,7 @@ export default function ProductCard({ product }: { product: Product }) {
   const wishlisted = isWishlisted(product.slug);
 
   return (
-    <div className="group relative flex flex-col rounded-2xl transition-[transform,box-shadow] duration-[280ms] ease-premium hover:-translate-y-1 hover:shadow-[0_16px_45px_rgba(42,32,28,0.08)]">
+    <div className="group relative flex flex-col rounded-2xl transition-[transform,box-shadow] duration-[350ms] ease-premium hover:-translate-y-1 hover:shadow-[0_18px_50px_rgba(69,48,42,0.08)]">
       <Link
         href={`/products/${product.slug}`}
         className="block overflow-hidden rounded-2xl"
@@ -45,34 +45,40 @@ export default function ProductCard({ product }: { product: Product }) {
         />
       </button>
 
-      <div className="mt-4 flex flex-1 flex-col pb-4">
-        <p className="text-xs uppercase tracking-wide text-walnut/70">{product.category}</p>
-        <Link href={`/products/${product.slug}`} className="mt-1">
-          <h3 className="text-balance font-display text-lg leading-snug text-ink transition group-hover:text-burgundy">
+      <div className="flex flex-1 flex-col px-5 pb-5 pt-4 sm:px-6">
+        <p className="text-[11px] uppercase tracking-[0.14em] text-walnut/55">{product.category}</p>
+        <Link href={`/products/${product.slug}`} className="mt-2">
+          <h3 className="text-balance font-display text-xl leading-[1.35] text-ink transition-colors duration-300 ease-premium group-hover:text-burgundy">
             {product.shortName ?? product.name}
           </h3>
         </Link>
 
-        <p className="mt-1 text-sm font-medium text-ink">
+        <p className="mt-2 text-sm tracking-wide text-walnut/80">
           {formatPrice(product.price, product.currency)}
         </p>
 
-        <div className="mt-3 flex items-center gap-3">
+        <div className="mt-5 flex flex-col">
           <button
             type="button"
             onClick={() => {
               addItem(product);
               triggerAdded();
             }}
-            className="rounded-full border border-burgundy px-4 py-2 text-xs font-medium text-burgundy transition-[background-color,color,transform] duration-[200ms] ease-premium hover:bg-burgundy hover:text-ivory active:scale-95"
+            className="w-full rounded-md border border-burgundy px-4 py-3 text-[11px] font-medium uppercase tracking-[0.14em] text-burgundy transition-[background-color,color,transform] duration-300 ease-premium hover:bg-burgundy hover:text-ivory active:scale-[0.98]"
           >
             {added ? "Added ✓" : "Quick Add"}
           </button>
           <Link
             href={`/products/${product.slug}`}
-            className="text-xs font-medium text-walnut/70 underline-offset-2 transition-colors duration-[200ms] ease-premium hover:text-burgundy hover:underline"
+            className="group/view mt-3 inline-flex items-center justify-center gap-1.5 text-[11px] uppercase tracking-wide text-walnut/50 transition-colors duration-300 ease-premium hover:text-burgundy"
           >
             View Product
+            <span
+              aria-hidden="true"
+              className="transition-transform duration-[180ms] ease-premium group-hover/view:translate-x-1"
+            >
+              →
+            </span>
           </Link>
         </div>
       </div>
