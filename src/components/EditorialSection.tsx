@@ -6,7 +6,7 @@ const tiles = [
   { src: "/images/kashmir/saffron-fields.jpg", label: "Saffron harvest, Kashmir" },
   { src: "/images/kashmir/rose-garden.jpg", label: "Rose garden" },
   { src: "/images/kashmir/textile-craft.jpg", label: "Traditional textile and craft detail" },
-  { src: "/images/kashmir/brass-textile.jpg", label: "Brass and textile detail" },
+  { src: "/images/kashmir/brass-textile.jpg", label: "Hand-blending botanical oils, Kashmir" },
 ];
 
 export default function EditorialSection() {
