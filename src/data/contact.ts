@@ -1,5 +1,5 @@
 // As supplied by the business.
-export const contactEmail = "skinshopofficial@gmail.com";
+export const contactEmail = "theskinshopofficial@gmail.com";
 
 // Display format for the phone number shown in UI copy.
 export const contactPhoneDisplay = "+91 70069 20093";

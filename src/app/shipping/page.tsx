@@ -12,11 +12,15 @@ export default function ShippingPage() {
   return (
     <PolicyPage
       title="Shipping"
-      intro="We aim to prepare and dispatch every order with care. Shipping methods, costs and estimated delivery windows are shown at checkout before you complete your order, based on your location."
+      intro="We aim to prepare and dispatch every order with care. Shipping costs are calculated automatically at checkout based on your delivery city and what's in your order."
       sections={[
         {
-          heading: "Processing time",
-          body: "Orders are generally processed within a few business days. You'll receive a confirmation once your order has shipped.",
+          heading: "Shipping charges",
+          body: "₹50 for delivery within Srinagar. ₹120 for delivery to other states. Shipping is free on all combo orders, everywhere in India.",
+        },
+        {
+          heading: "Delivery time",
+          body: "Orders are usually delivered within 5–6 working days of dispatch.",
         },
         {
           heading: "Tracking",

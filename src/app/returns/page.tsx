@@ -12,15 +12,15 @@ export default function ReturnsPage() {
   return (
     <PolicyPage
       title="Returns"
-      intro="If something isn't right with your order, we want to help make it right. Full return and exchange terms will be confirmed at checkout and in your order confirmation."
+      intro="For genuine cases — damaged, leaking, incorrect or missing items — we replace the product. We do not offer refunds."
       sections={[
         {
-          heading: "Damaged or incorrect items",
-          body: "If your order arrives damaged or you've received the wrong item, contact us as soon as possible with your order details.",
+          heading: "Damaged, leaking, incorrect or missing items",
+          body: "Contact us with your order number and photos of the item (and packaging, if damaged) as soon as possible, and we'll arrange a replacement.",
         },
         {
-          heading: "How to start a return",
-          body: "Reach out through our Contact page with your order number and we'll guide you through the next steps.",
+          heading: "How to start a replacement",
+          body: "Reach out through our Contact page or WhatsApp with your order number and photos, and we'll guide you through the next steps.",
         },
       ]}
     />

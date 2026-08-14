@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { siteUrl, storeName } from "@/lib/notifications/templates";
-import { brandLine } from "@/data/navigation";
+import { brandLine, foundedYear } from "@/data/navigation";
 import { contactEmail, contactPhoneDisplay } from "@/data/contact";
 
 /**
@@ -41,6 +41,7 @@ export function organizationJsonLd() {
     url: SITE_URL,
     email: contactEmail,
     telephone: contactPhoneDisplay,
+    foundingDate: String(foundedYear),
   };
 }
 

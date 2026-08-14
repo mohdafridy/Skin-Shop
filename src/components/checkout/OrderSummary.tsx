@@ -1,5 +1,6 @@
 import { formatPrice } from "@/lib/format";
 import { taxConfigured, calculateTax } from "@/data/tax";
+import { shippingConfigured } from "@/data/shipping";
 import SmartImage from "@/components/SmartImage";
 
 export type OrderLine = {
@@ -17,14 +18,19 @@ export default function OrderSummary({
   subtotal,
   discount,
   currency,
+  /** Null until enough of the shipping address is known to price it (e.g.
+   * city not entered yet). */
+  shippingCost,
 }: {
   lines: OrderLine[];
   subtotal: number;
   discount: number;
   currency: string;
+  shippingCost: number | null;
 }) {
   const tax = calculateTax(subtotal - discount);
-  const total = subtotal - discount + (tax ?? 0);
+  const knownShipping = shippingConfigured && shippingCost !== null;
+  const total = subtotal - discount + (tax ?? 0) + (knownShipping ? shippingCost : 0);
 
   return (
     <div className="rounded-3xl border border-gold/20 bg-white/50 p-6">
@@ -71,7 +77,13 @@ export default function OrderSummary({
         )}
         <div className="flex items-center justify-between">
           <span className="text-walnut/70">Shipping</span>
-          <span className="text-walnut/70">Calculated at checkout</span>
+          <span className={knownShipping && shippingCost === 0 ? "text-olive" : "text-walnut/70"}>
+            {!knownShipping
+              ? "Calculated at checkout"
+              : shippingCost === 0
+                ? "Free"
+                : formatPrice(shippingCost, currency)}
+          </span>
         </div>
         {taxConfigured && (
           <div className="flex items-center justify-between">
@@ -80,7 +92,7 @@ export default function OrderSummary({
           </div>
         )}
         <div className="flex items-center justify-between border-t border-gold/20 pt-2 text-base font-medium text-ink">
-          <span>Total (before shipping)</span>
+          <span>{knownShipping ? "Total" : "Total (before shipping)"}</span>
           <span>{formatPrice(total, currency)}</span>
         </div>
       </div>

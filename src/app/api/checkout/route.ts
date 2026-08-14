@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { createRazorpayOrder, razorpayPublicKeyId } from "@/lib/razorpay";
 import { toMinorUnits } from "@/lib/format";
 import { calculateDiscount, checkoutSchema, couponIsUsable, createOrderNumber } from "@/lib/backend";
+import { calculateShippingCost } from "@/data/shipping";
 import { getCurrentUser } from "@/lib/auth";
 import { createAccessToken, recordOrderEvent } from "@/lib/orders/events";
 import {
@@ -162,10 +163,14 @@ export async function POST(request: Request) {
 
     const provider = getServerPaymentProviderId();
 
-    // Shipping and tax are not configured anywhere on the site yet (see
-    // src/data/shipping.ts and src/data/tax.ts) — kept at 0 here rather than
-    // invented, consistent with the rest of the checkout flow.
-    const shippingCost = 0;
+    // Never trust a client-supplied shipping number — recompute from the
+    // order's own city and item composition, the same as the checkout page
+    // does for display. Tax has no rate supplied yet (see src/data/tax.ts),
+    // so it stays at 0 rather than inventing one.
+    const shippingCost = calculateShippingCost({
+      city: shipping.city,
+      hasFreeShippingItem: orderItems.some((item) => item.type === "COMBO"),
+    });
     const tax = 0;
     const currency = (process.env.STORE_CURRENCY || "INR").toUpperCase();
     const total = Math.max(0, subtotal - discount + shippingCost + tax);

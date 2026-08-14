@@ -119,6 +119,10 @@ export default async function ProductPage({
               </Accordion>
             )}
 
+            <Accordion title="Precautions">
+              <p>A patch test is always recommended before use.</p>
+            </Accordion>
+
             <Accordion title="Shipping">
               <p>
                 We aim to dispatch orders promptly. Shipping options and delivery

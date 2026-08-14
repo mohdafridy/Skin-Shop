@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import SmartImage from "@/components/SmartImage";
 import SectionDivider from "@/components/SectionDivider";
 import Reveal from "@/components/Reveal";
-import { brandLine, founderName, founderQuote, brandPillars } from "@/data/navigation";
+import { brandLine, founderName, founderQuote, brandPillars, foundedYear } from "@/data/navigation";
 import { HUSN_E_YUSUF, ARK_E_GULAAB } from "@/lib/proper-nouns";
 import { canonical } from "@/lib/seo";
 
@@ -53,9 +53,9 @@ export default function OurStoryPage() {
       <div className="mx-auto max-w-2xl px-6 py-16 sm:px-8 lg:py-20">
         <Reveal>
           <p className="text-balance text-lg leading-relaxed text-walnut/85">
-            The Skin Shop was created around a simple idea: bring ingredients and
-            rituals that feel familiar, treasured and timeless into the way people
-            care for themselves today.
+            Founded in {foundedYear}, The Skin Shop was created around a simple idea:
+            bring ingredients and rituals that feel familiar, treasured and timeless
+            into the way people care for themselves today.
           </p>
           <p className="mt-6 text-balance text-lg leading-relaxed text-walnut/85">
             Across the collection, botanical traditions meet contemporary skincare

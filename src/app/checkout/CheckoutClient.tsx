@@ -6,7 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { useCart } from "@/lib/cart-context";
 import { getProductBySlug } from "@/data/products";
 import { getComboBySlug } from "@/data/combos";
-import { defaultZone } from "@/data/shipping";
+import { defaultZone, calculateShippingCost } from "@/data/shipping";
 import { getActivePaymentProvider } from "@/lib/payment";
 import { openRazorpayCheckout, type RazorpayCheckoutConfig } from "@/lib/payment/razorpay-client";
 import { track } from "@/lib/analytics";
@@ -178,6 +178,10 @@ export default function CheckoutClient({ isPaymentConfigured }: { isPaymentConfi
   const currency = lines[0]?.currency ?? "INR";
   const subtotal = lines.reduce((sum, l) => sum + l.price * l.quantity, 0);
   const effectiveDiscount = mode === "cart" ? discount : 0;
+  const hasFreeShippingItem = lines.some((l) => l.type === "combo");
+  const shippingCost = form.city.trim()
+    ? calculateShippingCost({ city: form.city, hasFreeShippingItem })
+    : null;
 
   useEffect(() => {
     if (linesError || lines.length === 0) return;
@@ -571,7 +575,13 @@ export default function CheckoutClient({ isPaymentConfigured }: { isPaymentConfi
         </form>
 
         <div className="h-fit lg:sticky lg:top-28">
-          <OrderSummary lines={lines} subtotal={subtotal} discount={effectiveDiscount} currency={currency} />
+          <OrderSummary
+            lines={lines}
+            subtotal={subtotal}
+            discount={effectiveDiscount}
+            currency={currency}
+            shippingCost={shippingCost}
+          />
           {mode === "cart" && (
             <button
               type="button"
