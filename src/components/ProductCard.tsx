@@ -16,7 +16,7 @@ export default function ProductCard({ product }: { product: Product }) {
   const wishlisted = isWishlisted(product.slug);
 
   return (
-    <div className="group relative flex flex-col transition-[transform,box-shadow] duration-[280ms] ease-premium hover:-translate-y-1 hover:shadow-[0_16px_45px_rgba(42,32,28,0.08)]">
+    <div className="group relative flex flex-col rounded-2xl transition-[transform,box-shadow] duration-[280ms] ease-premium hover:-translate-y-1 hover:shadow-[0_16px_45px_rgba(42,32,28,0.08)]">
       <Link
         href={`/products/${product.slug}`}
         className="block overflow-hidden rounded-2xl"
@@ -45,7 +45,7 @@ export default function ProductCard({ product }: { product: Product }) {
         />
       </button>
 
-      <div className="mt-4 flex flex-1 flex-col">
+      <div className="mt-4 flex flex-1 flex-col pb-4">
         <p className="text-xs uppercase tracking-wide text-walnut/70">{product.category}</p>
         <Link href={`/products/${product.slug}`} className="mt-1">
           <h3 className="text-balance font-display text-lg leading-snug text-ink transition group-hover:text-burgundy">
