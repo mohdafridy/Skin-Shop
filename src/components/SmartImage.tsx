@@ -12,6 +12,11 @@ type SmartImageProps = {
   height?: number;
   sizes?: string;
   priority?: boolean;
+  /** 1-100, must be listed in next.config.ts's images.qualities allowlist
+   * or Next.js silently clamps to the nearest allowed value. Defaults to
+   * 90 — Next's own default of 75 visibly compresses photographic product
+   * shots (banding/blockiness on glass and cream textures). */
+  quality?: number;
   fit?: "cover" | "contain";
   label?: string;
   className?: string;
@@ -38,6 +43,7 @@ export default function SmartImage({
   height,
   sizes,
   priority,
+  quality = 90,
   fit = "cover",
   label,
   className = "",
@@ -74,6 +80,7 @@ export default function SmartImage({
             fill
             sizes={sizes}
             priority={priority}
+            quality={quality}
             onError={() => setErrored(true)}
             className={`relative ${fitClass} ${imageClassName}`}
           />
@@ -85,6 +92,7 @@ export default function SmartImage({
             height={height ?? 800}
             sizes={sizes}
             priority={priority}
+            quality={quality}
             onError={() => setErrored(true)}
             className={`relative ${fitClass} ${imageClassName}`}
           />
