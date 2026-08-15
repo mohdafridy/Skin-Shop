@@ -135,6 +135,16 @@ function trackUrl(order: OrderForNotification): string {
   return `${siteUrl()}/track/${order.accessToken}`;
 }
 
+/** Deep-links into the existing per-product/combo reviews section — the
+ * anchor ids (`reviews-${slug}`) already exist from ReviewsSection. Items
+ * without a slug (older orders, predating slug capture) are simply skipped. */
+function reviewUrl(item: { slug: string | null; type: "PRODUCT" | "COMBO" }): string | null {
+  if (!item.slug) return null;
+  return item.type === "COMBO"
+    ? `${siteUrl()}/rituals#reviews-${item.slug}`
+    : `${siteUrl()}/products/${item.slug}#reviews-${item.slug}`;
+}
+
 export type RenderedEmail = { html: string; text: string };
 
 export function renderOrderEmail(event: NotifiableEvent, order: OrderForNotification): RenderedEmail {
@@ -298,6 +308,45 @@ export function renderOrderEmail(event: NotifiableEvent, order: OrderForNotifica
         `Hi ${name},`,
         "",
         `Your refund of ${formatPrice(order.total, order.currency)} for order ${order.orderNumber} is complete.`,
+      ].join("\n");
+      return { html, text };
+    }
+
+    case "REVIEW_REQUESTED": {
+      const reviewLinks = order.items
+        .map((item) => ({ item, url: reviewUrl(item) }))
+        .filter((entry): entry is { item: (typeof order.items)[number]; url: string } => entry.url !== null);
+
+      const linksHtml = reviewLinks.length
+        ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:4px 0 8px;">${reviewLinks
+            .map(
+              ({ item, url }) => `<tr><td style="padding:8px 0;border-bottom:1px solid #e8ded1;font-family:Helvetica,Arial,sans-serif;font-size:14px;color:${INK};">
+${escapeHtml(item.name)}
+</td><td align="right" style="padding:8px 0;border-bottom:1px solid #e8ded1;">
+<a href="${url}" style="font-family:Helvetica,Arial,sans-serif;font-size:13px;color:${BURGUNDY};text-decoration:underline;">Write a review</a>
+</td></tr>`,
+            )
+            .join("")}</table>`
+        : button(track, "Write a review");
+
+      const html = shell(
+        order,
+        "How was your order?",
+        greeting +
+          paragraph(
+            `It's been a little while since order <strong>${escapeHtml(order.orderNumber)}</strong> was delivered — we'd love to know what you thought.`,
+          ) +
+          linksHtml +
+          paragraph("Real reviews from real customers are what help other people trust us. Thank you for taking a moment."),
+      );
+      const text = [
+        `Hi ${name},`,
+        "",
+        `It's been a little while since order ${order.orderNumber} was delivered — we'd love to know what you thought.`,
+        "",
+        ...(reviewLinks.length
+          ? reviewLinks.map(({ item, url }) => `${item.name}: ${url}`)
+          : [`Leave a review: ${track}`]),
       ].join("\n");
       return { html, text };
     }

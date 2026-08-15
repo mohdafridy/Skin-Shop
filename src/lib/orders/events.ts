@@ -148,3 +148,13 @@ export async function applyFulfilmentStatus(input: {
   }
   return true;
 }
+
+/**
+ * Records the REVIEW_REQUESTED event and sends the review-request
+ * notification for one delivered order. Called by the review-requests cron
+ * route, never at delivery time itself — see the enum's doc comment for why.
+ */
+export async function requestReview(orderId: string): Promise<void> {
+  await recordOrderEvent(orderId, "REVIEW_REQUESTED");
+  await notifyOrderEvent(orderId, "REVIEW_REQUESTED");
+}

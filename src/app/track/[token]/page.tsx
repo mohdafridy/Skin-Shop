@@ -111,17 +111,36 @@ export default async function TrackOrderPage({
 
       <h2 className="mt-10 font-display text-xl text-ink">Items</h2>
       <ul className="mt-3 divide-y divide-gold/15">
-        {order.items.map((item) => (
-          <li key={item.id} className="flex items-baseline justify-between gap-4 py-3">
-            <span className="text-sm text-ink">
-              {item.name}
-              <span className="text-walnut/70"> &times;{item.quantity}</span>
-            </span>
-            <span className="flex-shrink-0 text-sm text-ink">
-              {formatPrice(item.lineTotal, order.currency)}
-            </span>
-          </li>
-        ))}
+        {order.items.map((item) => {
+          const reviewHref =
+            order.fulfilmentStatus === "DELIVERED" && item.slug
+              ? item.type === "COMBO"
+                ? `/rituals#reviews-${item.slug}`
+                : `/products/${item.slug}#reviews-${item.slug}`
+              : null;
+          return (
+            <li key={item.id} className="flex items-baseline justify-between gap-4 py-3">
+              <span className="text-sm text-ink">
+                {item.name}
+                <span className="text-walnut/70"> &times;{item.quantity}</span>
+                {reviewHref && (
+                  <>
+                    {" · "}
+                    <Link
+                      href={reviewHref}
+                      className="text-burgundy underline-offset-2 hover:underline"
+                    >
+                      Leave a review
+                    </Link>
+                  </>
+                )}
+              </span>
+              <span className="flex-shrink-0 text-sm text-ink">
+                {formatPrice(item.lineTotal, order.currency)}
+              </span>
+            </li>
+          );
+        })}
       </ul>
 
       <dl className="mt-4 space-y-1.5 text-sm">

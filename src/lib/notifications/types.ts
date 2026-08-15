@@ -32,7 +32,7 @@ export const orderForNotificationSelect = {
   shippingPostal: true,
   shippingCountry: true,
   items: {
-    select: { name: true, quantity: true, unitPrice: true, lineTotal: true },
+    select: { name: true, quantity: true, unitPrice: true, lineTotal: true, slug: true, type: true },
   },
 } satisfies Prisma.OrderSelect;
 

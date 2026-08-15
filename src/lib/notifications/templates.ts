@@ -35,6 +35,7 @@ export type NotifiableEvent = Extract<
   | "CANCELLED"
   | "REFUND_INITIATED"
   | "REFUNDED"
+  | "REVIEW_REQUESTED"
 >;
 
 export const notifiableEvents: NotifiableEvent[] = [
@@ -46,6 +47,7 @@ export const notifiableEvents: NotifiableEvent[] = [
   "CANCELLED",
   "REFUND_INITIATED",
   "REFUNDED",
+  "REVIEW_REQUESTED",
 ];
 
 export function isNotifiableEvent(event: OrderEventType): event is NotifiableEvent {
@@ -66,6 +68,7 @@ const whatsappTemplateConfig: Record<
   CANCELLED: { envVar: "WHATSAPP_TEMPLATE_ORDER_CANCELLED", suggestedName: "order_cancelled" },
   REFUND_INITIATED: { envVar: "WHATSAPP_TEMPLATE_REFUND_INITIATED", suggestedName: "refund_initiated" },
   REFUNDED: { envVar: "WHATSAPP_TEMPLATE_REFUND_COMPLETED", suggestedName: "refund_completed" },
+  REVIEW_REQUESTED: { envVar: "WHATSAPP_TEMPLATE_REVIEW_REQUEST", suggestedName: "review_request" },
 };
 
 /**
@@ -93,6 +96,7 @@ export const emailSubjects: Record<NotifiableEvent, (orderNumber: string) => str
   CANCELLED: (n) => `Order ${n} has been cancelled`,
   REFUND_INITIATED: (n) => `Refund initiated for order ${n}`,
   REFUNDED: (n) => `Refund completed for order ${n}`,
+  REVIEW_REQUESTED: () => `How was your ${storeName} order?`,
 };
 
 export { whatsappTemplateConfig };
