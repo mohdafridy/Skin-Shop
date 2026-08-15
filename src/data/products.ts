@@ -32,10 +32,10 @@ export type Product = {
 
 // The primary photo (index 0) is the approved product shot, already supplied
 // (re-encoded to .jpg — the source PNGs were 2-3MB each, ~10x larger than
-// needed for photographic content). Slots 2 and 3 stay reserved for
-// additional angles the brief mentioned would follow in a later upload —
-// until those exist, SmartImage renders its placeholder for those slots.
-function productImages(slug: string, count = 3): string[] {
+// needed for photographic content). Only that one real photo is used for
+// now — extra angles were showing as empty placeholder thumbnails, so the
+// gallery stays single-image until additional shots are actually supplied.
+function productImages(slug: string, count = 1): string[] {
   return Array.from({ length: count }, (_, i) =>
     i === 0 ? `/images/products/${slug}.jpg` : `/images/products/${slug}-${i + 1}.jpg`,
   );
