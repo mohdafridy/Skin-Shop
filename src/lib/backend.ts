@@ -8,6 +8,19 @@ export const checkoutLineSchema = z.object({
   quantity: z.number().int().min(1).max(20),
 });
 
+/// No purchase or account verification — guest checkout is the default here
+/// too, so a review is just a submission. Every new row lands PENDING and
+/// only reaches the site after /admin/reviews approves it (see Review in
+/// prisma/schema.prisma).
+export const reviewSchema = z.object({
+  type: z.enum(["product", "combo"]),
+  slug: z.string().trim().min(1),
+  rating: z.number().int().min(1).max(5),
+  authorName: z.string().trim().min(1).max(120),
+  authorEmail: z.union([z.string().trim().email().max(254), z.literal("")]).optional(),
+  body: z.string().trim().min(10).max(2000),
+});
+
 export const shippingAddressSchema = z.object({
   name: z.string().trim().min(1).max(160),
   email: z.string().trim().email(),

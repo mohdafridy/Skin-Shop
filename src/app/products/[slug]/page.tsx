@@ -6,6 +6,7 @@ import ProductGallery from "@/components/ProductGallery";
 import ProductInfo from "@/components/ProductInfo";
 import Accordion from "@/components/Accordion";
 import ProductGrid from "@/components/ProductGrid";
+import ReviewsSection from "@/components/ReviewsSection";
 import SectionHeading from "@/components/SectionHeading";
 import { absoluteUrl, breadcrumbJsonLd, productJsonLd } from "@/lib/seo";
 
@@ -131,6 +132,10 @@ export default async function ProductPage({
             </Accordion>
           </div>
         </div>
+      </div>
+
+      <div className="mt-24">
+        <ReviewsSection type="product" slug={product.slug} subjectName={product.shortName ?? product.name} />
       </div>
 
       {related.length > 0 && (

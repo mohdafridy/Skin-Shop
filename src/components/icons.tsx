@@ -33,6 +33,32 @@ export function InstagramIcon({ className = "h-5 w-5" }: { className?: string })
   );
 }
 
+export function StarIcon({
+  filled = false,
+  className = "h-5 w-5",
+}: {
+  filled?: boolean;
+  className?: string;
+}) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill={filled ? "currentColor" : "none"}
+      stroke="currentColor"
+      strokeWidth="1.6"
+      className={`flex-shrink-0 ${className}`}
+      aria-hidden="true"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9L12 3Z"
+      />
+    </svg>
+  );
+}
+
 export function HeartIcon({
   filled = false,
   className = "h-5 w-5",
