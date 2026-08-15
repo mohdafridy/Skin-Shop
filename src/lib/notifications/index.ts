@@ -52,6 +52,8 @@ function whatsappParameters(event: NotifiableEvent, order: OrderForNotification)
       return [customer, order.orderNumber, amount];
     case "REFUNDED":
       return [customer, order.orderNumber, amount];
+    case "REVIEW_REQUESTED":
+      return [customer, order.orderNumber, `${siteUrl()}/track/${order.accessToken}`];
   }
 }
 

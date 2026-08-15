@@ -45,6 +45,10 @@ enum OrderEventType {
   CANCELLED
   REFUND_INITIATED
   REFUNDED
+  /// Sent once, some days after DELIVERED, inviting the customer to review
+  /// what they bought — never sent automatically at delivery time, since
+  /// nobody has an opinion on a product they haven't used yet.
+  REVIEW_REQUESTED
 }
 
 enum NotificationChannel {
