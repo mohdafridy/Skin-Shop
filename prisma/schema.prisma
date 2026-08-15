@@ -71,6 +71,14 @@ enum LineItemType {
   COMBO
 }
 
+/// A review is never shown publicly until an admin approves it — matches
+/// the site's "nothing invented, nothing unverified" stance elsewhere.
+enum ReviewStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 /// Mirrors src/data/products.ts. Prices are whole-currency-unit integers
 /// (e.g. 380 = ₹380), matching formatPrice()/the rest of the site — NOT
 /// Razorpay's smallest-unit convention. Conversion to paise happens only at
@@ -90,6 +98,7 @@ model Product {
   stock      Int?
   orderItems OrderItem[]
   comboItems ComboItem[]
+  reviews    Review[]
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
 
@@ -111,6 +120,7 @@ model Combo {
   stock      Int?
   items      ComboItem[]
   orderItems OrderItem[]
+  reviews    Review[]
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
 
@@ -294,6 +304,31 @@ model OrderItem {
   quantity  Int
   lineTotal Int
   createdAt DateTime     @default(now())
+}
+
+/// Public submissions land as PENDING and are never shown on the site until
+/// an admin approves them from /admin/reviews — no purchase verification or
+/// account required to submit (guest checkout is the default here too), so
+/// moderation is the only spam/authenticity gate.
+model Review {
+  id          String       @id @default(cuid())
+  type        LineItemType
+  productId   String?
+  product     Product?     @relation(fields: [productId], references: [id], onDelete: Cascade)
+  comboId     String?
+  combo       Combo?       @relation(fields: [comboId], references: [id], onDelete: Cascade)
+  rating      Int
+  authorName  String
+  /// Collected for the store owner's own follow-up only — never rendered
+  /// in any public-facing view.
+  authorEmail String?
+  body        String
+  status      ReviewStatus @default(PENDING)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@index([productId, status])
+  @@index([comboId, status])
 }
 
 model NewsletterSubscriber {

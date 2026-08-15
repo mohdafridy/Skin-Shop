@@ -7,6 +7,7 @@ import { adminLogoutAction } from "./actions";
 const navLinks = [
   { href: "/admin", label: "Orders" },
   { href: "/admin/products", label: "Products" },
+  { href: "/admin/reviews", label: "Reviews" },
 ];
 
 export default function AdminHeader({ title }: { title: string }) {

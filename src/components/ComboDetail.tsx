@@ -7,6 +7,7 @@ import { getComboPricing } from "@/data/combos";
 import { getProductBySlug } from "@/data/products";
 import { useCart } from "@/lib/cart-context";
 import { formatPrice } from "@/lib/format";
+import ReviewsSection from "./ReviewsSection";
 import SmartImage from "./SmartImage";
 
 export default function ComboDetail({ combo }: { combo: Combo }) {
@@ -87,6 +88,10 @@ export default function ComboDetail({ combo }: { combo: Combo }) {
             Buy Now
           </button>
         </div>
+      </div>
+
+      <div className="lg:col-span-2">
+        <ReviewsSection type="combo" slug={combo.slug} subjectName={combo.name} />
       </div>
     </div>
   );
