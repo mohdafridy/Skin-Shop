@@ -51,3 +51,50 @@ export async function updateProductStockAction(
   revalidatePath("/admin/products");
   return { success: "Saved." };
 }
+
+const addStockSchema = z.object({
+  productId: z.string().trim().min(1),
+  amount: z.string().trim().min(1),
+});
+
+/** Restocking shortcut: adds to whatever is already there instead of
+ * requiring the admin to know and retype the current total. A product with
+ * untracked (null) stock starts being tracked at exactly this amount. */
+export async function addProductStockAction(
+  _prevState: AdminActionState,
+  formData: FormData,
+): Promise<AdminActionState> {
+  await requireAdminSession();
+
+  const parsed = addStockSchema.safeParse({
+    productId: formData.get("productId"),
+    amount: formData.get("amount"),
+  });
+  if (!parsed.success) return { error: "Invalid update." };
+
+  const amount = Number(parsed.data.amount);
+  if (!Number.isInteger(amount) || amount <= 0) {
+    return { error: "Enter a whole number greater than 0 to add." };
+  }
+
+  const existing = await prisma.product.findUnique({
+    where: { id: parsed.data.productId },
+    select: { stock: true },
+  });
+  if (!existing) return { error: "Product not found." };
+
+  const newStock = (existing.stock ?? 0) + amount;
+
+  try {
+    await prisma.product.update({
+      where: { id: parsed.data.productId },
+      data: { stock: newStock },
+    });
+  } catch (error) {
+    console.error("admin_product_add_stock_failed", error);
+    return { error: "Couldn't add stock. Please try again." };
+  }
+
+  revalidatePath("/admin/products");
+  return { success: `Added ${amount} — new stock: ${newStock}.` };
+}

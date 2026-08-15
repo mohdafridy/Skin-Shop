@@ -43,7 +43,7 @@ export default async function AdminProductsPage() {
             <tbody className="divide-y divide-gold/15">
               {products.map((product) => (
                 <ProductRow
-                  key={product.id}
+                  key={`${product.id}-${product.stock}-${product.active}`}
                   id={product.id}
                   name={product.name}
                   category={product.category}
