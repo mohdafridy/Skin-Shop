@@ -8,6 +8,8 @@ import { useWishlist } from "@/lib/wishlist-context";
 import { formatPrice } from "@/lib/format";
 import { track } from "@/lib/analytics";
 import { useAddedFeedback } from "@/lib/use-added-feedback";
+import { useProductReviews } from "@/lib/reviews-client";
+import { StarRow } from "./reviews/RatingStars";
 import { HeartIcon } from "./icons";
 import ConsultationCTA from "./ConsultationCTA";
 
@@ -20,6 +22,15 @@ export default function ProductInfo({ product }: { product: Product }) {
   const [added, triggerAdded] = useAddedFeedback();
   const [showStickyBar, setShowStickyBar] = useState(false);
   const ctaRef = useRef<HTMLDivElement>(null);
+  const reviewData = useProductReviews("product", product.slug);
+
+  function handleReviewsClick(e: React.MouseEvent) {
+    e.preventDefault();
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    document
+      .getElementById(`reviews-${product.slug}`)
+      ?.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
+  }
 
   useEffect(() => {
     const node = ctaRef.current;
@@ -54,6 +65,19 @@ export default function ProductInfo({ product }: { product: Product }) {
       <h1 className="mt-2 text-balance font-display text-3xl font-semibold leading-[1.2] tracking-tight text-ink sm:text-4xl">
         {product.name}
       </h1>
+
+      {reviewData && reviewData.count > 0 && (
+        <a
+          href={`#reviews-${product.slug}`}
+          onClick={handleReviewsClick}
+          className="mt-2 inline-flex items-center gap-1.5 text-sm text-walnut/70 transition-colors duration-150 ease-premium hover:text-burgundy"
+        >
+          <StarRow rating={reviewData.average ?? 0} size="h-3.5 w-3.5" />
+          <span>
+            {(reviewData.average ?? 0).toFixed(1)} ({reviewData.count} review{reviewData.count === 1 ? "" : "s"})
+          </span>
+        </a>
+      )}
 
       <div className="mt-4 flex flex-wrap items-center gap-3">
         <span className="text-xl font-medium text-ink">
