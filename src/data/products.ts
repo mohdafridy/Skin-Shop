@@ -51,14 +51,16 @@ export const products: Product[] = [
     collection: "Skin",
     ritualTags: ["Cleanse"],
     tagline: "A rose ritual, in a single bar",
-    shortDescription: "A gentle, rose-scented cleansing soap for daily skin care.",
+    shortDescription:
+      "A gentle cleansing bar designed to effectively cleanse the skin without stripping away its natural oils. Helps restore the skin's natural glow while improving the appearance of uneven skin tone, dark spots and blemishes.",
     description:
-      `${HUSN_E_YUSUF} carries forward a beauty ritual long associated with rose and softness. Handcrafted in Kashmir from raw, organic botanicals with no artificial fragrance, it's lathered into a light foam that lifts away the day and leaves skin feeling calm and clean — a first step worth slowing down for.`,
+      "A gentle cleansing bar designed to effectively cleanse the skin without stripping away its natural oils. Helps restore the skin's natural glow while improving the appearance of uneven skin tone, dark spots and blemishes.",
     image: productImages("husn-e-yusuf-whitening-soap-cleanser")[0],
     price: 380,
     currency: "INR",
+    size: "100 g",
     gallery: productImages("husn-e-yusuf-whitening-soap-cleanser"),
-    ingredients: ["Raw organic botanicals", "Flower nectar", "Rubia tinctoria"],
+    ingredients: ["Rose", "Lavender", "Mushroom Extract", "Almond Oil", "Vitamin B3"],
     benefits: [
       "Helps promote an even-looking skin tone",
       "Helps improve the appearance of pigmentation",
@@ -92,13 +94,31 @@ export const products: Product[] = [
     collection: "Skin",
     ritualTags: ["Hydrate"],
     tagline: "A golden ritual for the night",
-    shortDescription: "A rich night cream to close the day's routine.",
+    shortDescription:
+      "A nourishing night cream formulated with a luxurious blend of botanical oils, extracts and skin-loving ingredients. Helps reduce the appearance of pigmentation, uneven skin tone, tanning, freckles and dark circles while supporting collagen synthesis and the skin's natural barrier. With regular use, skin appears smoother, healthier and more radiant.",
     description:
-      "Dahab — meaning gold — is formulated as the last step of an evening routine, applied after cleansing to comfort the skin overnight. Its texture is generous and warming: a small ritual of care before sleep.",
+      "A nourishing night cream formulated with a luxurious blend of botanical oils, extracts and skin-loving ingredients. Helps reduce the appearance of pigmentation, uneven skin tone, tanning, freckles and dark circles while supporting collagen synthesis and the skin's natural barrier. With regular use, skin appears smoother, healthier and more radiant.",
     image: productImages("dahab-whitening-night-cream")[0],
     price: 880,
     currency: "INR",
+    size: "30 g",
     gallery: productImages("dahab-whitening-night-cream"),
+    ingredients: [
+      "Rosehip Oil",
+      "Ocean Pearl Extract",
+      "Almond Oil",
+      "Beeswax",
+      "Mushroom Extract",
+      "Plant-Based Glutathione",
+      "Licorice Root Extract",
+      "Passion Fruit Extract",
+      "Grapeseed Oil",
+      "Hemp Seed Oil",
+      "Jojoba Oil",
+      "Curcumin",
+      "Avocado Oil",
+      "Vegetable Glycerine",
+    ],
     benefits: [
       "Promotes a brighter-looking complexion",
       "Helps improve the appearance of uneven skin tone",
@@ -129,12 +149,14 @@ export const products: Product[] = [
     collection: "Skin",
     ritualTags: ["Hydrate"],
     tagline: "Rose water, distilled simply",
-    shortDescription: "A fine rose mist for freshness throughout the day.",
+    shortDescription:
+      "A refreshing toner that helps tone and refresh the skin while minimizing the appearance of open pores. Leaves the complexion feeling fresh and looking naturally healthy and radiant.",
     description:
-      `${ARK_E_GULAAB} is a traditional rose water, valued for generations as a simple way to refresh and soften the skin. Kept close to the dressing table, it is misted on whenever the day calls for a small moment of coolness.`,
+      "A refreshing toner that helps tone and refresh the skin while minimizing the appearance of open pores. Leaves the complexion feeling fresh and looking naturally healthy and radiant.",
     image: productImages("ark-e-gulaab")[0],
     price: 250,
     currency: "INR",
+    size: "100 ml",
     gallery: productImages("ark-e-gulaab"),
     ritual: [
       "Shake gently before use.",
@@ -154,12 +176,14 @@ export const products: Product[] = [
     collection: "Skin",
     ritualTags: ["Treat"],
     tagline: "Brightness, bottled",
-    shortDescription: "A lightweight Vitamin C serum for the morning routine.",
+    shortDescription:
+      "A brightening serum that supports collagen production and helps improve the appearance of dark spots, blemishes and uneven skin tone. Its antioxidant properties help support a healthier, more youthful-looking complexion.",
     description:
-      "Formulated around Vitamin C, this serum is designed to sit lightly under moisturizer as part of a brightening morning routine. A few drops go a long way, absorbing quickly into clean skin.",
+      "A brightening serum that supports collagen production and helps improve the appearance of dark spots, blemishes and uneven skin tone. Its antioxidant properties help support a healthier, more youthful-looking complexion.",
     image: productImages("vitamin-c-serum")[0],
     price: 780,
     currency: "INR",
+    size: "30 ml",
     gallery: productImages("vitamin-c-serum"),
     ritual: [
       "Apply to clean, dry skin.",
@@ -179,12 +203,14 @@ export const products: Product[] = [
     collection: "Hair",
     ritualTags: ["Hair"],
     tagline: "An old herb, a modern format",
-    shortDescription: "A rosemary hair serum for the scalp and lengths.",
+    shortDescription:
+      "A lightweight hair serum that helps control frizz, makes detangling easier and helps reduce breakage, leaving hair smoother and more manageable.",
     description:
-      "Rosemary has long held a place in hair care traditions, and this serum brings it into a modern, easy-to-use format. Worked through the scalp and lengths, it fits naturally into a weekly hair routine.",
+      "A lightweight hair serum that helps control frizz, makes detangling easier and helps reduce breakage, leaving hair smoother and more manageable.",
     image: productImages("rosemary-hair-serum")[0],
     price: 480,
     currency: "INR",
+    size: "90 ml",
     gallery: productImages("rosemary-hair-serum"),
     ritual: [
       "Apply a small amount directly to the scalp or lengths.",
@@ -202,12 +228,14 @@ export const products: Product[] = [
     collection: "Skin",
     ritualTags: ["Treat"],
     tagline: "An earthy pause, once a week",
-    shortDescription: "A coffee-based face mask for a weekly reset.",
+    shortDescription:
+      "An exfoliating face mask designed to help remove dull surface buildup and reduce the appearance of tanning. Leaves the skin feeling refreshed, smoother and visibly more radiant.",
     description:
-      "Coffee Detox brings the deep, earthy character of coffee into a weekly face mask ritual. Applied to clean skin and rinsed away after a short pause, it is a small ceremony of stillness in a busy week.",
+      "An exfoliating face mask designed to help remove dull surface buildup and reduce the appearance of tanning. Leaves the skin feeling refreshed, smoother and visibly more radiant.",
     image: productImages("coffee-detox-facemask")[0],
     price: 650,
     currency: "INR",
+    size: "50 g",
     gallery: productImages("coffee-detox-facemask"),
     ingredients: ["Coffee / caffeine"],
     benefits: [
@@ -305,15 +333,16 @@ export const products: Product[] = [
     category: "Lip Balm",
     collection: "Lip Care",
     tagline: "A small comfort, kept close",
-    shortDescription: "A pure shea butter lip balm for everyday softness, gentle enough for the whole family.",
+    shortDescription:
+      "An intensely nourishing lip balm formulated to soften and condition dry, chapped lips. The rich blend helps lock in moisture and leaves lips feeling smooth, supple and comfortable.",
     description:
-      "Small enough for a pocket or bag, this lip balm is built around pure organic shea butter and designed to be reached for throughout the day — a small, quiet act of care, gentle enough for children too.",
+      "An intensely nourishing lip balm formulated to soften and condition dry, chapped lips. The rich blend helps lock in moisture and leaves lips feeling smooth, supple and comfortable.",
     image: productImages("shea-lip-balm")[0],
     price: 120,
     currency: "INR",
     gallery: productImages("shea-lip-balm"),
-    size: "Available in two sizes",
-    ingredients: ["Pure organic shea butter"],
+    size: "8 g",
+    ingredients: ["Shea Butter", "Coconut Oil", "Almond Oil", "Beeswax", "Beetroot Extract"],
     benefits: [
       "Moisturises dry and chapped lips",
       "Helps retain the lips' natural colour",
