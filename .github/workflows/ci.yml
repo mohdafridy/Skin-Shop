@@ -30,6 +30,11 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      - name: Generate route types
+        # tsc alone can't see Next's typed-route helpers (e.g. LayoutProps)
+        # until something has generated .next/types/ at least once.
+        run: npx next typegen
+
       - name: Type-check
         run: npx tsc --noEmit
 
