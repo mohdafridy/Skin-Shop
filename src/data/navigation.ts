@@ -54,7 +54,14 @@ export const announcementMessage = brandLine;
 export const productTagline = "Food For Your Skin";
 
 export const founderName = "Mumin Bhat";
+export const founderRole = "Founder";
 export const founderQuote = "The Skin Shop is the name, where results claim the fame.";
+
+// As supplied by the business — the founder's professional credentials.
+export const founderCredentials: string[] = [
+  "Graduate in Aesthetic Medicine & Clinical Cosmetology.",
+  "Master Herbalist & Professional Cosmetic Formulator with expertise in organic formulations.",
+];
 
 // As supplied by the business.
 export const foundedYear = 2019;
