@@ -87,7 +87,7 @@ export default function ReviewsSection({
           <div className="h-4 w-64 rounded bg-sand" />
         </div>
       ) : data.count === 0 ? (
-        <div className="mt-8 rounded-2xl border border-dashed border-gold/30 bg-white/30 px-6 py-10 text-center">
+        <div className="mt-8 rounded-md border border-dashed border-gold/30 bg-white/30 px-6 py-10 text-center">
           <p className="text-sm font-medium text-ink">No reviews yet</p>
           <p className="mt-1.5 text-sm text-walnut/70">
             Be the first to share your experience with {subjectName}.

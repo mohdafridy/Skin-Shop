@@ -48,17 +48,17 @@ export default function OurStoryPage() {
         </h1>
       </div>
 
-      <Reveal className="mx-auto mt-14 max-w-4xl px-6 sm:px-8">
+      <Reveal className="mx-auto mt-12 max-w-4xl px-6 sm:px-8">
         <SmartImage
           src="/images/kashmir/our-story.jpg"
           alt="Kashmir, the place The Skin Shop's rituals and ingredients come from"
           label="Beauty with a sense of place"
-          className="aspect-[16/9] rounded-2xl"
+          className="aspect-[16/9] rounded-md"
           sizes="(min-width: 1024px) 60vw, 90vw"
         />
       </Reveal>
 
-      <div className="mx-auto max-w-2xl px-6 py-16 sm:px-8 lg:py-20">
+      <div className="mx-auto max-w-2xl px-6 py-[var(--space-section-md)] sm:px-8">
         <Reveal>
           <p className="text-balance text-lg leading-relaxed text-walnut/85">
             Founded in {foundedYear}, The Skin Shop was created around a simple idea:
@@ -97,7 +97,7 @@ export default function OurStoryPage() {
         </Reveal>
       </div>
 
-      <div className="bg-sand/50 py-16 lg:py-20">
+      <div className="bg-sand/50 py-[var(--space-section-md)]">
         <div className="mx-auto max-w-2xl px-6 sm:px-8">
           <Reveal>
             <p className="mb-4 text-center text-xs font-semibold uppercase tracking-[0.2em] text-burgundy">

@@ -29,8 +29,8 @@ export default function RitualsPage() {
         <ShopByRitual />
       </div>
 
-      <section className="mx-auto max-w-6xl px-6 py-20 sm:px-8 lg:py-24">
-        <div className="space-y-10">
+      <section className="mx-auto max-w-standard px-6 py-[var(--space-section-md)] sm:px-8">
+        <div className="space-y-8">
           {combos.map((combo, i) => (
             <Reveal key={combo.slug} delay={i * 80}>
               <ComboDetail combo={combo} />

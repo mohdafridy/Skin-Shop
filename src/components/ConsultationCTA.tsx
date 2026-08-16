@@ -34,7 +34,7 @@ export default function ConsultationCTA({
   });
 
   return (
-    <div className="mt-6 rounded-2xl border border-gold/25 bg-sand/25 p-5 sm:p-6">
+    <div className="mt-6 rounded-md border border-gold/25 bg-sand/25 p-5 sm:p-6">
       <p className="text-xs font-medium uppercase tracking-[0.14em] text-walnut/60">
         Need help choosing?
       </p>

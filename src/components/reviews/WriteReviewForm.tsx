@@ -53,7 +53,7 @@ export default function WriteReviewForm({
 
   if (feedback?.success) {
     return (
-      <div className="rounded-2xl border border-gold/20 bg-white/40 p-6 text-center">
+      <div className="rounded-md border border-gold/20 bg-white/40 p-6 text-center">
         <p className="text-sm font-medium text-ink">Thank you for sharing your experience.</p>
         <p className="mt-1.5 text-sm text-walnut/70">{feedback.success}</p>
       </div>
@@ -61,7 +61,7 @@ export default function WriteReviewForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 rounded-2xl border border-gold/20 bg-white/40 p-6">
+    <form onSubmit={handleSubmit} className="space-y-4 rounded-md border border-gold/20 bg-white/40 p-6">
       <p className="text-xs uppercase tracking-wide text-walnut/60">
         Reviewing: <span className="text-ink">{subjectName}</span>
       </p>

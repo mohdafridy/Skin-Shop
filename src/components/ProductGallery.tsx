@@ -19,7 +19,7 @@ export default function ProductGallery({
         alt={productName}
         label={productName}
         priority
-        className="aspect-square rounded-2xl"
+        className="aspect-square rounded-md"
         sizes="(min-width: 1024px) 55vw, 100vw"
       />
       {images.length > 1 && (
@@ -31,7 +31,7 @@ export default function ProductGallery({
               onClick={() => setActive(i)}
               aria-label={`Show image ${i + 1} of ${productName}`}
               aria-pressed={active === i}
-              className={`overflow-hidden rounded-xl transition ${
+              className={`overflow-hidden rounded-md transition ${
                 active === i ? "ring-2 ring-burgundy" : "opacity-70 hover:opacity-100"
               }`}
             >
