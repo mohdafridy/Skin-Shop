@@ -49,8 +49,8 @@ export default function Header() {
 
   if (isCheckout) {
     return (
-      <header className="sticky top-0 z-50 h-20 border-b border-gold/20 bg-ivory/95 backdrop-blur-sm">
-        <div className="mx-auto flex h-full max-w-7xl items-center justify-between px-5 text-ink sm:px-8">
+      <header className="sticky top-0 z-50 h-[72px] border-b border-gold/20 bg-ivory/95 backdrop-blur-sm">
+        <div className="mx-auto flex h-full max-w-standard items-center justify-between px-5 text-ink sm:px-8">
           <Link href="/" className="flex-shrink-0" aria-label="The Skin Shop, home">
             <Logo />
           </Link>
@@ -74,14 +74,14 @@ export default function Header() {
   return (
     <header
       className={`sticky top-0 z-50 transition-[height,background-color,border-color,backdrop-filter] duration-300 ease-premium ${
-        scrolled ? "h-16" : "h-20"
+        scrolled ? "h-16" : "h-[72px]"
       } ${
         transparent
           ? "bg-transparent"
           : "border-b border-[rgba(69,48,42,0.08)] bg-[rgba(247,242,233,0.94)] backdrop-blur-[12px]"
       }`}
     >
-      <div className={`mx-auto flex h-full max-w-7xl items-center justify-between px-5 sm:px-8 ${textTone}`}>
+      <div className={`mx-auto flex h-full max-w-standard items-center justify-between px-5 sm:px-8 ${textTone}`}>
         <Link href="/" className="flex-shrink-0" aria-label="The Skin Shop, home">
           <Logo light={transparent} />
         </Link>

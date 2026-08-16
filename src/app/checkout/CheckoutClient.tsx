@@ -463,7 +463,7 @@ export default function CheckoutClient({ isPaymentConfigured }: { isPaymentConfi
               {defaultZone.methods.map((method) => (
                 <label
                   key={method.id}
-                  className="flex items-center justify-between gap-4 rounded-2xl border border-gold/30 bg-white/50 px-4 py-3.5 text-sm"
+                  className="flex items-center justify-between gap-4 rounded-md border border-gold/30 bg-white/50 px-4 py-3.5 text-sm"
                 >
                   <span className="flex items-center gap-3">
                     <input
@@ -534,7 +534,7 @@ export default function CheckoutClient({ isPaymentConfigured }: { isPaymentConfi
           <fieldset>
             <legend className="mb-4 font-display text-xl text-ink">Payment</legend>
             {isPaymentConfigured ? (
-              <div className="rounded-2xl border border-gold/30 bg-white/50 px-5 py-4 text-sm text-walnut/75">
+              <div className="rounded-md border border-gold/30 bg-white/50 px-5 py-4 text-sm text-walnut/75">
                 <p className="font-medium text-ink">Pay securely with Razorpay</p>
                 <p className="mt-1">
                   UPI, cards and netbanking open in a secure Razorpay window. No payment
@@ -542,7 +542,7 @@ export default function CheckoutClient({ isPaymentConfigured }: { isPaymentConfi
                 </p>
               </div>
             ) : (
-              <div className="rounded-2xl border border-dashed border-gold/40 bg-sand/40 px-5 py-4 text-sm text-walnut/75">
+              <div className="rounded-md border border-dashed border-gold/40 bg-sand/40 px-5 py-4 text-sm text-walnut/75">
                 <p className="font-medium text-ink">Payment isn&apos;t connected yet</p>
                 <p className="mt-1">
                   This store is ready to accept payment once Razorpay is connected. No card
@@ -555,7 +555,7 @@ export default function CheckoutClient({ isPaymentConfigured }: { isPaymentConfi
           {paymentPending && (
             <div
               role="status"
-              className="rounded-2xl border border-burgundy/30 bg-burgundy/5 px-5 py-4 text-sm text-burgundy"
+              className="rounded-md border border-burgundy/30 bg-burgundy/5 px-5 py-4 text-sm text-burgundy"
             >
               <p className="font-medium">We can&apos;t complete this order yet</p>
               <p className="mt-1 text-burgundy/90">{paymentPending}</p>

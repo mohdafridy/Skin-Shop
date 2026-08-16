@@ -14,7 +14,7 @@ export default function IngredientCard({ ingredient }: { ingredient: IngredientS
   const imageSrc = ingredient.image ?? primaryProduct?.image;
 
   return (
-    <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-gold/20 bg-white/40">
+    <div className="flex h-full flex-col overflow-hidden rounded-md border border-gold/20 bg-white/40">
       {imageSrc ? (
         <SmartImage
           src={imageSrc}

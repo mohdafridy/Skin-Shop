@@ -3,7 +3,7 @@ import SectionDivider from "./SectionDivider";
 
 export default function CustomerExperience() {
   return (
-    <section className="py-20 lg:py-28">
+    <section className="py-[var(--space-section-md)]">
       <div className="mx-auto max-w-3xl px-6 text-center sm:px-8">
         <SectionHeading eyebrow="Word Of Mouth" title="The Difference People Talk About" center />
         <p className="mt-6 text-balance text-lg leading-relaxed text-walnut/85">
@@ -17,7 +17,7 @@ export default function CustomerExperience() {
           guarantee of results.
         </p>
       </div>
-      <div className="mt-16">
+      <div className="mt-12">
         <SectionDivider />
       </div>
     </section>

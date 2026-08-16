@@ -83,7 +83,7 @@ export default function ShopClient() {
   }, [activeFilter, query, sort]);
 
   return (
-    <div className="mx-auto max-w-7xl px-6 py-12 sm:px-8 lg:py-16">
+    <div className="mx-auto max-w-standard px-6 py-[var(--space-section-md)] sm:px-8">
       <div className="mb-3">
         <h1 className="font-display text-4xl text-ink sm:text-5xl">Shop All</h1>
         <p className="mt-2 text-sm text-walnut/70">

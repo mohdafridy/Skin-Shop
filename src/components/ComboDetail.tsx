@@ -25,13 +25,13 @@ export default function ComboDetail({ combo }: { combo: Combo }) {
   return (
     <div
       id={combo.slug}
-      className="grid gap-10 rounded-3xl border border-gold/20 bg-white/40 p-6 scroll-mt-28 sm:p-10 lg:grid-cols-2 lg:gap-14"
+      className="grid gap-10 rounded-md border border-gold/20 bg-white/40 p-6 scroll-mt-28 sm:p-10 lg:grid-cols-2 lg:gap-14"
     >
       <SmartImage
         src={combo.image}
         alt={`${combo.name} — ${combo.mood}`}
         label={combo.name}
-        className="aspect-[4/5] rounded-2xl"
+        className="aspect-[4/5] rounded-md"
         sizes="(min-width: 1024px) 40vw, 90vw"
       />
 

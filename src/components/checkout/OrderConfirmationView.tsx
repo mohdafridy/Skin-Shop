@@ -40,7 +40,7 @@ export default function OrderConfirmationView({ order }: { order: ConfirmedOrder
         Order number: <span className="font-medium text-ink">{order.orderNumber}</span>
       </p>
 
-      <div className="mt-10 rounded-3xl border border-gold/20 bg-white/50 p-6 text-left">
+      <div className="mt-10 rounded-md border border-gold/20 bg-white/50 p-6 text-left">
         <div className="space-y-3">
           {order.lines.map((line) => (
             <div key={`${line.type}:${line.slug}`} className="flex justify-between text-sm">

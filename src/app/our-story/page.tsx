@@ -2,7 +2,15 @@ import type { Metadata } from "next";
 import SmartImage from "@/components/SmartImage";
 import SectionDivider from "@/components/SectionDivider";
 import Reveal from "@/components/Reveal";
-import { brandLine, founderName, founderQuote, brandPillars, foundedYear } from "@/data/navigation";
+import {
+  brandLine,
+  founderName,
+  founderRole,
+  founderQuote,
+  founderCredentials,
+  brandPillars,
+  foundedYear,
+} from "@/data/navigation";
 import { HUSN_E_YUSUF, ARK_E_GULAAB } from "@/lib/proper-nouns";
 import { canonical } from "@/lib/seo";
 
@@ -40,17 +48,17 @@ export default function OurStoryPage() {
         </h1>
       </div>
 
-      <Reveal className="mx-auto mt-14 max-w-4xl px-6 sm:px-8">
+      <Reveal className="mx-auto mt-12 max-w-4xl px-6 sm:px-8">
         <SmartImage
           src="/images/kashmir/our-story.jpg"
           alt="Kashmir, the place The Skin Shop's rituals and ingredients come from"
           label="Beauty with a sense of place"
-          className="aspect-[16/9] rounded-2xl"
+          className="aspect-[16/9] rounded-md"
           sizes="(min-width: 1024px) 60vw, 90vw"
         />
       </Reveal>
 
-      <div className="mx-auto max-w-2xl px-6 py-16 sm:px-8 lg:py-20">
+      <div className="mx-auto max-w-2xl px-6 py-[var(--space-section-md)] sm:px-8">
         <Reveal>
           <p className="text-balance text-lg leading-relaxed text-walnut/85">
             Founded in {foundedYear}, The Skin Shop was created around a simple idea:
@@ -89,7 +97,7 @@ export default function OurStoryPage() {
         </Reveal>
       </div>
 
-      <div className="bg-sand/50 py-16 lg:py-20">
+      <div className="bg-sand/50 py-[var(--space-section-md)]">
         <div className="mx-auto max-w-2xl px-6 sm:px-8">
           <Reveal>
             <p className="mb-4 text-center text-xs font-semibold uppercase tracking-[0.2em] text-burgundy">
@@ -122,12 +130,51 @@ export default function OurStoryPage() {
         </div>
       </div>
 
-      <div className="mx-auto max-w-2xl px-6 py-16 text-center sm:px-8 lg:py-20">
+      <div className="mx-auto max-w-wide px-6 py-[var(--space-section-lg)] sm:px-8">
+        <div className="grid items-center gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
+          <Reveal variant="image" className="overflow-hidden rounded-md">
+            <SmartImage
+              src="/images/brand/founder-mumin-bhat.jpg"
+              alt={`${founderName}, ${founderRole} of The Skin Shop`}
+              label={founderName}
+              className="aspect-[4/5] rounded-md"
+              sizes="(min-width: 1024px) 40vw, 90vw"
+            />
+          </Reveal>
+          <Reveal delay={100}>
+            <p className="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-burgundy">
+              Meet The Founder
+            </p>
+            <h2 className="font-display text-3xl leading-tight text-ink sm:text-4xl">
+              {founderName}
+            </h2>
+            <p className="mt-1 text-sm font-medium uppercase tracking-[0.14em] text-walnut/60">
+              {founderRole}
+            </p>
+            <ul className="mt-6 space-y-4 border-t border-gold/20 pt-6">
+              {founderCredentials.map((credential) => (
+                <li
+                  key={credential}
+                  className="flex items-start gap-3 text-balance leading-relaxed text-walnut/85"
+                >
+                  <span
+                    className="mt-2.5 h-1 w-1 flex-shrink-0 rounded-full bg-gold"
+                    aria-hidden="true"
+                  />
+                  <span>{credential}</span>
+                </li>
+              ))}
+            </ul>
+          </Reveal>
+        </div>
+      </div>
+
+      <div className="mx-auto max-w-2xl px-6 pb-16 text-center sm:px-8">
         <Reveal>
           <p className="text-balance font-display text-2xl leading-snug text-ink sm:text-3xl">
             &ldquo;{founderQuote}&rdquo;
           </p>
-          <p className="mt-4 text-sm text-walnut/60">— {founderName}, Founder</p>
+          <p className="mt-4 text-sm text-walnut/60">— {founderName}, {founderRole}</p>
         </Reveal>
       </div>
 

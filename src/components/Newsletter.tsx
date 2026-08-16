@@ -12,7 +12,7 @@ export default function Newsletter() {
   }
 
   return (
-    <section className="bg-sand/60 py-20">
+    <section className="bg-sand/60 py-[var(--space-section-sm)]">
       <div className="mx-auto max-w-2xl px-6 text-center sm:px-8">
         <SectionHeading
           eyebrow="Stay Close"

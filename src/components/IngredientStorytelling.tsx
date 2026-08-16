@@ -6,7 +6,7 @@ import Reveal from "./Reveal";
 
 export default function IngredientStorytelling() {
   return (
-    <section className="mx-auto max-w-7xl px-6 py-20 sm:px-8 lg:py-32">
+    <section className="mx-auto max-w-standard px-6 py-[var(--space-section-lg)] sm:px-8">
       <SectionHeading
         eyebrow="Botanical Roots"
         title="Ingredients With A Story"
@@ -14,7 +14,7 @@ export default function IngredientStorytelling() {
         center
       />
 
-      <div className="mt-16">
+      <div className="mt-12">
         <IngredientScrollytelling />
       </div>
 

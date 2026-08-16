@@ -7,7 +7,7 @@ import { track } from "@/lib/analytics";
 
 export default function Hero() {
   return (
-    <section className="relative -mt-20 h-[92vh] min-h-[560px] w-full overflow-hidden">
+    <section className="relative -mt-[72px] h-[clamp(500px,42vw,640px)] w-full overflow-hidden">
       <div className="absolute inset-0">
         <SmartImage
           src="/images/kashmir/hero-landscape-new.png"

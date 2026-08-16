@@ -66,7 +66,7 @@ export default async function ProductPage({
   ]);
 
   return (
-    <div className="mx-auto max-w-7xl px-6 pb-24 pt-10 sm:px-8 lg:pb-16 lg:pt-14">
+    <div className="mx-auto max-w-standard px-6 pb-[var(--space-section-lg)] pt-10 sm:px-8">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -134,12 +134,12 @@ export default async function ProductPage({
         </div>
       </div>
 
-      <div className="mt-24">
+      <div className="mt-[var(--space-section-lg)]">
         <ReviewsSection type="product" slug={product.slug} subjectName={product.shortName ?? product.name} />
       </div>
 
       {related.length > 0 && (
-        <section className="mt-24">
+        <section className="mt-[var(--space-section-lg)]">
           <SectionHeading eyebrow="Continue The Ritual" title="You May Also Like" />
           <div className="mt-10">
             <ProductGrid products={related} />

@@ -42,7 +42,7 @@ export default function IngredientScrollytelling() {
   return (
     <div className="hidden gap-20 lg:grid lg:grid-cols-[0.9fr_1.1fr]">
       <div className="sticky top-28 self-start">
-        <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-sand">
+        <div className="relative aspect-[4/5] overflow-hidden rounded-md bg-sand">
           {ingredientStories.map((ingredient) => {
             const product = ingredient.relatedProductSlugs[0]
               ? getProductBySlug(ingredient.relatedProductSlugs[0])

@@ -16,7 +16,7 @@ export default function ComboCard({ combo }: { combo: Combo }) {
   const treatment = ritualHoverTreatment[combo.id] ?? defaultRitualTreatment;
 
   return (
-    <div className="group flex flex-col overflow-hidden rounded-2xl border border-gold/15 bg-white/40 transition-[transform,box-shadow] duration-[280ms] ease-premium hover:-translate-y-1 hover:shadow-[0_16px_45px_rgba(42,32,28,0.1)]">
+    <div className="group flex flex-col overflow-hidden rounded-md border border-gold/15 bg-white/40 transition-[transform,box-shadow] duration-[280ms] ease-premium hover:-translate-y-0.5 hover:shadow-[0_10px_28px_rgba(42,32,28,0.1)]">
       <Link href={`/rituals#${combo.slug}`} className="relative block overflow-hidden">
         <SmartImage
           src={combo.image}

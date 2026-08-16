@@ -198,7 +198,7 @@ export default function CartDrawer() {
             </ul>
 
             {suggestion && (
-              <div className="mx-6 mb-2 rounded-2xl border border-gold/20 bg-sand/40 p-4">
+              <div className="mx-6 mb-2 rounded-md border border-gold/20 bg-sand/40 p-4">
                 {suggestion.kind === "complete-ritual" ? (
                   <>
                     <p className="text-xs font-semibold uppercase tracking-wide text-burgundy">
