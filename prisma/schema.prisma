@@ -87,6 +87,8 @@ enum ReviewStatus {
 /// (e.g. 380 = ₹380), matching formatPrice()/the rest of the site — NOT
 /// Razorpay's smallest-unit convention. Conversion to paise happens only at
 /// the Razorpay API boundary (see src/lib/razorpay.ts).
+/// price is DB-CHECK-constrained >= 0 (see
+/// migrations/20260816115500_add_financial_check_constraints).
 model Product {
   id         String      @id @default(cuid())
   slug       String      @unique
@@ -113,6 +115,8 @@ model Product {
 /// price — never the sum of its constituent products (see getComboPricing
 /// in src/data/combos.ts, which computes the "you save" figure from live
 /// product prices rather than storing it).
+/// price is DB-CHECK-constrained >= 0 (see
+/// migrations/20260816115500_add_financial_check_constraints).
 model Combo {
   id         String      @id @default(cuid())
   slug       String      @unique
@@ -131,6 +135,8 @@ model Combo {
   @@index([active])
 }
 
+/// quantity is DB-CHECK-constrained > 0 (see
+/// migrations/20260816115500_add_financial_check_constraints).
 model ComboItem {
   id        String  @id @default(cuid())
   comboId   String
@@ -170,6 +176,9 @@ model Session {
   @@index([expiresAt])
 }
 
+/// value, minimumSubtotal, maxDiscount are DB-CHECK-constrained >= 0 (see
+/// migrations/20260816115500_add_financial_check_constraints) as a backstop
+/// under the app-level validation that already prevents negative values.
 model Coupon {
   id              String       @id @default(cuid())
   code            String       @unique
@@ -187,6 +196,8 @@ model Coupon {
   updatedAt       DateTime     @updatedAt
 }
 
+/// subtotal/discount/shipping/tax/total are DB-CHECK-constrained >= 0 (see
+/// migrations/20260816115500_add_financial_check_constraints).
 model Order {
   id              String      @id @default(cuid())
   orderNumber     String      @unique
@@ -292,6 +303,8 @@ model OrderNotification {
   @@index([status])
 }
 
+/// quantity is DB-CHECK-constrained > 0, unitPrice/lineTotal >= 0 (see
+/// migrations/20260816115500_add_financial_check_constraints).
 model OrderItem {
   id        String       @id @default(cuid())
   orderId   String
@@ -350,4 +363,18 @@ model ProcessedWebhookEvent {
   id        String   @id
   type      String
   createdAt DateTime @default(now())
+}
+
+/// Fixed-window rate-limit ledger for sensitive, low-traffic endpoints
+/// (login, admin login, coupon guesses). Backed by Postgres rather than an
+/// in-memory Map because Vercel's serverless functions are short-lived and
+/// multi-instance — an in-memory counter would reset constantly and never
+/// see traffic hitting a different instance, so it wouldn't actually limit
+/// anything. See src/lib/rate-limit.ts.
+model RateLimitAttempt {
+  id        String   @id @default(cuid())
+  key       String
+  createdAt DateTime @default(now())
+
+  @@index([key, createdAt])
 }

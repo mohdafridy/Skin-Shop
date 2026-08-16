@@ -7,6 +7,7 @@ import {
   verifyRazorpayWebhookSignature,
 } from "@/lib/razorpay";
 import { applyPaymentStatus } from "@/lib/orders/events";
+import { toMinorUnits } from "@/lib/format";
 
 export const runtime = "nodejs";
 
@@ -29,30 +30,42 @@ export const runtime = "nodejs";
 type RazorpayWebhookEvent = {
   event?: string;
   payload?: {
-    payment?: { entity?: { id?: string; order_id?: string; method?: string; status?: string } };
+    payment?: {
+      entity?: {
+        id?: string;
+        order_id?: string;
+        method?: string;
+        status?: string;
+        amount?: number;
+        currency?: string;
+      };
+    };
     order?: { entity?: { id?: string } };
     refund?: { entity?: { id?: string; payment_id?: string; status?: string } };
   };
 };
 
+type OrderForWebhook = { id: string; total: number; currency: string };
+
 /** Resolves our internal order from the gateway ids in the payload. */
-async function findOrderId(entity: {
+async function findOrder(entity: {
   razorpayOrderId?: string | null;
   razorpayPaymentId?: string | null;
-}): Promise<string | null> {
+}): Promise<OrderForWebhook | null> {
+  const select = { id: true, total: true, currency: true } as const;
   if (entity.razorpayOrderId) {
     const byOrder = await prisma.order.findUnique({
       where: { razorpayOrderId: entity.razorpayOrderId },
-      select: { id: true },
+      select,
     });
-    if (byOrder) return byOrder.id;
+    if (byOrder) return byOrder;
   }
   if (entity.razorpayPaymentId) {
     const byPayment = await prisma.order.findFirst({
       where: { razorpayPaymentId: entity.razorpayPaymentId },
-      select: { id: true },
+      select,
     });
-    if (byPayment) return byPayment.id;
+    if (byPayment) return byPayment;
   }
   return null;
 }
@@ -88,7 +101,7 @@ export async function POST(request: Request) {
     `${event.event ?? "unknown"}:${payment?.id ?? refund?.id ?? gatewayOrderId ?? "none"}`;
 
   try {
-    const orderId = await findOrderId({
+    const order = await findOrder({
       razorpayOrderId: gatewayOrderId,
       razorpayPaymentId: payment?.id ?? refund?.payment_id ?? null,
     });
@@ -99,16 +112,37 @@ export async function POST(request: Request) {
       data: { id: `rzp_${eventId}`, type: event.event ?? "unknown" },
     });
 
-    if (!orderId) {
+    if (!order) {
       // Signature was valid but we have no such order — acknowledge so Razorpay
       // stops retrying, and log for investigation.
       console.warn("razorpay_webhook_unknown_order", { event: event.event, gatewayOrderId });
       return NextResponse.json({ received: true });
     }
+    const orderId = order.id;
 
     switch (event.event) {
       case "order.paid":
-      case "payment.captured":
+      case "payment.captured": {
+        // Belt-and-suspenders: the Razorpay Order was already created
+        // server-side with the exact amount, so this should never legitimately
+        // mismatch — but refusing to mark PAID on a mismatch, rather than
+        // trusting the webhook blindly, costs nothing and catches any future
+        // gap in that assumption. Acknowledge (don't make Razorpay retry
+        // forever) but leave the order status untouched for investigation.
+        if (
+          payment?.amount !== undefined &&
+          (payment.amount !== toMinorUnits(order.total) || payment.currency !== order.currency)
+        ) {
+          console.error("razorpay_webhook_amount_mismatch", {
+            orderId,
+            event: event.event,
+            expectedAmount: toMinorUnits(order.total),
+            actualAmount: payment.amount,
+            expectedCurrency: order.currency,
+            actualCurrency: payment.currency,
+          });
+          break;
+        }
         await applyPaymentStatus({
           orderId,
           status: "PAID",
@@ -118,6 +152,7 @@ export async function POST(request: Request) {
           metadata: { source: "webhook", event: event.event },
         });
         break;
+      }
 
       case "payment.failed":
         await applyPaymentStatus({

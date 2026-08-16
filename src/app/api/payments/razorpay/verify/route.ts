@@ -7,6 +7,7 @@ import {
   verifyRazorpayPaymentSignature,
 } from "@/lib/razorpay";
 import { applyPaymentStatus } from "@/lib/orders/events";
+import { toMinorUnits } from "@/lib/format";
 
 export const runtime = "nodejs";
 
@@ -63,7 +64,14 @@ export async function POST(request: Request) {
   try {
     const order = await prisma.order.findUnique({
       where: { id: orderId },
-      select: { id: true, razorpayOrderId: true, accessToken: true, paymentStatus: true },
+      select: {
+        id: true,
+        razorpayOrderId: true,
+        accessToken: true,
+        paymentStatus: true,
+        total: true,
+        currency: true,
+      },
     });
 
     // Binding the signature to the order we actually created blocks replaying
@@ -92,6 +100,29 @@ export async function POST(request: Request) {
       return NextResponse.json(
         { verified: false, message: "That payment didn't complete. Nothing has been charged." },
         { status: 402 },
+      );
+    }
+
+    // Belt-and-suspenders: the Razorpay Order was already created server-side
+    // with the exact amount, so Checkout.js cannot itself substitute a
+    // different one — but confirming what the gateway actually captured
+    // matches what we billed costs nothing and catches any future gap in
+    // that assumption.
+    if (payment.amount !== toMinorUnits(order.total) || payment.currency !== order.currency) {
+      console.error("razorpay_amount_mismatch", {
+        orderId: order.id,
+        expectedAmount: toMinorUnits(order.total),
+        actualAmount: payment.amount,
+        expectedCurrency: order.currency,
+        actualCurrency: payment.currency,
+      });
+      return NextResponse.json(
+        {
+          error: "amount_mismatch",
+          message:
+            "We couldn't verify that payment. If you were charged, please contact us with your order number.",
+        },
+        { status: 400 },
       );
     }
 
