@@ -13,13 +13,22 @@ import type { OrderEventType } from "@prisma/client";
 export const storeName = "The Skin Shop";
 
 /** Server-side canonical site URL. Falls back to the public var the rest of
- * the app already uses, then to localhost for development. */
+ * the app already uses, then to localhost for development.
+ *
+ * The result is fed straight into `new URL(...)` (metadataBase, absoluteUrl),
+ * which throws on a scheme-less value. Env vars are easy to set as a bare host
+ * ("www.skinshopofficial.in"), so normalise here — default to https:// when no
+ * scheme is present — rather than let one misconfigured var break the build. */
 export function siteUrl(): string {
-  return (
+  const raw = (
     process.env.SITE_URL ||
     process.env.NEXT_PUBLIC_SITE_URL ||
     "http://localhost:3000"
-  ).replace(/\/$/, "");
+  )
+    .trim()
+    .replace(/\/+$/, "");
+  if (!raw) return "http://localhost:3000";
+  return /^https?:\/\//i.test(raw) ? raw : `https://${raw}`;
 }
 
 /** Which events notify the customer at all. Internal-only transitions
