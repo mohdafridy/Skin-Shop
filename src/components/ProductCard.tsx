@@ -16,10 +16,10 @@ export default function ProductCard({ product }: { product: Product }) {
   const wishlisted = isWishlisted(product.slug);
 
   return (
-    <div className="group relative flex flex-col rounded-2xl transition-[transform,box-shadow] duration-[350ms] ease-premium hover:-translate-y-1 hover:shadow-[0_18px_50px_rgba(69,48,42,0.08)]">
+    <div className="group relative flex flex-col rounded-md transition-[transform,box-shadow] duration-[350ms] ease-premium hover:-translate-y-0.5 hover:shadow-[0_10px_30px_rgba(69,48,42,0.07)]">
       <Link
         href={`/products/${product.slug}`}
-        className="block overflow-hidden rounded-2xl"
+        className="block overflow-hidden rounded-md"
         aria-label={`View ${product.name}`}
       >
         <SmartImage

@@ -17,7 +17,7 @@ function BestsellerCard({ product }: { product: Product }) {
     <div className="group flex flex-col">
       <Link
         href={`/products/${product.slug}`}
-        className="block overflow-hidden rounded-2xl"
+        className="block overflow-hidden rounded-md"
         aria-label={`View ${product.name}`}
       >
         <SmartImage
@@ -60,7 +60,7 @@ export default function FeaturedProducts() {
   }
 
   return (
-    <section className="mx-auto max-w-7xl px-6 py-20 sm:px-8 lg:py-28">
+    <section className="mx-auto max-w-standard px-6 py-[var(--space-section-md)] sm:px-8">
       <div className="grid min-w-0 gap-10 lg:grid-cols-[1fr_2.3fr] lg:items-end lg:gap-10">
         <div className="min-w-0">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-burgundy">Our Bestsellers</p>

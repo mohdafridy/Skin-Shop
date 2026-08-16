@@ -31,6 +31,25 @@
      the whole site moves with one consistent hand. Available as the
      `ease-premium` Tailwind utility. */
   --ease-premium: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* Named container widths (generates max-w-wide/standard/narrow) — an
+     intentional replacement for the blanket max-w-7xl used everywhere.
+     wide: cinematic full-bleed image sections. standard: the default page
+     container. narrow: long-form reading text (Our Story, editorial copy). */
+  --container-wide: 90rem; /* 1440px */
+  --container-standard: 77.5rem; /* 1240px */
+  --container-narrow: 47.5rem; /* 760px */
+}
+
+/* Section vertical rhythm — roughly half of the padding sections used
+   before this pass, so a normal desktop viewport shows more than one
+   section's worth of content instead of feeling like a slide deck. `lg`
+   gets its own var since most sections scale their padding at that
+   breakpoint. */
+:root {
+  --space-section-sm: clamp(32px, 4vw, 56px);
+  --space-section-md: clamp(48px, 5vw, 76px);
+  --space-section-lg: clamp(64px, 6vw, 96px);
 }
 
 @media (prefers-reduced-motion: reduce) {

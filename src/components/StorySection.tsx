@@ -23,18 +23,18 @@ export default function StorySection({
   reverse = false,
 }: StorySectionProps) {
   return (
-    <section className="mx-auto max-w-7xl px-6 py-20 sm:px-8 lg:py-36">
+    <section className="mx-auto max-w-wide px-6 py-[var(--space-section-lg)] sm:px-8">
       <div
         className={`grid items-center gap-12 lg:grid-cols-2 lg:gap-16 ${
           reverse ? "lg:[&>*:first-child]:order-2" : ""
         }`}
       >
-        <Reveal variant="image" className="overflow-hidden rounded-2xl">
+        <Reveal variant="image" className="overflow-hidden rounded-md">
           <SmartImage
             src={image}
             alt={imageLabel}
             label={imageLabel}
-            className="aspect-[5/4] rounded-2xl"
+            className="aspect-[5/4] rounded-md"
             sizes="(min-width: 1024px) 45vw, 90vw"
           />
         </Reveal>

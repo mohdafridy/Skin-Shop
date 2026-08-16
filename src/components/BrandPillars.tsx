@@ -59,31 +59,28 @@ const pillars: {
 
 export default function BrandPillars() {
   return (
-    <div className="border-b border-gold/15 bg-sand/40 py-14">
-      <div className="mx-auto grid max-w-7xl grid-cols-1 gap-10 divide-y divide-gold/15 px-6 sm:grid-cols-2 sm:gap-8 sm:divide-y-0 sm:px-8 lg:grid-cols-4 lg:divide-x">
-        {pillars.map((pillar, i) => (
-          <div key={pillar.title} className={`flex gap-4 ${i > 0 ? "pt-10 sm:pt-0" : ""} lg:px-6 lg:first:pl-0 lg:last:pr-0`}>
+    <div className="border-b border-gold/15 bg-sand/40 py-7 sm:py-8">
+      <div className="mx-auto grid max-w-standard grid-cols-2 gap-x-6 gap-y-6 px-6 sm:px-8 lg:grid-cols-4 lg:divide-x lg:divide-gold/15">
+        {pillars.map((pillar) => (
+          <Link
+            key={pillar.title}
+            href={pillar.href}
+            className="group flex items-center justify-center gap-3 text-center lg:px-6 lg:first:pl-0 lg:last:pr-0"
+          >
             <svg
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
               strokeWidth="1.4"
-              className="h-7 w-7 flex-shrink-0 text-burgundy"
+              className="h-6 w-6 flex-shrink-0 text-burgundy"
               aria-hidden="true"
             >
               {pillar.icon}
             </svg>
-            <div>
-              <h3 className="font-display text-lg text-ink">{pillar.title}</h3>
-              <p className="mt-1 text-sm text-walnut/70">{pillar.description}</p>
-              <Link
-                href={pillar.href}
-                className="mt-2 inline-block text-xs font-medium text-burgundy underline-offset-2 hover:underline"
-              >
-                Explore
-              </Link>
-            </div>
-          </div>
+            <span className="text-sm font-medium tracking-wide text-ink transition-colors duration-[180ms] ease-premium group-hover:text-burgundy">
+              {pillar.title}
+            </span>
+          </Link>
         ))}
       </div>
     </div>

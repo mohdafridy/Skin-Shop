@@ -21,8 +21,8 @@ export default function StartHere() {
   if (products.length === 0) return null;
 
   return (
-    <section className="bg-sand/40 py-20 lg:py-24">
-      <div className="mx-auto max-w-7xl px-6 sm:px-8">
+    <section className="bg-sand/40 py-[var(--space-section-md)]">
+      <div className="mx-auto max-w-standard px-6 sm:px-8">
         <SectionHeading
           eyebrow="New To The Skin Shop?"
           title="Begin Your Routine"
