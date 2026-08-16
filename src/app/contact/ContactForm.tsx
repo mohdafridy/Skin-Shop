@@ -4,15 +4,45 @@ import { useState } from "react";
 
 export default function ContactForm() {
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setSubmitted(true);
+    if (submitting) return;
+    setError(null);
+    setSubmitting(true);
+
+    const form = e.currentTarget;
+    const data = new FormData(form);
+    const payload = {
+      name: String(data.get("name") ?? ""),
+      email: String(data.get("email") ?? ""),
+      message: String(data.get("message") ?? ""),
+    };
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const body = await res.json().catch(() => null);
+      if (!res.ok || !body?.ok) {
+        setError(body?.message ?? "Something went wrong. Please try again.");
+        return;
+      }
+      setSubmitted(true);
+    } catch {
+      setError("Couldn't send your message. Please check your connection and try again.");
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   if (submitted) {
     return (
-      <p className="rounded-2xl border border-gold/20 bg-white/40 p-8 text-center font-display text-lg text-burgundy" role="status">
+      <p className="rounded-md border border-gold/20 bg-white/40 p-8 text-center font-display text-lg text-burgundy" role="status">
         Thank you — we&apos;ve received your message and will be in touch soon.
       </p>
     );
@@ -29,6 +59,7 @@ export default function ContactForm() {
           name="name"
           type="text"
           required
+          autoComplete="name"
           className="w-full rounded-xl border border-gold/30 bg-white/60 px-4 py-3 text-ink focus:outline-none focus:ring-2 focus:ring-burgundy/50"
         />
       </div>
@@ -41,6 +72,7 @@ export default function ContactForm() {
           name="email"
           type="email"
           required
+          autoComplete="email"
           className="w-full rounded-xl border border-gold/30 bg-white/60 px-4 py-3 text-ink focus:outline-none focus:ring-2 focus:ring-burgundy/50"
         />
       </div>
@@ -56,11 +88,17 @@ export default function ContactForm() {
           className="w-full rounded-xl border border-gold/30 bg-white/60 px-4 py-3 text-ink focus:outline-none focus:ring-2 focus:ring-burgundy/50"
         />
       </div>
+      {error && (
+        <p className="text-sm text-burgundy" role="alert">
+          {error}
+        </p>
+      )}
       <button
         type="submit"
-        className="w-full rounded-full bg-burgundy px-7 py-3.5 text-sm font-medium text-ivory transition hover:bg-burgundy-dark"
+        disabled={submitting}
+        className="w-full rounded-full bg-burgundy px-7 py-3.5 text-sm font-medium text-ivory transition hover:bg-burgundy-dark disabled:cursor-not-allowed disabled:opacity-70"
       >
-        Send Message
+        {submitting ? "Sending…" : "Send Message"}
       </button>
     </form>
   );

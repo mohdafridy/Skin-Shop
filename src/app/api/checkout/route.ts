@@ -11,13 +11,28 @@ import {
   isActiveProviderConfigured,
   unconfiguredProviderMessage,
 } from "@/lib/payment/server";
+import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 
 /** A checkout failure the shopper can act on (an item sold out or was
  * withdrawn). Its message is written to be shown as-is; every other error
  * stays generic so implementation details never reach the browser. */
 class CheckoutError extends Error {}
 
+const CHECKOUT_LIMIT = 15;
+const CHECKOUT_WINDOW_MS = 10 * 60 * 1000;
+
 export async function POST(request: Request) {
+  // Throttle order-creation attempts per IP — guards against order-row and
+  // coupon-reservation spam without impeding a real shopper retrying.
+  const ip = getClientIp(request.headers);
+  const { allowed } = await checkRateLimit(`checkout:${ip}`, CHECKOUT_LIMIT, CHECKOUT_WINDOW_MS);
+  if (!allowed) {
+    return NextResponse.json(
+      { error: "rate_limited", message: "Too many attempts. Please wait a moment and try again." },
+      { status: 429 },
+    );
+  }
+
   // Whichever gateway is active must have its secrets before we touch the
   // database, so checkout degrades to the same honest "not connected yet"
   // response rather than leaving a pending order nothing can pay for.

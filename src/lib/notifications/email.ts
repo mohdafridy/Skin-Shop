@@ -36,6 +36,7 @@ async function deliverViaResend(input: {
   subject: string;
   html: string;
   text: string;
+  replyTo?: string;
 }): Promise<EmailSendResult> {
   const response = await fetch("https://api.resend.com/emails", {
     method: "POST",
@@ -49,6 +50,9 @@ async function deliverViaResend(input: {
       subject: input.subject,
       html: input.html,
       text: input.text,
+      // Lets the store owner reply straight to the customer (used by the
+      // contact form so a reply goes to the sender, not the from-address).
+      ...(input.replyTo ? { reply_to: input.replyTo } : {}),
     }),
     cache: "no-store",
   });
@@ -72,6 +76,7 @@ export async function sendEmail(input: {
   subject: string;
   html: string;
   text: string;
+  replyTo?: string;
 }): Promise<EmailSendResult> {
   const provider = providerId();
   if (provider === "none") {
