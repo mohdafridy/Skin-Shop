@@ -2,10 +2,23 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { calculateDiscount, couponIsUsable } from "@/lib/backend";
+import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 
 const schema = z.object({ code: z.string().trim().min(1).max(64), subtotal: z.number().int().nonnegative() });
 
+const COUPON_LIMIT = 20;
+const COUPON_WINDOW_MS = 5 * 60 * 1000;
+
 export async function POST(request: Request) {
+  const ip = getClientIp(request.headers);
+  const { allowed } = await checkRateLimit(`coupon:${ip}`, COUPON_LIMIT, COUPON_WINDOW_MS);
+  if (!allowed) {
+    return NextResponse.json(
+      { valid: false, message: "Too many attempts. Please try again in a few minutes." },
+      { status: 429 },
+    );
+  }
+
   const parsed = schema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) {
     return NextResponse.json({ valid: false, message: "Invalid request." }, { status: 400 });

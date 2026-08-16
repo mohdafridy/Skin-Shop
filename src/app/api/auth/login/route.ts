@@ -1,12 +1,25 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { createSession, loginSchema, verifyPassword } from "@/lib/auth";
+import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
+
+const LOGIN_LIMIT = 5;
+const LOGIN_WINDOW_MS = 15 * 60 * 1000;
 
 export async function POST(request: Request) {
   if (!process.env.DATABASE_URL) {
     return NextResponse.json(
       { error: "not_configured", message: "Accounts aren't connected yet." },
       { status: 503 },
+    );
+  }
+
+  const ip = getClientIp(request.headers);
+  const { allowed } = await checkRateLimit(`login:${ip}`, LOGIN_LIMIT, LOGIN_WINDOW_MS);
+  if (!allowed) {
+    return NextResponse.json(
+      { error: "rate_limited", message: "Too many attempts. Please try again in a few minutes." },
+      { status: 429 },
     );
   }
 
