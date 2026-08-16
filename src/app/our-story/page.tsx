@@ -134,7 +134,7 @@ export default function OurStoryPage() {
         <div className="grid items-center gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
           <Reveal variant="image" className="overflow-hidden rounded-md">
             <SmartImage
-              src="/images/brand/founder-mumin-bhat.jpg"
+              src="/images/brand/founder-mumin-bhat.png"
               alt={`${founderName}, ${founderRole} of The Skin Shop`}
               label={founderName}
               className="aspect-[4/5] rounded-md"
