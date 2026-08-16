@@ -5,10 +5,33 @@ import SectionHeading from "./SectionHeading";
 
 export default function Newsletter() {
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setSubmitted(true);
+    if (submitting) return;
+    setError(null);
+    setSubmitting(true);
+
+    const email = String(new FormData(e.currentTarget).get("email") ?? "");
+    try {
+      const res = await fetch("/api/newsletter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      const body = await res.json().catch(() => null);
+      if (!res.ok || !body?.ok) {
+        setError(body?.message ?? "Something went wrong. Please try again.");
+        return;
+      }
+      setSubmitted(true);
+    } catch {
+      setError("Couldn't sign you up just now. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -28,27 +51,37 @@ export default function Newsletter() {
             Thank you — you&apos;re on the list.
           </p>
         ) : (
-          <form
-            onSubmit={handleSubmit}
-            className="mx-auto mt-8 flex max-w-md flex-col gap-3 sm:flex-row"
-          >
-            <label htmlFor="newsletter-email" className="sr-only">
-              Email address
-            </label>
-            <input
-              id="newsletter-email"
-              type="email"
-              required
-              placeholder="Your email address"
-              className="w-full flex-1 rounded-full border border-gold/30 bg-ivory px-5 py-3 text-sm text-ink placeholder:text-walnut/40 focus:outline-none focus:ring-2 focus:ring-burgundy/50"
-            />
-            <button
-              type="submit"
-              className="flex-shrink-0 rounded-full bg-burgundy px-6 py-3 text-sm font-medium text-ivory transition hover:bg-burgundy-dark"
+          <>
+            <form
+              onSubmit={handleSubmit}
+              className="mx-auto mt-8 flex max-w-md flex-col gap-3 sm:flex-row"
             >
-              Join The Ritual
-            </button>
-          </form>
+              <label htmlFor="newsletter-email" className="sr-only">
+                Email address
+              </label>
+              <input
+                id="newsletter-email"
+                name="email"
+                type="email"
+                required
+                autoComplete="email"
+                placeholder="Your email address"
+                className="w-full flex-1 rounded-full border border-gold/30 bg-ivory px-5 py-3 text-sm text-ink placeholder:text-walnut/40 focus:outline-none focus:ring-2 focus:ring-burgundy/50"
+              />
+              <button
+                type="submit"
+                disabled={submitting}
+                className="flex-shrink-0 rounded-full bg-burgundy px-6 py-3 text-sm font-medium text-ivory transition hover:bg-burgundy-dark disabled:cursor-not-allowed disabled:opacity-70"
+              >
+                {submitting ? "Joining…" : "Join The Ritual"}
+              </button>
+            </form>
+            {error && (
+              <p className="mt-3 text-sm text-burgundy" role="alert">
+                {error}
+              </p>
+            )}
+          </>
         )}
       </div>
     </section>

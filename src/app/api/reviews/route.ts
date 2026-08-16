@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { reviewSchema } from "@/lib/backend";
+import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
+
+const REVIEW_LIMIT = 5;
+const REVIEW_WINDOW_MS = 15 * 60 * 1000;
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -29,6 +33,15 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  const ip = getClientIp(request.headers);
+  const { allowed } = await checkRateLimit(`review:${ip}`, REVIEW_LIMIT, REVIEW_WINDOW_MS);
+  if (!allowed) {
+    return NextResponse.json(
+      { error: "Too many submissions. Please try again in a few minutes." },
+      { status: 429 },
+    );
+  }
+
   const parsed = reviewSchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) {
     return NextResponse.json({ error: "Invalid review.", details: parsed.error.flatten() }, { status: 400 });
