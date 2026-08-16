@@ -11,7 +11,6 @@ import {
   brandPillars,
   foundedYear,
 } from "@/data/navigation";
-import { HUSN_E_YUSUF, ARK_E_GULAAB } from "@/lib/proper-nouns";
 import { canonical } from "@/lib/seo";
 
 const philosophyPoints = [
@@ -28,13 +27,6 @@ export const metadata: Metadata = {
     "The Skin Shop was created to bring ingredients and rituals that feel familiar, treasured and timeless into the way people care for themselves today.",
   alternates: canonical("/our-story"),
 };
-
-const transformations = [
-  `Rose becomes ${ARK_E_GULAAB}.`,
-  "Saffron becomes an indulgent gel ritual.",
-  "Rosemary enters modern hair care.",
-  `${HUSN_E_YUSUF} becomes part of cleansing and exfoliation.`,
-];
 
 export default function OurStoryPage() {
   return (
@@ -69,19 +61,6 @@ export default function OurStoryPage() {
             Across the collection, botanical traditions meet contemporary skincare
             formats.
           </p>
-        </Reveal>
-
-        <Reveal delay={80}>
-          <ul className="mt-10 space-y-4 border-y border-gold/20 py-8">
-            {transformations.map((line) => (
-              <li
-                key={line}
-                className="text-balance font-display text-xl text-ink sm:text-2xl"
-              >
-                {line}
-              </li>
-            ))}
-          </ul>
         </Reveal>
 
         <Reveal delay={120}>
