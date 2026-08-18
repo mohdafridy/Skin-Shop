@@ -37,7 +37,7 @@ export const ritualCategories: RitualCategory[] = [
   {
     filterValues: ["Hair", "Body"],
     name: "Care Beyond The Face",
-    description: "Rosemary hair care and argan body care, for beyond-the-face routines.",
+    description: "Rosemary hair care and argan body care, for the rest of you.",
     representativeSlug: "rosemary-hair-serum",
   },
   {

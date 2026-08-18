@@ -65,7 +65,7 @@ export default function Hero() {
         </p>
 
         <h1
-          className="stagger-in mt-4 max-w-[330px] font-display font-normal tracking-tight text-ivory text-[clamp(2.625rem,10.6vw,3.25rem)] leading-[0.99] lg:mt-5 lg:max-w-[520px] lg:font-medium lg:text-[clamp(3.5rem,4.6vw,4.5rem)] lg:leading-[1.0]"
+          className="stagger-in mt-4 max-w-[330px] font-display font-normal tracking-tight text-ivory text-[clamp(2.625rem,10.6vw,3.25rem)] leading-[0.99] lg:mt-5 lg:max-w-[520px] lg:text-[clamp(3.5rem,4.6vw,4.5rem)] lg:leading-[1.0]"
           style={{ "--stagger-rise": "10px", "--stagger-delay": "80ms" } as React.CSSProperties}
         >
           Rooted in Kashmir.
@@ -90,8 +90,8 @@ export default function Hero() {
           className="stagger-in mt-6 max-w-[315px] text-base leading-[1.5] text-ivory/90 sm:max-w-[360px] lg:text-[17px] lg:leading-[1.55]"
           style={{ "--stagger-rise": "8px", "--stagger-delay": "200ms" } as React.CSSProperties}
         >
-          Botanical beauty inspired by ritual, ingredients, and a remarkable sense of
-          place.
+          Thoughtfully made skincare inspired by Kashmir&rsquo;s botanicals, beauty
+          traditions, and remarkable sense of place.
         </p>
 
         <div

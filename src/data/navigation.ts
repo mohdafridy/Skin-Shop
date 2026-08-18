@@ -48,7 +48,9 @@ export const footerColumns: { title: string; links: NavLink[] }[] = [
 
 export const brandLine = "Rooted in Kashmir. Made for Your Ritual.";
 export const logoLine = "To End Skin Problems.";
-export const announcementMessage = brandLine;
+// Deliberately NOT the hero tagline — the hero owns "Rooted in Kashmir. Made
+// for Your Ritual." so the first viewport doesn't say the same line twice.
+export const announcementMessage = "Botanical Beauty, Handcrafted in Kashmir";
 
 // As supplied by the business — the tagline printed on packaging.
 export const productTagline = "Food For Your Skin";

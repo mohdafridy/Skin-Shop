@@ -10,7 +10,6 @@ import CuratedRituals from "@/components/CuratedRituals";
 import CustomerExperience from "@/components/CustomerExperience";
 import EditorialSection from "@/components/EditorialSection";
 import Newsletter from "@/components/Newsletter";
-import { HUSN_E_YUSUF } from "@/lib/proper-nouns";
 import { canonical } from "@/lib/seo";
 
 export const metadata: Metadata = {
@@ -30,15 +29,13 @@ export default function HomePage() {
 
       <StorySection
         eyebrow="Our Story"
-        title="From Kashmir, With Care"
+        title="Inspired by a Remarkable Place"
         paragraphs={[
-          "Some beauty products simply occupy a place on the shelf. Others become the products you reach for every morning, pack when you travel and recommend to somebody you love.",
-          `The Skin Shop brings familiar botanical ingredients into contemporary everyday care. Rose, saffron, rosemary, moringa, argan, jojoba, shea, coffee, Vitamin C and ${HUSN_E_YUSUF} meet modern formats including serums, gels, masks, cleansers and creams.`,
-          "The result is a collection where heritage meets the modern dressing table — and an everyday routine begins to feel like a ritual.",
+          "Kashmir is more than where we make our products; it shapes how we think about beauty. From botanicals treasured for generations to a culture of craftsmanship and care, we translate that sense of place into skincare made to be used and loved every day.",
         ]}
         image="/images/kashmir/story-editorial.jpg"
         imageLabel="From Kashmir, with care"
-        cta={{ label: "Read Our Story", href: "/our-story" }}
+        cta={{ label: "Our Story", href: "/our-story" }}
       />
 
       <ShopByRitual />

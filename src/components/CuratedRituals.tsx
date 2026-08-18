@@ -9,8 +9,8 @@ export default function CuratedRituals() {
       <div className="mx-auto max-w-standard px-6 sm:px-8">
         <SectionHeading
           eyebrow="Together"
-          title="Curated Rituals"
-          subtitle="Three ways to experience The Skin Shop together."
+          title="The Art of Pairing"
+          subtitle="Skincare companions selected to work beautifully together, whatever kind of care your skin needs today."
           center
           light
         />

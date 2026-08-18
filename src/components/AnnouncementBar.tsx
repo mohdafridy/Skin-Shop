@@ -12,7 +12,7 @@ export default function AnnouncementBar() {
 
   return (
     <div className="flex h-8 items-center justify-center bg-wine px-4 sm:h-9">
-      <p className="text-center font-display text-sm tracking-wide text-ivory sm:text-base">
+      <p className="text-center font-sans text-[11px] font-medium leading-none tracking-[0.06em] text-ivory sm:text-xs">
         {announcementMessage}
       </p>
     </div>

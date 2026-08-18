@@ -224,7 +224,7 @@ export default function Header() {
               <Link
                 key={item.label}
                 href={item.href}
-                className="rounded-lg px-2 py-3.5 font-display text-xl transition hover:bg-sand"
+                className="rounded-lg px-2 py-3.5 font-sans text-base font-medium tracking-wide transition hover:bg-sand"
               >
                 {item.label}
               </Link>
