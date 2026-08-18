@@ -24,6 +24,8 @@ export default function HomePage() {
 
       <StartHere />
 
+      <CuratedRituals />
+
       <StorySection
         eyebrow="Our Story"
         title="Inspired by a Remarkable Place"
@@ -38,8 +40,6 @@ export default function HomePage() {
       <ShopByRitual />
 
       <IngredientStorytelling />
-
-      <CuratedRituals />
 
       <CustomerExperience />
 
