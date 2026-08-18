@@ -18,7 +18,7 @@ import { track } from "@/lib/analytics";
  */
 export default function Hero() {
   return (
-    <section className="relative -mt-[72px] h-[clamp(780px,120vw,900px)] w-full overflow-hidden lg:h-[clamp(720px,54vw,820px)]">
+    <section className="relative -mt-[72px] h-[clamp(780px,120vw,900px)] w-full overflow-hidden lg:h-[clamp(520px,41.7vw,680px)]">
       {/* Photography. Mobile portrait / desktop wide — each viewport downloads
           only its own image. The hero image is the LCP element, so it is
           eagerly loaded (priority), never lazy. */}
@@ -56,7 +56,7 @@ export default function Hero() {
 
       {/* Copy. Mobile: upper third, story-first; capped at 330px so it never
           runs across the products. Desktop: left ~8% inset, upper third. */}
-      <div className="relative mx-auto flex h-full w-full max-w-7xl flex-col items-start justify-start px-6 pt-[115px] text-left sm:px-8 lg:px-8 lg:pt-[210px]">
+      <div className="relative mx-auto flex h-full w-full max-w-7xl flex-col items-start justify-start px-6 pt-[115px] text-left sm:px-8 lg:justify-center lg:px-8 lg:pt-0">
         <p
           className="stagger-in text-xs font-semibold uppercase tracking-[0.2em] text-gold lg:text-sm lg:tracking-[0.22em]"
           style={{ "--stagger-rise": "6px", "--stagger-delay": "0ms" } as React.CSSProperties}
