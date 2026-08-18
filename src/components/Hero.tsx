@@ -8,20 +8,20 @@ import { track } from "@/lib/analytics";
 
 /**
  * "Option C" editorial hero — two reading zones inside one continuous
- * photograph: a quiet, gradient-darkened LEFT for the story/typography and a
- * bright product still-life on the RIGHT. The gradient is localized (it fades
- * out before the product cluster) rather than a panel or a whole-image tint,
- * so the photo never looks overlaid.
+ * photograph: a quiet, gradient-darkened story area (LEFT on desktop, TOP on
+ * mobile) and a bright product still-life (RIGHT / lower). The gradient is
+ * localized — it fades out before the products — rather than a panel or a
+ * whole-image tint, so the photo never looks overlaid.
  *
- * The effect depends on photography composed with negative space on the left
- * (desktop) / top (mobile); the art-directed sources are swapped per breakpoint.
+ * Art-directed sources are swapped per breakpoint: a portrait crop on phones,
+ * a wide crop on desktop, so each viewport gets a composition made for it.
  */
 export default function Hero() {
   return (
-    <section className="relative -mt-[72px] h-[clamp(760px,118vw,900px)] w-full overflow-hidden lg:h-[clamp(720px,54vw,820px)]">
-      {/* Photography — portrait crop on phones, wide on desktop. Each viewport
-          downloads only its own image. object-position keeps the product
-          cluster in the lower area on mobile and toward the right on desktop. */}
+    <section className="relative -mt-[72px] h-[clamp(780px,120vw,900px)] w-full overflow-hidden lg:h-[clamp(720px,54vw,820px)]">
+      {/* Photography. Mobile portrait / desktop wide — each viewport downloads
+          only its own image. The hero image is the LCP element, so it is
+          eagerly loaded (priority), never lazy. */}
       <div className="absolute inset-0">
         <SmartImage
           src="/images/kashmir/hero-mobile.png"
@@ -30,7 +30,7 @@ export default function Hero() {
           priority
           labelPosition="corner"
           className="h-full w-full lg:hidden"
-          imageClassName="animate-slow-zoom object-[center_78%]"
+          imageClassName="animate-slow-zoom object-center"
           sizes="100vw"
         />
         <SmartImage
@@ -48,26 +48,24 @@ export default function Hero() {
       {/* Localized text-zone gradient — warm wine/brown, no hard edge.
           Mobile: from the top, gone before the lower product cluster.
           Desktop: from the left, gone before the right-side products. */}
-      <div
-        className="pointer-events-none absolute inset-0 bg-[linear-gradient(178deg,rgba(84,33,43,0.66)_0%,rgba(84,33,43,0.40)_26%,rgba(84,33,43,0.12)_44%,transparent_58%)] lg:bg-[linear-gradient(98deg,rgba(84,33,43,0.74)_0%,rgba(84,33,43,0.48)_25%,rgba(84,33,43,0.16)_44%,transparent_60%)]"
-      />
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(55,22,25,0.58)_0%,rgba(55,22,25,0.38)_30%,rgba(55,22,25,0.12)_55%,rgba(55,22,25,0)_72%)] lg:bg-[linear-gradient(98deg,rgba(84,33,43,0.74)_0%,rgba(84,33,43,0.48)_25%,rgba(84,33,43,0.16)_44%,transparent_60%)]" />
 
       {/* Slim top gradient — keeps the transparent nav legible without tinting
           the whole photograph. */}
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-ink/35 to-transparent" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-ink/35 to-transparent" />
 
-      {/* Copy — left ~8% inset (via the centered container), upper-third
-          vertical position. Never widened into the product area. */}
-      <div className="relative mx-auto flex h-full w-full max-w-7xl flex-col items-start justify-start px-6 pt-28 text-left sm:px-8 lg:px-8 lg:pt-[210px]">
+      {/* Copy. Mobile: upper third, story-first; capped at 330px so it never
+          runs across the products. Desktop: left ~8% inset, upper third. */}
+      <div className="relative mx-auto flex h-full w-full max-w-7xl flex-col items-start justify-start px-6 pt-[115px] text-left sm:px-8 lg:px-8 lg:pt-[210px]">
         <p
-          className="stagger-in text-[13px] font-semibold uppercase tracking-[0.22em] text-gold sm:text-sm"
+          className="stagger-in text-xs font-semibold uppercase tracking-[0.2em] text-gold lg:text-sm lg:tracking-[0.22em]"
           style={{ "--stagger-rise": "6px", "--stagger-delay": "0ms" } as React.CSSProperties}
         >
           {productTagline}
         </p>
 
         <h1
-          className="stagger-in mt-5 max-w-[520px] font-display font-medium tracking-tight text-ivory text-[clamp(2.75rem,10vw,3.25rem)] leading-[1.02] lg:text-[clamp(3.5rem,4.6vw,4.5rem)] lg:leading-[1.0]"
+          className="stagger-in mt-4 max-w-[330px] font-display font-normal tracking-tight text-ivory text-[clamp(2.625rem,10.6vw,3.25rem)] leading-[0.99] lg:mt-5 lg:max-w-[520px] lg:font-medium lg:text-[clamp(3.5rem,4.6vw,4.5rem)] lg:leading-[1.0]"
           style={{ "--stagger-rise": "10px", "--stagger-delay": "80ms" } as React.CSSProperties}
         >
           Rooted in Kashmir.
@@ -76,8 +74,8 @@ export default function Hero() {
         </h1>
 
         {/* Fine gold divider with a small botanical ornament — craftsmanship
-            cue, deliberately understated. Hidden on the very smallest screens
-            where vertical space is tight. */}
+            cue. Desktop/tablet only; on phones the vertical budget is spent on
+            the headline and copy instead. */}
         <div
           className="stagger-in mt-7 hidden items-center gap-3 sm:flex"
           style={{ "--stagger-rise": "6px", "--stagger-delay": "140ms" } as React.CSSProperties}
@@ -89,7 +87,7 @@ export default function Hero() {
         </div>
 
         <p
-          className="stagger-in mt-6 max-w-[340px] text-[15px] leading-relaxed text-ivory/90 sm:max-w-[360px] lg:text-[17px] lg:leading-[1.55]"
+          className="stagger-in mt-6 max-w-[315px] text-base leading-[1.5] text-ivory/90 sm:max-w-[360px] lg:text-[17px] lg:leading-[1.55]"
           style={{ "--stagger-rise": "8px", "--stagger-delay": "200ms" } as React.CSSProperties}
         >
           Botanical beauty inspired by ritual, ingredients, and a remarkable sense of
@@ -97,13 +95,13 @@ export default function Hero() {
         </p>
 
         <div
-          className="stagger-in mt-8 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:gap-6"
+          className="stagger-in mt-7 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:gap-6 lg:mt-8"
           style={{ "--stagger-rise": "0px", "--stagger-delay": "260ms" } as React.CSSProperties}
         >
           <Link
             href="/shop"
             onClick={() => track({ name: "hero_cta_click", cta: "Shop All" })}
-            className="group inline-flex h-[54px] min-w-[190px] items-center justify-between gap-5 rounded-full bg-ivory pl-7 pr-6 text-sm font-semibold uppercase tracking-[0.12em] text-burgundy-dark transition-[background-color,transform] duration-[180ms] ease-premium hover:-translate-y-px hover:bg-sand"
+            className="group inline-flex h-[54px] min-w-[170px] items-center justify-between gap-5 rounded-full bg-ivory pl-7 pr-6 text-sm font-semibold uppercase tracking-[0.12em] text-burgundy-dark transition-[background-color,transform] duration-[180ms] ease-premium hover:-translate-y-px hover:bg-sand sm:min-w-[190px]"
           >
             Shop All
             <span
