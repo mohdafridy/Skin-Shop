@@ -43,7 +43,8 @@ export default function Newsletter() {
           center
         />
         <p className="mx-auto mt-3 max-w-md text-balance text-walnut/75">
-          New rituals, ingredient stories and Skin Shop favourites — sent thoughtfully.
+          New launches, skincare notes, ingredient stories and a little inspiration from
+          Kashmir — sent occasionally to your inbox.
         </p>
 
         {submitted ? (
@@ -73,7 +74,7 @@ export default function Newsletter() {
                 disabled={submitting}
                 className="flex-shrink-0 rounded-full bg-burgundy px-6 py-3 text-sm font-medium text-ivory transition hover:bg-burgundy-dark disabled:cursor-not-allowed disabled:opacity-70"
               >
-                {submitting ? "Joining…" : "Join The Ritual"}
+                {submitting ? "Joining…" : "Join The Skin Shop"}
               </button>
             </form>
             {error && (

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { footerColumns, brandLine, productTagline, foundedYear } from "@/data/navigation";
+import { footerColumns, productTagline, foundedYear } from "@/data/navigation";
 import { contactEmail, contactPhoneDisplay, whatsappLink } from "@/data/contact";
 import Logo from "./Logo";
 import SectionDivider from "./SectionDivider";
@@ -76,7 +76,9 @@ export default function Footer() {
 
       <div className="border-t border-sand/15 bg-walnut">
         <div className="mx-auto flex max-w-7xl flex-col items-start gap-3 px-6 py-6 text-xs text-sand/60 sm:flex-row sm:items-center sm:justify-between sm:px-8">
-          <p className="font-display text-sm text-sand/80">{brandLine}</p>
+          <p className="font-display text-sm text-sand/80">
+            Botanical skincare, thoughtfully made in Kashmir.
+          </p>
           <p>
             &copy; {foundedYear}–{new Date().getFullYear()} The Skin Shop. All rights reserved.
           </p>

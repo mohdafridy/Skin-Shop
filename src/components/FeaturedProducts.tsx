@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import Link from "next/link";
-import { products, type Product } from "@/data/products";
+import { getProductBySlug, type Product } from "@/data/products";
 import { formatPrice } from "@/lib/format";
 import { useCart } from "@/lib/cart-context";
 import { useAddedFeedback } from "@/lib/use-added-feedback";
@@ -50,7 +50,19 @@ function BestsellerCard({ product }: { product: Product }) {
 }
 
 export default function FeaturedProducts() {
-  const featured = products.filter((p) => p.featured);
+  // A deliberately DIFFERENT set from StartHere above — no product should
+  // repeat across both rows within one short scroll. Everyday favourites
+  // spanning categories (gel, hair, body, cleanser, exfoliator, lip).
+  const featured = [
+    "saffron-gel",
+    "rosemary-hair-serum",
+    "argan-body-whitening-cream",
+    "moringa-whitening-soap-cleanser",
+    "husn-e-yusuf-exfoliator",
+    "shea-lip-balm",
+  ]
+    .map(getProductBySlug)
+    .filter((p): p is Product => p != null);
   const scrollerRef = useRef<HTMLDivElement>(null);
 
   function scrollByAmount(direction: 1 | -1) {
@@ -63,12 +75,12 @@ export default function FeaturedProducts() {
     <section className="mx-auto max-w-standard px-6 py-[var(--space-section-md)] sm:px-8">
       <div className="grid min-w-0 gap-10 lg:grid-cols-[1fr_2.3fr] lg:items-end lg:gap-10">
         <div className="min-w-0">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-burgundy">Our Bestsellers</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-burgundy">Bestsellers</p>
           <h2 className="mt-3 text-balance font-display text-3xl leading-tight text-ink sm:text-4xl">
-            Discover what your skin will love
+            Loved, Reordered, Recommended
           </h2>
           <p className="mt-4 max-w-xs text-balance text-walnut/75">
-            Handpicked favorites from our botanical collections.
+            Meet the formulas that have become everyday favourites.
           </p>
           <Link
             href="/shop"

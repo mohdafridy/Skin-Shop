@@ -25,8 +25,8 @@ export default function StartHere() {
       <div className="mx-auto max-w-standard px-6 sm:px-8">
         <SectionHeading
           eyebrow="New To The Skin Shop?"
-          title="Begin Your Routine"
-          subtitle="No need to learn all twelve products at once. Begin here, and explore the rest of the collection whenever you're ready."
+          title="A Beautiful Place to Begin"
+          subtitle="A thoughtful introduction to our most-loved formulas for cleansing, hydrating, brightening and everyday care."
           center
         />
 

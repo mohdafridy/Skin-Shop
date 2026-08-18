@@ -9,7 +9,12 @@ export default function ShopByRitual() {
   return (
     <section className="bg-sand/50 py-[var(--space-section-md)]">
       <div className="mx-auto max-w-standard px-6 sm:px-8">
-        <SectionHeading eyebrow="Shop By Desire" title="What Are You In The Mood For?" center />
+        <SectionHeading
+          eyebrow="Shop By Need"
+          title="Find Your Kind of Care"
+          subtitle="Explore skincare by what you want more of — hydration, radiance, nourishment, clarity or calm."
+          center
+        />
 
         <div className="mt-10 grid grid-cols-2 gap-5 sm:grid-cols-3">
           {ritualCategories.map((ritual, i) => {

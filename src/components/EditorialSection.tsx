@@ -13,8 +13,9 @@ export default function EditorialSection() {
   return (
     <section className="mx-auto max-w-wide px-6 py-[var(--space-section-lg)] sm:px-8">
       <SectionHeading
-        eyebrow="A World, Not Just A Product"
-        title="Ritual, Material, Place"
+        eyebrow="Craftsmanship"
+        title="The Craft Behind the Care"
+        subtitle="From the ingredients we choose to the textures, fragrances and finishing touches, every detail is considered to make everyday skincare feel a little more special."
         center
       />
       <div className="mt-10 grid grid-cols-2 gap-4 lg:grid-cols-4">
