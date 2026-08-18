@@ -4,17 +4,18 @@ import ProductCard from "./ProductCard";
 import Reveal from "./Reveal";
 
 /**
- * A gentle, low-commitment entry point for first-time visitors, additive to
- * (never a replacement for) the full 12-product collection shown elsewhere.
- * Highlights five real hot-sellers.
+ * The homepage's single product-discovery section: the five best-sellers,
+ * doubling as an easy entry point for first-time visitors (this merges what
+ * used to be a separate "Bestsellers" row, so the same products never appear
+ * twice within one short scroll). Order and selection supplied by the business.
  */
 export default function StartHere() {
   const slugs = [
-    "husn-e-yusuf-whitening-soap-cleanser",
     "dahab-whitening-night-cream",
     "vitamin-c-serum",
+    "husn-e-yusuf-whitening-soap-cleanser",
     "coffee-detox-facemask",
-    "ark-e-gulaab",
+    "argan-body-whitening-cream",
   ];
   const products = slugs.map(getProductBySlug).filter((p) => p != null);
 
@@ -26,7 +27,7 @@ export default function StartHere() {
         <SectionHeading
           eyebrow="New To The Skin Shop?"
           title="A Beautiful Place to Begin"
-          subtitle="A thoughtful introduction to our most-loved formulas for cleansing, hydrating, brightening and everyday care."
+          subtitle="Loved, reordered and recommended — the formulas customers come back to, and an easy place to start."
           center
         />
 

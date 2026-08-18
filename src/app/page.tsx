@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Hero from "@/components/Hero";
 import BrandPillars from "@/components/BrandPillars";
 import StartHere from "@/components/StartHere";
-import FeaturedProducts from "@/components/FeaturedProducts";
 import StorySection from "@/components/StorySection";
 import ShopByRitual from "@/components/ShopByRitual";
 import IngredientStorytelling from "@/components/IngredientStorytelling";
@@ -24,8 +23,6 @@ export default function HomePage() {
       <BrandPillars />
 
       <StartHere />
-
-      <FeaturedProducts />
 
       <StorySection
         eyebrow="Our Story"
