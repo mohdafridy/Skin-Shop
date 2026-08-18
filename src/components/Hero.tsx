@@ -9,13 +9,26 @@ export default function Hero() {
   return (
     <section className="relative -mt-[72px] h-[clamp(500px,42vw,640px)] w-full overflow-hidden">
       <div className="absolute inset-0">
+        {/* Art-directed hero: a tall portrait crop on phones, the wide landscape
+            on tablet/desktop. Each is display-toggled by breakpoint so a viewport
+            only downloads its own image. */}
         <SmartImage
-          src="/images/kashmir/hero-landscape-new.png"
-          alt="The Skin Shop's botanical skincare products displayed on a moss-covered rock against the Kashmir mountains"
+          src="/images/kashmir/hero-mobile.png"
+          alt="The Skin Shop's skincare collection arranged before the Dal Lake at sunset in Kashmir"
           label="The Skin Shop collection in Kashmir"
           priority
           labelPosition="corner"
-          className="h-full w-full"
+          className="h-full w-full lg:hidden"
+          imageClassName="animate-slow-zoom"
+          sizes="100vw"
+        />
+        <SmartImage
+          src="/images/kashmir/hero-desktop.png"
+          alt="The Skin Shop's full skincare collection arranged before the Dal Lake at sunset in Kashmir"
+          label="The Skin Shop collection in Kashmir"
+          priority
+          labelPosition="corner"
+          className="hidden h-full w-full lg:block"
           imageClassName="animate-slow-zoom"
           sizes="100vw"
         />
