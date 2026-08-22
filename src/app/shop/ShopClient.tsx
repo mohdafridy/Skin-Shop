@@ -16,12 +16,6 @@ const sortLabels: Record<SortOption, string> = {
   "price-desc": "Price: High to Low",
 };
 
-// Collections only. Per-product `category` values are mostly 1 product
-// each (e.g. only "Face Cleanser" has 2) — listing all of them as separate
-// chips alongside collections just duplicated the same handful of Skin
-// products across many near-identical single-item filters. `category`
-// still filters correctly via a direct link/query param and still shows on
-// each product card; it's just not a top-level chip anymore.
 const filterChips = [...collections];
 
 function sortProducts(list: Product[], sort: SortOption): Product[] {
@@ -38,6 +32,7 @@ export default function ShopClient() {
   const searchParams = useSearchParams();
 
   const initialFilter =
+    searchParams.get("filter") ??
     searchParams.get("collection") ??
     searchParams.get("category") ??
     searchParams.get("ritual") ??
@@ -52,18 +47,13 @@ export default function ShopClient() {
     const params = new URLSearchParams();
     if (value) params.set("filter", value);
     if (query) params.set("q", query);
-    router.replace(`/shop${params.toString() ? `?${params.toString()}` : ""}`, {
-      scroll: false,
-    });
+    router.replace(`/shop${params.toString() ? `?${params.toString()}` : ""}`, { scroll: false });
   }
 
   const filtered = useMemo(() => {
     let list = products;
 
     if (activeFilter) {
-      // Supports comma-joined values so one link can OR together multiple
-      // real category/ritualTag values (e.g. "Hair,Body") for a combined
-      // discovery pathway, without inventing a category that doesn't exist.
       const values = activeFilter.split(",");
       list = list.filter((p) =>
         values.some(
@@ -83,24 +73,28 @@ export default function ShopClient() {
   }, [activeFilter, query, sort]);
 
   return (
-    <div className="mx-auto max-w-standard px-6 py-[var(--space-section-md)] sm:px-8">
-      <div className="mb-3">
-        <h1 className="font-display text-4xl text-ink sm:text-5xl">Shop All</h1>
-        <p className="mt-2 text-sm text-walnut/70">
-          {filtered.length} product{filtered.length === 1 ? "" : "s"}
-        </p>
-      </div>
+    <div className="mx-auto max-w-standard px-6 pb-[var(--space-section-lg)] pt-14 sm:px-8 lg:pt-20">
+      <header className="border-b border-gold/20 pb-8 lg:pb-10">
+        <div className="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-end">
+          <div>
+            <div className="flex items-center gap-3">
+              <span className="h-px w-8 bg-gold/80" aria-hidden="true" />
+              <p className="text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-burgundy">The Collection</p>
+            </div>
+            <h1 className="mt-4 font-display text-[clamp(3.2rem,7vw,6.3rem)] leading-[0.88] tracking-[-0.055em] text-ink">Shop All</h1>
+          </div>
+          <p className="pb-1 text-xs font-semibold uppercase tracking-[0.12em] text-walnut/48">
+            {filtered.length} product{filtered.length === 1 ? "" : "s"}
+          </p>
+        </div>
+      </header>
 
-      <div className="mb-10 flex flex-col gap-5 border-b border-gold/20 pb-8 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex flex-1 flex-wrap gap-2">
+      <div className="mb-12 grid gap-6 border-b border-gold/20 py-6 lg:grid-cols-[1fr_auto] lg:items-center">
+        <div className="flex min-w-0 flex-wrap gap-x-6 gap-y-1">
           <button
             type="button"
             onClick={() => applyFilter(null)}
-            className={`rounded-full border px-4 py-2 text-xs font-medium transition ${
-              !activeFilter
-                ? "border-burgundy bg-burgundy text-ivory"
-                : "border-gold/30 text-walnut/70 hover:border-burgundy hover:text-burgundy"
-            }`}
+            className={`editorial-tab ${!activeFilter ? "is-active" : ""}`}
           >
             All
           </button>
@@ -109,44 +103,38 @@ export default function ShopClient() {
               key={chip}
               type="button"
               onClick={() => applyFilter(chip)}
-              className={`rounded-full border px-4 py-2 text-xs font-medium transition ${
-                activeFilter === chip
-                  ? "border-burgundy bg-burgundy text-ivory"
-                  : "border-gold/30 text-walnut/70 hover:border-burgundy hover:text-burgundy"
-              }`}
+              className={`editorial-tab ${activeFilter === chip ? "is-active" : ""}`}
             >
               {chip}
             </button>
           ))}
         </div>
 
-        <div className="flex flex-wrap items-center gap-3">
-          <label htmlFor="shop-search" className="sr-only">
-            Search products
-          </label>
-          <input
-            id="shop-search"
-            type="search"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search…"
-            className="w-full min-w-0 flex-1 rounded-full border border-gold/30 bg-white/60 px-4 py-2 text-sm text-ink placeholder:text-walnut/40 focus:outline-none focus:ring-2 focus:ring-burgundy/50 sm:w-48"
-          />
-          <label htmlFor="shop-sort" className="sr-only">
-            Sort products
-          </label>
-          <select
-            id="shop-sort"
-            value={sort}
-            onChange={(e) => setSort(e.target.value as SortOption)}
-            className="rounded-full border border-gold/30 bg-white/60 px-4 py-2 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-burgundy/50"
-          >
-            {Object.entries(sortLabels).map(([value, label]) => (
-              <option key={value} value={value}>
-                {label}
-              </option>
-            ))}
-          </select>
+        <div className="grid gap-4 sm:grid-cols-[minmax(180px,240px)_auto] sm:items-end">
+          <div>
+            <label htmlFor="shop-search" className="block text-[0.6rem] font-semibold uppercase tracking-[0.13em] text-walnut/45">Search</label>
+            <input
+              id="shop-search"
+              type="search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Product or ingredient…"
+              className="mt-1 w-full border-0 border-b border-gold/30 bg-transparent px-0 py-2 text-sm text-ink outline-none transition-colors placeholder:text-walnut/35 focus:border-burgundy focus:ring-0"
+            />
+          </div>
+          <div>
+            <label htmlFor="shop-sort" className="block text-[0.6rem] font-semibold uppercase tracking-[0.13em] text-walnut/45">Sort</label>
+            <select
+              id="shop-sort"
+              value={sort}
+              onChange={(e) => setSort(e.target.value as SortOption)}
+              className="mt-1 min-w-44 border-0 border-b border-gold/30 bg-transparent px-0 py-2 pr-7 text-sm text-ink outline-none transition-colors focus:border-burgundy focus:ring-0"
+            >
+              {Object.entries(sortLabels).map(([value, label]) => (
+                <option key={value} value={value}>{label}</option>
+              ))}
+            </select>
+          </div>
         </div>
       </div>
 

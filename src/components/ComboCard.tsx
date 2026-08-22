@@ -16,66 +16,69 @@ export default function ComboCard({ combo }: { combo: Combo }) {
   const treatment = ritualHoverTreatment[combo.id] ?? defaultRitualTreatment;
 
   return (
-    <div className="group flex flex-col overflow-hidden rounded-md border border-gold/15 bg-white/40 transition-[transform,box-shadow] duration-[280ms] ease-premium hover:-translate-y-0.5 hover:shadow-[0_10px_28px_rgba(42,32,28,0.1)]">
-      <Link href={`/rituals#${combo.slug}`} className="relative block overflow-hidden">
+    <article className="group flex h-full flex-col">
+      <Link href={`/rituals#${combo.slug}`} className="relative block overflow-hidden bg-ink/20">
         <SmartImage
           src={combo.image}
           alt={`${combo.name} — ${combo.mood}`}
           label={combo.name}
-          className="aspect-[4/5]"
+          className="aspect-[4/3]"
           sizes="(min-width: 1024px) 30vw, 90vw"
-          imageClassName={`transition-transform duration-[500ms] ease-premium ${treatment.scale}`}
+          imageClassName={`transition-transform duration-[750ms] ease-premium ${treatment.scale}`}
         />
         {treatment.overlay && (
           <div
             aria-hidden="true"
-            className={`pointer-events-none absolute inset-0 transition-opacity duration-500 ease-premium ${treatment.overlay}`}
+            className={`pointer-events-none absolute inset-0 transition-opacity duration-700 ease-premium ${treatment.overlay}`}
           />
         )}
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-ink/35 to-transparent opacity-70" />
+        <div className="editorial-hover-overlay pointer-events-none absolute bottom-5 left-5 text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-ivory/90">
+          View ritual <span className="ml-1">→</span>
+        </div>
       </Link>
-      <div className="flex flex-1 flex-col p-6">
-        <Link href={`/rituals#${combo.slug}`}>
-          <h3 className="text-balance font-display text-2xl font-semibold leading-[1.2] tracking-tight text-ink transition-colors duration-[200ms] ease-premium group-hover:text-burgundy">
+
+      <div className="flex flex-1 flex-col pt-5 text-ivory">
+        <p className="text-[0.64rem] font-semibold uppercase tracking-[0.16em] text-gold/85">Curated ritual</p>
+        <Link href={`/rituals#${combo.slug}`} className="mt-1.5 block">
+          <h3 className="text-balance font-display text-[1.8rem] font-normal leading-none tracking-[-0.03em] text-ivory transition-colors duration-200 ease-premium group-hover:text-sand sm:text-[2rem]">
             {combo.name}
           </h3>
         </Link>
-        <p className="mt-2 text-balance text-sm leading-relaxed text-walnut/75">
-          {combo.tagline}
-        </p>
+        <p className="mt-3 text-balance text-sm leading-[1.65] text-ivory/62">{combo.tagline}</p>
 
-        <div className="mt-4 flex flex-wrap items-baseline gap-x-2 gap-y-1">
-          <span className="text-lg font-medium text-ink">{formatPrice(price, currency)}</span>
+        <div className="mt-5 flex flex-wrap items-baseline gap-x-2.5 gap-y-1 border-t border-gold/20 pt-4">
+          <span className="text-base font-medium text-ivory">{formatPrice(price, currency)}</span>
           {savings > 0 && (
             <>
-              <span className="text-sm text-walnut/50 line-through">
-                {formatPrice(individualValue, currency)}
-              </span>
-              <span className="rounded-full bg-olive/15 px-2.5 py-0.5 text-xs font-medium text-olive">
+              <span className="text-xs text-ivory/42 line-through">{formatPrice(individualValue, currency)}</span>
+              <span className="text-[0.65rem] font-semibold uppercase tracking-[0.1em] text-gold">
                 Save {formatPrice(savings, currency)}
               </span>
             </>
           )}
         </div>
 
-        <div className="mt-4 flex items-center gap-3">
+        <div className="mt-5 flex items-center justify-between gap-4">
           <button
             type="button"
             onClick={() => {
               addCombo(combo);
               triggerAdded();
             }}
-            className="rounded-full bg-burgundy px-4 py-2 text-xs font-medium text-ivory transition-[background-color,transform] duration-[200ms] ease-premium hover:bg-burgundy-dark active:scale-95"
+            className="editorial-link text-ivory"
           >
-            {added ? "Added ✓" : "Add The Ritual"}
+            {added ? "Added ✓" : "Add the ritual"}
+            <span aria-hidden="true">+</span>
           </button>
           <Link
             href={`/rituals#${combo.slug}`}
-            className="text-xs font-medium text-walnut/70 underline-offset-2 transition-colors duration-[200ms] ease-premium hover:text-burgundy hover:underline"
+            className="text-[0.66rem] font-semibold uppercase tracking-[0.12em] text-ivory/55 transition-colors hover:text-gold"
           >
-            View Ritual
+            Details →
           </Link>
         </div>
       </div>
-    </div>
+    </article>
   );
 }

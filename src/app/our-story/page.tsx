@@ -23,11 +23,11 @@ export const metadata: Metadata = {
 export default function OurStoryPage() {
   return (
     <div>
-      <div className="mx-auto max-w-3xl px-6 pt-16 text-center sm:px-8">
-        <p className="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-burgundy">
+      <div className="mx-auto max-w-standard px-6 pt-16 sm:px-8 lg:pt-20">
+        <p className="mb-4 flex items-center gap-3 text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-burgundy before:h-px before:w-8 before:bg-gold/80">
           Our Story
         </p>
-        <h1 className="text-balance font-display text-4xl leading-tight text-ink sm:text-5xl">
+        <h1 className="max-w-4xl text-balance font-display text-[clamp(3.4rem,7vw,6.6rem)] leading-[0.9] tracking-[-0.055em] text-ink">
           Beauty With A Sense Of Place
         </h1>
       </div>
@@ -37,7 +37,7 @@ export default function OurStoryPage() {
           src="/images/kashmir/our-story.jpg"
           alt="Kashmir, the place The Skin Shop's rituals and ingredients come from"
           label="Beauty with a sense of place"
-          className="aspect-[16/9] rounded-md"
+          className="aspect-[16/9]"
           sizes="(min-width: 1024px) 60vw, 90vw"
         />
       </Reveal>
@@ -68,7 +68,7 @@ export default function OurStoryPage() {
         </Reveal>
       </div>
 
-      <div className="bg-sand/50 py-[var(--space-section-md)]">
+      <div className="chapter-section bg-sand/30 py-[var(--space-section-lg)]">
         <div className="mx-auto max-w-2xl px-6 sm:px-8">
           <Reveal>
             <p className="mb-4 text-center text-xs font-semibold uppercase tracking-[0.2em] text-burgundy">

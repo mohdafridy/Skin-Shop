@@ -25,7 +25,7 @@
   --color-dustyrose: var(--color-dustyrose);
   --color-sand: var(--color-sand);
   --color-ink: var(--color-ink);
-  --font-display: var(--font-cormorant);
+  --font-display: var(--font-instrument-serif);
   --font-sans: var(--font-manrope);
   /* Shared premium ease — used across hover, drawer and reveal motion so
      the whole site moves with one consistent hand. Available as the
@@ -67,6 +67,7 @@ body {
   background: var(--color-ivory);
   color: var(--color-ink);
   font-family: var(--font-manrope), Arial, Helvetica, sans-serif;
+  letter-spacing: -0.005em;
 }
 
 ::selection {
@@ -242,5 +243,267 @@ p {
 @media (max-width: 640px) {
   .pashmina-footer-border {
     height: 112px;
+  }
+}
+
+
+/* -------------------------------------------------------------------------
+   Premium editorial refinement layer
+   ------------------------------------------------------------------------- */
+
+html {
+  scroll-behavior: smooth;
+  background: var(--color-ivory);
+}
+
+/* Deliberately subtle page entry. This is not scroll-jacking and never
+   delays navigation; it only removes the abrupt app-like flash between routes. */
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.page-enter {
+  animation: page-enter 320ms var(--ease-premium) both;
+}
+
+/* A quieter editorial reveal for type blocks. Used sparingly on hero/section
+   compositions; no letter-by-letter animation. */
+@keyframes editorial-line-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+    clip-path: inset(0 0 22% 0);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+.editorial-line-in {
+  animation: editorial-line-in 760ms var(--ease-premium) both;
+}
+
+/* Shared understated controls. Kept in CSS so the storefront has one visual
+   language rather than a collection of unrelated rounded buttons. */
+.premium-button {
+  display: inline-flex;
+  min-height: 50px;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem;
+  border-radius: 2px;
+  padding: 0.85rem 1.45rem;
+  font-size: 0.75rem;
+  font-weight: 650;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  transition:
+    transform 260ms var(--ease-premium),
+    background-color 260ms var(--ease-premium),
+    color 260ms var(--ease-premium),
+    border-color 260ms var(--ease-premium);
+}
+
+.premium-button:hover {
+  transform: translateY(-1px);
+}
+
+.premium-button:active {
+  transform: translateY(0) scale(0.99);
+}
+
+.premium-button-primary {
+  background: var(--color-burgundy);
+  color: var(--color-ivory);
+  border: 1px solid var(--color-burgundy);
+}
+
+.premium-button-primary:hover {
+  background: var(--color-burgundy-dark);
+  border-color: var(--color-burgundy-dark);
+}
+
+.premium-button-secondary {
+  background: transparent;
+  color: var(--color-ink);
+  border: 1px solid rgba(69, 48, 42, 0.32);
+}
+
+.premium-button-secondary:hover {
+  border-color: var(--color-burgundy);
+  color: var(--color-burgundy);
+}
+
+.editorial-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.78rem;
+  font-weight: 650;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.editorial-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -0.32rem;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0.28);
+  transform-origin: left;
+  opacity: 0.45;
+  transition: transform 280ms var(--ease-premium), opacity 280ms var(--ease-premium);
+}
+
+.editorial-link:hover::after,
+.editorial-link:focus-visible::after {
+  transform: scaleX(1);
+  opacity: 0.85;
+}
+
+/* A restrained Kashmir-inspired geometric separator. The motif is deliberately
+   tiny and used as punctuation between chapters, not as decoration everywhere. */
+.kashmir-motif {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.kashmir-motif > span {
+  display: block;
+  width: 5px;
+  height: 5px;
+  border: 1px solid currentColor;
+  transform: rotate(45deg);
+}
+
+.kashmir-motif > span:nth-child(2) {
+  width: 7px;
+  height: 7px;
+}
+
+/* Slow chapter-tone transition. Sections still behave as normal document
+   flow; this simply gives the scroll journey more continuity. */
+.chapter-section {
+  position: relative;
+  isolation: isolate;
+}
+
+.chapter-section::before {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset-inline: clamp(1.5rem, 5vw, 5rem);
+  top: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(184, 139, 75, 0.34), transparent);
+  opacity: 0.7;
+}
+
+/* Image loading treatment: the approved photograph fades over the warm
+   placeholder instead of popping in. */
+.smart-image-media {
+  opacity: 0;
+  transition: opacity 520ms var(--ease-premium);
+}
+
+.smart-image-media.is-loaded {
+  opacity: 1;
+}
+
+/* Product image art direction: a shared photographic canvas plus per-product
+   focal-point classes. These change only cropping, never the source image. */
+.product-photo {
+  object-position: center center;
+}
+
+.product-photo--top { object-position: center 30%; }
+.product-photo--upper { object-position: center 40%; }
+.product-photo--lower { object-position: center 62%; }
+.product-photo--left { object-position: 42% center; }
+.product-photo--right { object-position: 58% center; }
+
+/* Elegant tabs used by shop filters; unlike pills they read as editorial
+   navigation and keep the catalogue controls visually quiet. */
+.editorial-tab {
+  position: relative;
+  padding: 0.55rem 0;
+  color: rgba(69, 48, 42, 0.66);
+  font-size: 0.74rem;
+  font-weight: 650;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transition: color 220ms var(--ease-premium);
+}
+
+.editorial-tab::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: 1px;
+  background: var(--color-burgundy);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 250ms var(--ease-premium);
+}
+
+.editorial-tab:hover,
+.editorial-tab.is-active {
+  color: var(--color-burgundy);
+}
+
+.editorial-tab.is-active::after {
+  transform: scaleX(1);
+}
+
+/* Gentle image-overlay reveal for selected editorial cards. */
+.editorial-hover-overlay {
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 320ms var(--ease-premium), transform 320ms var(--ease-premium);
+}
+
+.group:hover .editorial-hover-overlay,
+.group:focus-within .editorial-hover-overlay {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (hover: none) {
+  .editorial-hover-overlay {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .page-enter,
+  .editorial-line-in {
+    animation: none;
+  }
+
+  .smart-image-media,
+  .smart-image-media.is-loaded {
+    opacity: 1;
+    transform: none;
+    transition: none;
   }
 }

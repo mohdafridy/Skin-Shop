@@ -51,6 +51,19 @@ export default function SmartImage({
   labelPosition = "center",
 }: SmartImageProps) {
   const [errored, setErrored] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+
+  // Reset the load/error state when the source changes, using React's
+  // render-time "adjust state on prop change" pattern rather than an effect
+  // (an effect that calls setState synchronously is flagged and causes an
+  // extra render). See https://react.dev/learn/you-might-not-need-an-effect
+  const [renderedSrc, setRenderedSrc] = useState(src);
+  if (renderedSrc !== src) {
+    setRenderedSrc(src);
+    setErrored(false);
+    setLoaded(false);
+  }
+
   const fitClass = fit === "cover" ? "object-cover" : "object-contain";
 
   return (
@@ -81,8 +94,9 @@ export default function SmartImage({
             sizes={sizes}
             priority={priority}
             quality={quality}
+            onLoad={() => setLoaded(true)}
             onError={() => setErrored(true)}
-            className={`relative ${fitClass} ${imageClassName}`}
+            className={`relative smart-image-media ${loaded ? "is-loaded" : ""} ${fitClass} ${imageClassName}`}
           />
         ) : (
           <Image
@@ -93,8 +107,9 @@ export default function SmartImage({
             sizes={sizes}
             priority={priority}
             quality={quality}
+            onLoad={() => setLoaded(true)}
             onError={() => setErrored(true)}
-            className={`relative ${fitClass} ${imageClassName}`}
+            className={`relative smart-image-media ${loaded ? "is-loaded" : ""} ${fitClass} ${imageClassName}`}
           />
         ))}
     </div>

@@ -9,36 +9,39 @@ import SectionDivider from "./SectionDivider";
 
 export default function Footer() {
   const pathname = usePathname();
-  // /admin is an internal tool, not storefront — no footer there.
   if (pathname.startsWith("/admin")) return null;
 
   return (
-    <footer className="mt-28 bg-walnut text-sand">
-      <div className="py-10">
-        <SectionDivider />
-      </div>
-      <div className="mx-auto max-w-7xl px-6 pb-12 sm:px-8">
-        <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
-          <div>
-            <div className="text-sand">
-              <Logo />
+    <footer className="bg-walnut text-sand">
+      <div className="py-9"><SectionDivider /></div>
+
+      <div className="mx-auto max-w-standard px-6 pb-12 sm:px-8 lg:pb-16">
+        <div className="border-b border-sand/14 pb-10">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <p className="text-[0.66rem] font-semibold uppercase tracking-[0.18em] text-gold">{productTagline}</p>
+              <p className="mt-3 font-display text-[clamp(3.5rem,8vw,8rem)] leading-[0.78] tracking-[-0.055em] text-ivory">
+                The Skin Shop
+              </p>
             </div>
-            <p className="mt-3 text-xs font-medium uppercase tracking-[0.15em] text-gold">
-              {productTagline}
-            </p>
-            <p className="mt-4 max-w-xs text-sm leading-relaxed text-sand/70">
-              Organic, botanical skincare, body care and hair care — handcrafted in
-              Kashmir and shipped across India.
-            </p>
-            <div className="mt-5 space-y-1.5 text-sm text-sand/80">
-              <a href={`mailto:${contactEmail}`} className="block transition hover:text-ivory">
-                {contactEmail}
-              </a>
+            <div className="max-w-sm lg:text-right">
+              <p className="text-sm leading-[1.75] text-sand/62">
+                Organic, botanical skincare, body care and hair care — handcrafted in Kashmir and shipped across India.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="grid gap-12 pt-10 sm:grid-cols-2 lg:grid-cols-[1.3fr_1fr_1fr_1fr]">
+          <div>
+            <Logo variant="mark" />
+            <div className="mt-5 space-y-2 text-sm text-sand/72">
+              <a href={`mailto:${contactEmail}`} className="block transition-colors hover:text-ivory">{contactEmail}</a>
               <a
                 href={whatsappLink("Hi! I have a question about The Skin Shop.")}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block transition hover:text-ivory"
+                className="block transition-colors hover:text-ivory"
               >
                 {contactPhoneDisplay} (WhatsApp)
               </a>
@@ -47,10 +50,8 @@ export default function Footer() {
 
           {footerColumns.map((column) => (
             <div key={column.title}>
-              <p className="text-sm font-semibold uppercase tracking-wide text-gold">
-                {column.title}
-              </p>
-              <ul className="mt-4 space-y-2.5">
+              <p className="text-[0.66rem] font-semibold uppercase tracking-[0.16em] text-gold">{column.title}</p>
+              <ul className="mt-5 space-y-3">
                 {column.links.map((link) => {
                   const isExternal = link.href.startsWith("http");
                   return (
@@ -59,9 +60,10 @@ export default function Footer() {
                         href={link.href}
                         target={isExternal ? "_blank" : undefined}
                         rel={isExternal ? "noopener noreferrer" : undefined}
-                        className="text-sm text-sand/80 transition hover:text-ivory"
+                        className="group inline-flex items-center gap-2 text-sm text-sand/68 transition-colors hover:text-ivory"
                       >
                         {link.label}
+                        <span aria-hidden="true" className="translate-x-[-3px] text-gold opacity-0 transition-[opacity,transform] group-hover:translate-x-0 group-hover:opacity-100">→</span>
                       </Link>
                     </li>
                   );
@@ -74,14 +76,10 @@ export default function Footer() {
 
       <div className="pashmina-footer-border" aria-hidden="true" />
 
-      <div className="border-t border-sand/15 bg-walnut">
-        <div className="mx-auto flex max-w-7xl flex-col items-start gap-3 px-6 py-6 text-xs text-sand/60 sm:flex-row sm:items-center sm:justify-between sm:px-8">
-          <p className="font-display text-sm text-sand/80">
-            Botanical skincare, thoughtfully made in Kashmir.
-          </p>
-          <p>
-            &copy; {foundedYear}–{new Date().getFullYear()} The Skin Shop. All rights reserved.
-          </p>
+      <div className="border-t border-sand/12 bg-walnut">
+        <div className="mx-auto flex max-w-standard flex-col items-start gap-3 px-6 py-6 text-xs text-sand/50 sm:flex-row sm:items-center sm:justify-between sm:px-8">
+          <p className="font-display text-base tracking-[-0.01em] text-sand/75">Botanical skincare, thoughtfully made in Kashmir.</p>
+          <p>&copy; {foundedYear}–{new Date().getFullYear()} The Skin Shop. All rights reserved.</p>
         </div>
       </div>
     </footer>

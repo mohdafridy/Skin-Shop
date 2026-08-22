@@ -5,6 +5,7 @@ import StartHere from "@/components/StartHere";
 import StorySection from "@/components/StorySection";
 import ShopByRitual from "@/components/ShopByRitual";
 import IngredientStorytelling from "@/components/IngredientStorytelling";
+import BuildYourRitual from "@/components/BuildYourRitual";
 import CuratedRituals from "@/components/CuratedRituals";
 import CustomerExperience from "@/components/CustomerExperience";
 import EditorialSection from "@/components/EditorialSection";
@@ -38,6 +39,8 @@ export default function HomePage() {
       />
 
       <ShopByRitual />
+
+      <BuildYourRitual />
 
       <IngredientStorytelling />
 

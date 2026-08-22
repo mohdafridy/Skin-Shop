@@ -34,11 +34,11 @@ export default function ConsultationCTA({
   });
 
   return (
-    <div className="mt-6 rounded-md border border-gold/25 bg-sand/25 p-5 sm:p-6">
+    <div className="mt-7 border-y border-gold/20 py-5">
       <p className="text-xs font-medium uppercase tracking-[0.14em] text-walnut/60">
         Need help choosing?
       </p>
-      <p className="mt-1.5 font-display text-lg font-semibold leading-snug text-ink">
+      <p className="mt-2 font-display text-[1.65rem] font-normal leading-none tracking-[-0.02em] text-ink">
         FREE Personalised Skin Consultation
       </p>
       <p className="mt-2 text-sm leading-relaxed text-walnut/75">
@@ -58,7 +58,7 @@ export default function ConsultationCTA({
           })
         }
         aria-label={`Get a free skin consultation for ${productName} on WhatsApp`}
-        className="mt-4 flex min-h-11 w-full items-center justify-center gap-2 rounded-full border border-burgundy/40 px-5 py-3.5 text-sm font-medium text-burgundy transition-colors duration-200 ease-premium hover:border-burgundy hover:bg-burgundy/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-burgundy/50 sm:w-auto"
+        className="editorial-link mt-4 text-burgundy"
       >
         <WhatsAppIcon className="h-4 w-4" />
         Chat &amp; Order on WhatsApp
