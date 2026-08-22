@@ -52,6 +52,14 @@ export default function Field({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           autoComplete={autoComplete}
+          // Stop mobile keyboards from silently mangling a case-sensitive
+          // secret: they auto-capitalise the first letter and autocorrect
+          // words, so a key typed on a phone could differ from the same key
+          // typed on a laptop. Only applied to password fields (including
+          // when revealed via the toggle, which switches type to "text").
+          autoCapitalize={isPassword ? "none" : undefined}
+          autoCorrect={isPassword ? "off" : undefined}
+          spellCheck={isPassword ? false : undefined}
           aria-invalid={Boolean(error)}
           aria-describedby={error ? `${id}-error` : undefined}
           className={`w-full rounded-xl border bg-white py-2.5 pl-4 text-ink outline-none transition focus:border-burgundy focus:ring-2 focus:ring-burgundy/50 ${
