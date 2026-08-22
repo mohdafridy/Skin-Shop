@@ -65,7 +65,7 @@ export default function Hero() {
         </p>
 
         <h1
-          className="stagger-in mt-4 max-w-[340px] font-display font-normal tracking-[-0.045em] text-ivory text-[clamp(2.9rem,11vw,3.55rem)] leading-[0.94] lg:mt-5 lg:max-w-[560px] lg:text-[clamp(4rem,5vw,5.2rem)] lg:leading-[0.93]"
+          className="heading-on-media stagger-in mt-4 max-w-[340px] font-display font-normal tracking-[-0.05em] text-ivory text-[clamp(2.9rem,11vw,3.55rem)] leading-[0.94] lg:mt-5 lg:max-w-[560px] lg:text-[clamp(4rem,5vw,5.2rem)] lg:leading-[0.93]"
           style={{ "--stagger-rise": "10px", "--stagger-delay": "80ms" } as React.CSSProperties}
         >
           Rooted in Kashmir.

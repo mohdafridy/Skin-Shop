@@ -30,11 +30,11 @@ export default function SectionHeading({
         </div>
       )}
       <h2
-        className={`text-balance font-display font-normal tracking-[-0.035em] ${
+        className={`text-balance font-display font-normal tracking-[-0.042em] ${
           size === "large"
             ? "text-[2.65rem] leading-[0.98] sm:text-5xl lg:text-[4rem]"
             : "text-[2.2rem] leading-[1.02] sm:text-[2.8rem] lg:text-[3.25rem]"
-        } ${light ? "text-ivory" : "text-ink"}`}
+        } ${light ? "heading-on-media text-ivory" : "text-ink"}`}
       >
         {title}
       </h2>
