@@ -43,8 +43,13 @@ export function isAdminConfigured(): boolean {
  * session cookie on success.
  */
 export async function loginWithAdminKey(key: string): Promise<boolean> {
-  const expected = process.env.ADMIN_API_KEY;
-  if (!expected || !key || !safeEqual(expected, key)) return false;
+  // Trim both sides: a stray trailing newline/space on the stored env secret
+  // (a common paste artefact in hosting dashboards) would otherwise make the
+  // exact byte comparison fail even when the right key is typed. Whitespace-only
+  // differences aren't a meaningful key, so trimming doesn't weaken the check.
+  const expected = process.env.ADMIN_API_KEY?.trim();
+  const provided = key.trim();
+  if (!expected || !provided || !safeEqual(expected, provided)) return false;
 
   const expiresAt = Date.now() + SESSION_HOURS * 60 * 60 * 1000;
   const payload = String(expiresAt);

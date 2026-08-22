@@ -54,8 +54,8 @@ export const productSchema = z.object({
 });
 
 export function isAdminRequest(request: Request) {
-  const expected = process.env.ADMIN_API_KEY;
-  const provided = request.headers.get("x-admin-key");
+  const expected = process.env.ADMIN_API_KEY?.trim();
+  const provided = request.headers.get("x-admin-key")?.trim();
   if (!expected || !provided) return false;
   const a = Buffer.from(expected);
   const b = Buffer.from(provided);

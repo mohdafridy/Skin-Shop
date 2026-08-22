@@ -8,6 +8,7 @@ const navLinks = [
   { href: "/admin", label: "Orders" },
   { href: "/admin/products", label: "Products" },
   { href: "/admin/reviews", label: "Reviews" },
+  { href: "/admin/coupons", label: "Coupons" },
 ];
 
 export default function AdminHeader({ title }: { title: string }) {

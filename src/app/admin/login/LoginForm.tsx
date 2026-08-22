@@ -11,7 +11,7 @@ export default function LoginForm() {
   const [key, setKey] = useState("");
   return (
     <form action={formAction} className="space-y-4">
-      <Field label="Admin key" id="key" type="password" value={key} onChange={setKey} autoComplete="off" />
+      <Field label="Admin key" id="key" type="password" value={key} onChange={setKey} autoComplete="off" showToggle />
       {state?.error && (
         <p role="alert" className="rounded-xl bg-burgundy/10 p-3 text-sm text-burgundy">
           {state.error}
