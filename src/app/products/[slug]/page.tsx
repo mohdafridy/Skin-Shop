@@ -8,6 +8,7 @@ import Accordion from "@/components/Accordion";
 import ProductGrid from "@/components/ProductGrid";
 import ReviewsSection from "@/components/ReviewsSection";
 import SectionHeading from "@/components/SectionHeading";
+import RitualTimeline from "@/components/RitualTimeline";
 import { absoluteUrl, breadcrumbJsonLd, productJsonLd } from "@/lib/seo";
 
 export function generateStaticParams() {
@@ -66,7 +67,7 @@ export default async function ProductPage({
   ]);
 
   return (
-    <div className="mx-auto max-w-standard px-6 pb-[var(--space-section-lg)] pt-10 sm:px-8">
+    <div className="mx-auto max-w-wide px-6 pb-[var(--space-section-lg)] pt-10 sm:px-8 lg:pt-14">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -76,7 +77,7 @@ export default async function ProductPage({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbs) }}
       />
 
-      <nav className="mb-8 text-sm text-walnut/70" aria-label="Breadcrumb">
+      <nav className="mb-8 text-xs font-semibold uppercase tracking-[0.1em] text-walnut/48" aria-label="Breadcrumb">
         <Link href="/shop" className="hover:text-burgundy">
           Shop
         </Link>
@@ -84,11 +85,14 @@ export default async function ProductPage({
         <span className="text-ink">{product.shortName ?? product.name}</span>
       </nav>
 
-      <div className="grid gap-12 lg:grid-cols-[3fr_2fr] lg:gap-16">
-        <ProductGallery images={gallery} productName={product.name} />
+      <div className="grid gap-12 lg:grid-cols-[1.12fr_0.88fr] lg:gap-16 xl:gap-24">
+        <div className="lg:sticky lg:top-28 lg:self-start">
+          <ProductGallery images={gallery} productName={product.name} />
+        </div>
 
-        <div>
+        <div className="min-w-0">
           <ProductInfo product={product} />
+          <RitualTimeline product={product} />
 
           <div className="mt-10">
             <Accordion title="The Ritual" defaultOpen>

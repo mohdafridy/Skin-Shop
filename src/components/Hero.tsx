@@ -65,7 +65,7 @@ export default function Hero() {
         </p>
 
         <h1
-          className="stagger-in mt-4 max-w-[330px] font-display font-normal tracking-tight text-ivory text-[clamp(2.625rem,10.6vw,3.25rem)] leading-[0.99] lg:mt-5 lg:max-w-[520px] lg:text-[clamp(3.5rem,4.6vw,4.5rem)] lg:leading-[1.0]"
+          className="stagger-in mt-4 max-w-[340px] font-display font-normal tracking-[-0.045em] text-ivory text-[clamp(2.9rem,11vw,3.55rem)] leading-[0.94] lg:mt-5 lg:max-w-[560px] lg:text-[clamp(4rem,5vw,5.2rem)] lg:leading-[0.93]"
           style={{ "--stagger-rise": "10px", "--stagger-delay": "80ms" } as React.CSSProperties}
         >
           Rooted in Kashmir.
@@ -101,7 +101,7 @@ export default function Hero() {
           <Link
             href="/shop"
             onClick={() => track({ name: "hero_cta_click", cta: "Shop All" })}
-            className="group inline-flex h-[54px] min-w-[170px] items-center justify-between gap-5 rounded-full bg-ivory pl-7 pr-6 text-sm font-semibold uppercase tracking-[0.12em] text-burgundy-dark transition-[background-color,transform] duration-[180ms] ease-premium hover:-translate-y-px hover:bg-sand sm:min-w-[190px]"
+            className="premium-button min-w-[180px] border border-ivory bg-ivory text-burgundy-dark hover:bg-sand sm:min-w-[195px]"
           >
             Shop All
             <span
@@ -114,7 +114,7 @@ export default function Hero() {
           <Link
             href="/our-story"
             onClick={() => track({ name: "hero_cta_click", cta: "Our Story" })}
-            className="text-sm font-medium text-ivory underline decoration-gold/50 underline-offset-4 transition-colors duration-[180ms] ease-premium hover:decoration-ivory"
+            className="editorial-link text-ivory"
           >
             Our Story
           </Link>

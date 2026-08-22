@@ -52,7 +52,7 @@ export default function Header() {
       <header className="sticky top-0 z-50 h-[72px] border-b border-gold/20 bg-ivory/95 backdrop-blur-sm">
         <div className="mx-auto flex h-full max-w-standard items-center justify-between px-5 text-ink sm:px-8">
           <Link href="/" className="flex-shrink-0" aria-label="The Skin Shop, home">
-            <Logo />
+            <Logo variant="wordmark" />
           </Link>
           <p className="hidden text-xs font-medium uppercase tracking-[0.2em] text-walnut/60 sm:block">
             Contact <span className="mx-1 text-gold">→</span> Delivery
@@ -83,7 +83,7 @@ export default function Header() {
     >
       <div className={`mx-auto flex h-full max-w-standard items-center justify-between px-5 sm:px-8 ${textTone}`}>
         <Link href="/" className="flex-shrink-0" aria-label="The Skin Shop, home">
-          <Logo light={transparent} />
+          <Logo light={transparent} variant="wordmark" />
         </Link>
 
         <nav className="hidden items-center gap-8 lg:flex" aria-label="Main">
@@ -91,12 +91,15 @@ export default function Header() {
             <Link
               key={item.label}
               href={item.href}
-              className="group relative py-1 font-sans text-[0.9rem] font-medium tracking-wide"
+              aria-current={pathname === item.href ? "page" : undefined}
+              className="group relative py-2 font-sans text-[0.78rem] font-semibold uppercase tracking-[0.12em] transition-colors duration-200 hover:text-gold"
             >
               {item.label}
               <span
                 aria-hidden="true"
-                className="absolute inset-x-0 -bottom-0.5 h-px origin-left scale-x-0 bg-gold transition-transform duration-[180ms] ease-premium group-hover:scale-x-100"
+                className={`absolute inset-x-0 bottom-0 h-px origin-left bg-gold transition-transform duration-[240ms] ease-premium ${
+                  pathname === item.href ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
+                }`}
               />
             </Link>
           ))}
@@ -215,8 +218,8 @@ export default function Header() {
 
       {menuOpen && (
         <div
-          className={`absolute inset-x-0 border-b border-[rgba(69,48,42,0.08)] bg-ivory px-6 py-7 text-ink shadow-lg transition-[top] duration-300 ease-premium lg:hidden ${
-            scrolled ? "top-16" : "top-20"
+          className={`absolute inset-x-0 border-b border-[rgba(69,48,42,0.08)] bg-ivory px-6 pb-8 pt-4 text-ink shadow-[0_18px_45px_rgba(42,32,28,0.08)] transition-[top] duration-300 ease-premium lg:hidden ${
+            scrolled ? "top-16" : "top-[72px]"
           }`}
         >
           <nav className="flex flex-col gap-2" aria-label="Mobile">
@@ -224,7 +227,7 @@ export default function Header() {
               <Link
                 key={item.label}
                 href={item.href}
-                className="rounded-lg px-2 py-3.5 font-sans text-base font-medium tracking-wide transition hover:bg-sand"
+                className="border-b border-gold/15 px-1 py-4 font-display text-[1.65rem] leading-none tracking-[-0.02em] transition-colors hover:text-burgundy"
               >
                 {item.label}
               </Link>

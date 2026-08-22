@@ -82,7 +82,7 @@ export default function CartDrawer() {
       aria-hidden={!isOpen}
     >
       <div
-        className={`absolute inset-0 bg-[rgba(30,22,18,0.28)] transition-opacity duration-300 ease-premium ${
+        className={`absolute inset-0 bg-[rgba(30,22,18,0.34)] backdrop-blur-[2px] transition-opacity duration-300 ease-premium ${
           isOpen ? "opacity-100" : "opacity-0"
         }`}
         onClick={closeCart}
@@ -91,20 +91,20 @@ export default function CartDrawer() {
         role="dialog"
         aria-modal="true"
         aria-label="Shopping bag"
-        className={`absolute right-0 top-0 flex h-full w-full max-w-md flex-col bg-ivory shadow-2xl transition-transform duration-300 ease-premium ${
+        className={`absolute right-0 top-0 flex h-full w-full max-w-md flex-col bg-ivory shadow-[0_0_60px_rgba(42,32,28,0.16)] transition-transform duration-300 ease-premium ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
         <div className="flex items-center justify-between border-b border-gold/25 px-6 py-5">
           <h2 className="font-display text-2xl text-ink">
-            Your Bag {itemCount > 0 && <span className="text-walnut/70">({itemCount})</span>}
+            Your Ritual {itemCount > 0 && <span className="text-walnut/70">({itemCount})</span>}
           </h2>
           <button
             ref={closeButtonRef}
             type="button"
             onClick={closeCart}
             aria-label="Close bag"
-            className="flex h-11 w-11 items-center justify-center rounded-full text-ink transition hover:bg-sand"
+            className="flex h-11 w-11 items-center justify-center text-ink transition-colors hover:text-burgundy"
           >
             <span aria-hidden>&times;</span>
           </button>
@@ -116,7 +116,7 @@ export default function CartDrawer() {
             <Link
               href="/shop"
               onClick={closeCart}
-              className="mt-2 rounded-full bg-burgundy px-6 py-3 text-sm font-medium text-ivory transition hover:bg-burgundy-dark"
+              className="premium-button premium-button-primary mt-2"
             >
               Explore The Collection
             </Link>
@@ -130,7 +130,7 @@ export default function CartDrawer() {
                     src={item.image}
                     alt={item.name}
                     label={item.name}
-                    className="h-20 w-20 flex-shrink-0 rounded-lg"
+                    className="h-20 w-20 flex-shrink-0"
                     sizes="80px"
                   />
                   <div className="flex flex-1 flex-col justify-between">
@@ -149,7 +149,7 @@ export default function CartDrawer() {
                       </p>
                     </div>
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center rounded-full border border-gold/30">
+                      <div className="flex items-center border border-gold/30">
                         <button
                           type="button"
                           onClick={() => updateQuantity(item.key, item.quantity - 1)}
@@ -198,7 +198,7 @@ export default function CartDrawer() {
             </ul>
 
             {suggestion && (
-              <div className="mx-6 mb-2 rounded-md border border-gold/20 bg-sand/40 p-4">
+              <div className="mx-6 mb-2 border-y border-gold/20 bg-sand/22 p-4">
                 {suggestion.kind === "complete-ritual" ? (
                   <>
                     <p className="text-xs font-semibold uppercase tracking-wide text-burgundy">
@@ -231,7 +231,7 @@ export default function CartDrawer() {
                             src={product.image}
                             alt={product.name}
                             label={product.shortName ?? product.name}
-                            className="h-12 w-12 flex-shrink-0 rounded-lg"
+                            className="h-12 w-12 flex-shrink-0"
                             sizes="48px"
                           />
                           <div className="min-w-0 flex-1">
@@ -243,7 +243,7 @@ export default function CartDrawer() {
                           <button
                             type="button"
                             onClick={() => addItem(product)}
-                            className="flex-shrink-0 rounded-full border border-burgundy px-3 py-1.5 text-xs font-medium text-burgundy transition hover:bg-burgundy hover:text-ivory"
+                            className="flex-shrink-0 border border-burgundy px-3 py-1.5 text-xs font-medium text-burgundy transition hover:bg-burgundy hover:text-ivory"
                           >
                             + Add
                           </button>
@@ -257,7 +257,7 @@ export default function CartDrawer() {
 
             <div className="border-t border-gold/25 px-6 py-6">
               {couponCode && discount > 0 ? (
-                <div className="mb-4 flex items-center justify-between rounded-full bg-olive/10 px-4 py-2 text-xs text-olive">
+                <div className="mb-4 flex items-center justify-between border-y border-olive/20 bg-olive/5 px-1 py-2.5 text-xs text-olive">
                   <span>
                     Code <span className="font-semibold">{couponCode}</span> applied
                   </span>
@@ -279,11 +279,11 @@ export default function CartDrawer() {
                       setCouponError(null);
                     }}
                     placeholder="Coupon code"
-                    className="w-full min-w-0 rounded-full border border-gold/30 bg-white/60 px-4 py-2 text-sm text-ink placeholder:text-walnut/40 focus:outline-none focus:ring-2 focus:ring-burgundy/50"
+                    className="w-full min-w-0 border-0 border-b border-gold/30 bg-transparent px-0 py-2 text-sm text-ink placeholder:text-walnut/40 focus:border-burgundy focus:outline-none focus:ring-0"
                   />
                   <button
                     type="submit"
-                    className="flex-shrink-0 rounded-full border border-ink px-4 py-2 text-xs font-medium text-ink transition hover:bg-ink hover:text-ivory"
+                    className="flex-shrink-0 border border-ink px-4 py-2 text-xs font-semibold uppercase tracking-[0.08em] text-ink transition hover:bg-ink hover:text-ivory"
                   >
                     Apply
                   </button>
@@ -319,7 +319,7 @@ export default function CartDrawer() {
               <Link
                 href="/checkout"
                 onClick={closeCart}
-                className="mt-5 block w-full rounded-full bg-burgundy px-6 py-3.5 text-center text-sm font-medium text-ivory transition hover:bg-burgundy-dark"
+                className="premium-button premium-button-primary mt-5 w-full"
               >
                 Checkout
               </Link>
@@ -328,7 +328,7 @@ export default function CartDrawer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => track({ name: "whatsapp_click", source: "cart_order" })}
-                className="mt-2.5 flex w-full items-center justify-center gap-2 rounded-full border border-gold/30 px-6 py-3 text-center text-sm font-medium text-ink transition hover:border-[#25D366] hover:text-[#1DA851]"
+                className="mt-2.5 flex w-full items-center justify-center gap-2 border border-gold/30 px-6 py-3 text-center text-sm font-medium text-ink transition hover:border-[#25D366] hover:text-[#1DA851]"
               >
                 <WhatsAppIcon className="h-4 w-4" />
                 Order via WhatsApp
@@ -338,7 +338,7 @@ export default function CartDrawer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => track({ name: "instagram_click", source: "cart_order" })}
-                className="mt-2.5 flex w-full items-center justify-center gap-2 rounded-full border border-gold/30 px-6 py-3 text-center text-sm font-medium text-ink transition hover:border-burgundy hover:text-burgundy"
+                className="mt-2.5 flex w-full items-center justify-center gap-2 border border-gold/30 px-6 py-3 text-center text-sm font-medium text-ink transition hover:border-burgundy hover:text-burgundy"
               >
                 <InstagramIcon className="h-4 w-4" />
                 Order via Instagram
@@ -346,7 +346,7 @@ export default function CartDrawer() {
               <button
                 type="button"
                 onClick={closeCart}
-                className="mt-2 w-full rounded-full px-6 py-3 text-center text-sm font-medium text-walnut/70 transition hover:text-ink"
+                className="mt-2 w-full px-6 py-3 text-center text-xs font-semibold uppercase tracking-[0.1em] text-walnut/60 transition hover:text-ink"
               >
                 Continue Shopping
               </button>

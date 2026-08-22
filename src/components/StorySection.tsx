@@ -2,6 +2,7 @@ import Link from "next/link";
 import SmartImage from "./SmartImage";
 import SectionHeading from "./SectionHeading";
 import Reveal from "./Reveal";
+import SectionDivider from "./SectionDivider";
 
 type StorySectionProps = {
   eyebrow?: string;
@@ -23,45 +24,42 @@ export default function StorySection({
   reverse = false,
 }: StorySectionProps) {
   return (
-    <section className="mx-auto max-w-wide px-6 py-[var(--space-section-lg)] sm:px-8">
-      <div
-        className={`grid items-center gap-12 lg:grid-cols-2 lg:gap-16 ${
-          reverse ? "lg:[&>*:first-child]:order-2" : ""
-        }`}
-      >
-        <Reveal variant="image" className="overflow-hidden rounded-md">
-          <SmartImage
-            src={image}
-            alt={imageLabel}
-            label={imageLabel}
-            className="aspect-[5/4] rounded-md"
-            sizes="(min-width: 1024px) 45vw, 90vw"
-          />
-        </Reveal>
-        <Reveal delay={100}>
-          <SectionHeading eyebrow={eyebrow} title={title} />
-          <div className="mt-5 space-y-4">
-            {paragraphs.map((paragraph, i) => (
-              <p key={i} className="text-balance leading-relaxed text-walnut/80">
-                {paragraph}
-              </p>
-            ))}
-          </div>
-          {cta && (
-            <Link
-              href={cta.href}
-              className="group mt-7 inline-flex items-center gap-1.5 text-sm font-medium text-burgundy transition-colors duration-[180ms] ease-premium hover:underline"
-            >
-              {cta.label}
-              <span
-                aria-hidden="true"
-                className="transition-transform duration-[180ms] ease-premium group-hover:translate-x-1"
-              >
-                →
-              </span>
-            </Link>
-          )}
-        </Reveal>
+    <section className="chapter-section bg-ivory py-[var(--space-section-lg)]">
+      <div className="mx-auto max-w-wide px-6 sm:px-8">
+        <div
+          className={`grid items-center gap-12 lg:grid-cols-[1.08fr_0.92fr] lg:gap-20 xl:gap-28 ${
+            reverse ? "lg:[&>*:first-child]:order-2" : ""
+          }`}
+        >
+          <Reveal variant="image" className="overflow-hidden">
+            <SmartImage
+              src={image}
+              alt={imageLabel}
+              label={imageLabel}
+              className="aspect-[5/4]"
+              sizes="(min-width: 1024px) 52vw, 92vw"
+              imageClassName="transition-transform duration-[900ms] ease-premium hover:scale-[1.018]"
+            />
+          </Reveal>
+          <Reveal delay={100}>
+            <SectionHeading eyebrow={eyebrow} title={title} size="large" />
+            <div className="mt-6 max-w-xl space-y-4">
+              {paragraphs.map((paragraph, i) => (
+                <p key={i} className="text-balance text-[0.98rem] leading-[1.85] text-walnut/68">
+                  {paragraph}
+                </p>
+              ))}
+            </div>
+            {cta && (
+              <Link href={cta.href} className="editorial-link mt-7 text-burgundy">
+                {cta.label} <span aria-hidden="true">→</span>
+              </Link>
+            )}
+          </Reveal>
+        </div>
+      </div>
+      <div className="mt-[var(--space-section-lg)]">
+        <SectionDivider />
       </div>
     </section>
   );

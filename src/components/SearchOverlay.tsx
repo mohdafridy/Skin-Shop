@@ -58,13 +58,13 @@ export default function SearchOverlay({
       aria-hidden={!isOpen}
     >
       <div
-        className={`absolute inset-0 bg-[rgba(30,22,18,0.28)] transition-opacity duration-300 ease-premium ${
+        className={`absolute inset-0 bg-[rgba(30,22,18,0.34)] backdrop-blur-[2px] transition-opacity duration-300 ease-premium ${
           isOpen ? "opacity-100" : "opacity-0"
         }`}
         onClick={onClose}
       />
       <div
-        className={`relative mx-auto mt-24 w-[92%] max-w-2xl rounded-2xl bg-ivory p-6 shadow-2xl transition-[opacity,transform] duration-300 ease-premium sm:p-8 ${
+        className={`relative mx-auto mt-20 w-[92%] max-w-3xl border border-gold/20 bg-ivory p-6 shadow-[0_24px_70px_rgba(42,32,28,0.16)] transition-[opacity,transform] duration-300 ease-premium sm:p-9 ${
           isOpen ? "translate-y-0 opacity-100" : "-translate-y-2 opacity-0"
         }`}
       >
@@ -91,13 +91,13 @@ export default function SearchOverlay({
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search products, ingredients, rituals…"
-            className="w-full rounded-md bg-transparent font-display text-xl text-ink placeholder:text-walnut/40 focus:outline-none focus:ring-2 focus:ring-burgundy/40"
+            className="w-full bg-transparent font-display text-[1.8rem] leading-none tracking-[-0.025em] text-ink placeholder:text-walnut/35 focus:outline-none"
           />
           <button
             type="button"
             onClick={onClose}
             aria-label="Close search"
-            className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full text-ink transition hover:bg-sand"
+            className="flex h-9 w-9 flex-shrink-0 items-center justify-center text-ink transition-colors hover:text-burgundy"
           >
             <span aria-hidden>&times;</span>
           </button>
@@ -117,7 +117,7 @@ export default function SearchOverlay({
               <Link
                 href="/shop"
                 onClick={onClose}
-                className="mt-4 inline-block text-sm font-medium text-burgundy hover:underline"
+                className="editorial-link mt-4 text-burgundy"
               >
                 Shop All →
               </Link>
@@ -135,7 +135,7 @@ export default function SearchOverlay({
                       src={product.image}
                       alt={product.name}
                       label={product.shortName ?? product.name}
-                      className="h-14 w-14 flex-shrink-0 rounded-lg"
+                      className="h-14 w-14 flex-shrink-0"
                       sizes="56px"
                     />
                     <div className="min-w-0 flex-1">

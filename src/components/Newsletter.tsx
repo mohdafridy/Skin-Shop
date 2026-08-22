@@ -35,55 +35,45 @@ export default function Newsletter() {
   }
 
   return (
-    <section className="bg-sand/60 py-[var(--space-section-sm)]">
-      <div className="mx-auto max-w-2xl px-6 text-center sm:px-8">
-        <SectionHeading
-          eyebrow="Stay Close"
-          title="A Little Beauty, Delivered"
-          center
-        />
-        <p className="mx-auto mt-3 max-w-md text-balance text-walnut/75">
-          New launches, skincare notes, ingredient stories and a little inspiration from
-          Kashmir — sent occasionally to your inbox.
-        </p>
-
-        {submitted ? (
-          <p className="mt-8 font-display text-lg text-burgundy" role="status">
-            Thank you — you&apos;re on the list.
+    <section className="chapter-section bg-ivory py-[var(--space-section-lg)]">
+      <div className="mx-auto grid max-w-standard gap-9 px-6 sm:px-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-end lg:gap-20">
+        <SectionHeading eyebrow="Stay Close" title="A Little Beauty, Delivered" size="large" />
+        <div className="border-b border-gold/30 pb-2">
+          <p className="max-w-xl text-balance text-sm leading-[1.8] text-walnut/65">
+            New launches, skincare notes, ingredient stories and a little inspiration from Kashmir — sent occasionally to your inbox.
           </p>
-        ) : (
-          <>
-            <form
-              onSubmit={handleSubmit}
-              className="mx-auto mt-8 flex max-w-md flex-col gap-3 sm:flex-row"
-            >
-              <label htmlFor="newsletter-email" className="sr-only">
-                Email address
-              </label>
-              <input
-                id="newsletter-email"
-                name="email"
-                type="email"
-                required
-                autoComplete="email"
-                placeholder="Your email address"
-                className="w-full flex-1 rounded-full border border-gold/30 bg-ivory px-5 py-3 text-sm text-ink placeholder:text-walnut/40 focus:outline-none focus:ring-2 focus:ring-burgundy/50"
-              />
-              <button
-                type="submit"
-                disabled={submitting}
-                className="flex-shrink-0 rounded-full bg-burgundy px-6 py-3 text-sm font-medium text-ivory transition hover:bg-burgundy-dark disabled:cursor-not-allowed disabled:opacity-70"
-              >
-                {submitting ? "Joining…" : "Join The Skin Shop"}
-              </button>
-            </form>
-            {error && (
-              <p className="mt-3 text-sm text-burgundy" role="alert">
-                {error}
-              </p>
-            )}
-          </>
-        )}
+
+          {submitted ? (
+            <p className="mt-7 font-display text-2xl text-burgundy" role="status">
+              Thank you — you&apos;re on the list.
+            </p>
+          ) : (
+            <>
+              <form onSubmit={handleSubmit} className="mt-7 flex items-end gap-3">
+                <div className="min-w-0 flex-1">
+                  <label htmlFor="newsletter-email" className="sr-only">Email address</label>
+                  <input
+                    id="newsletter-email"
+                    name="email"
+                    type="email"
+                    required
+                    autoComplete="email"
+                    placeholder="Your email address"
+                    className="w-full border-0 border-b border-walnut/30 bg-transparent px-0 py-3 text-sm text-ink outline-none transition-colors placeholder:text-walnut/38 focus:border-burgundy focus:ring-0"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="editorial-link flex-shrink-0 pb-3 text-burgundy disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {submitting ? "Joining…" : "Join"} <span aria-hidden="true">→</span>
+                </button>
+              </form>
+              {error && <p className="mt-3 text-sm text-burgundy" role="alert">{error}</p>}
+            </>
+          )}
+        </div>
       </div>
     </section>
   );
