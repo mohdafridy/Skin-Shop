@@ -52,7 +52,7 @@ export default function Header() {
       <header className="sticky top-0 z-50 h-[72px] border-b border-gold/20 bg-ivory/95 backdrop-blur-sm">
         <div className="mx-auto flex h-full max-w-standard items-center justify-between px-5 text-ink sm:px-8">
           <Link href="/" className="flex-shrink-0" aria-label="The Skin Shop, home">
-            <Logo variant="wordmark" />
+            <Logo variant="lockup" />
           </Link>
           <p className="hidden text-xs font-medium uppercase tracking-[0.2em] text-walnut/60 sm:block">
             Contact <span className="mx-1 text-gold">→</span> Delivery
@@ -83,7 +83,7 @@ export default function Header() {
     >
       <div className={`mx-auto flex h-full max-w-standard items-center justify-between px-5 sm:px-8 ${textTone}`}>
         <Link href="/" className="flex-shrink-0" aria-label="The Skin Shop, home">
-          <Logo light={transparent} variant="wordmark" />
+          <Logo light={transparent} variant="lockup" />
         </Link>
 
         <nav className="hidden items-center gap-8 lg:flex" aria-label="Main">

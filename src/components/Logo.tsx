@@ -5,7 +5,7 @@ import Image from "next/image";
 
 type LogoProps = {
   light?: boolean;
-  variant?: "mark" | "wordmark";
+  variant?: "mark" | "wordmark" | "lockup";
 };
 
 /**
@@ -25,6 +25,28 @@ export default function Logo({ light = false, variant = "mark" }: LogoProps) {
           The Skin Shop
         </span>
         <span aria-hidden="true" className="hidden h-px w-5 bg-gold/80 sm:block" />
+      </span>
+    );
+  }
+
+  if (variant === "lockup") {
+    return (
+      <span className="inline-flex items-center gap-2.5 whitespace-nowrap sm:gap-3" aria-label="The Skin Shop">
+        {!errored && (
+          <Image
+            src={src}
+            alt=""
+            aria-hidden="true"
+            width={56}
+            height={56}
+            onError={() => setErrored(true)}
+            className="h-9 w-9 flex-shrink-0 sm:h-11 sm:w-11"
+            priority
+          />
+        )}
+        <span className="font-display text-[1.5rem] leading-none tracking-[-0.035em] sm:text-[1.85rem]">
+          The Skin Shop
+        </span>
       </span>
     );
   }
