@@ -417,11 +417,18 @@ html {
    placeholder instead of popping in. */
 .smart-image-media {
   opacity: 0;
-  transition: opacity 520ms var(--ease-premium);
+  transform: scale(1.035);
+  filter: blur(14px);
+  transition:
+    opacity 520ms var(--ease-premium),
+    transform 760ms var(--ease-premium),
+    filter 760ms var(--ease-premium);
 }
 
 .smart-image-media.is-loaded {
   opacity: 1;
+  transform: none;
+  filter: none;
 }
 
 /* Product image art direction: a shared photographic canvas plus per-product
@@ -504,6 +511,7 @@ html {
   .smart-image-media.is-loaded {
     opacity: 1;
     transform: none;
+    filter: none;
     transition: none;
   }
 }

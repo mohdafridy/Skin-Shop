@@ -146,6 +146,19 @@ export default function ProductInfo({ product }: { product: Product }) {
         </div>
       </div>
 
+      <ul className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2 text-[0.62rem] font-semibold uppercase tracking-[0.13em] text-walnut/55">
+        {["Cruelty-Free", "Handcrafted in Kashmir", "Ships Across India", "Secure Checkout"].map(
+          (item, i) => (
+            <li key={item} className="flex items-center gap-4">
+              {i > 0 && (
+                <span aria-hidden="true" className="h-1 w-1 rotate-45 bg-gold/70" />
+              )}
+              {item}
+            </li>
+          ),
+        )}
+      </ul>
+
       <ConsultationCTA
         productSlug={product.slug}
         productName={product.name}
