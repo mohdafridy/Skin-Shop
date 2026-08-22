@@ -412,13 +412,11 @@ export const products: Product[] = [
     gallery: productImages("saffron-gel"),
     ingredients: ["Kashmiri Navel Saffron", "Almond Oil", "Sea Buckthorn Oil", "Aloe Vera"],
     benefits: [
-      "Helps reduce the appearance of open pores",
-      "Can be used as a leave-in face mask",
-      "Suitable as a daytime moisturiser",
-      "Helps diminish the appearance of dark spots and blemishes",
-      "Gives the skin a healthy-looking shine",
+      "Hydrates and moisturises the skin",
+      "Helps brighten the complexion",
+      "Helps lighten blemishes and dark spots",
+      "Helps even out skin tone",
     ],
-    suitableFor: "Oily & acne-prone skin",
     ritual: [
       "Apply a thin, even layer to clean skin.",
       "Allow to absorb fully before layering other products.",
