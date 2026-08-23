@@ -46,7 +46,7 @@ export default function IngredientScrollytelling() {
             style={{ width: `${((activeIndex + 1) / ingredientStories.length) * 100}%` }}
           />
         </div>
-        <div className="relative h-[clamp(400px,58vh,560px)] overflow-hidden bg-sand">
+        <div className="relative mx-auto aspect-[4/5] h-[clamp(460px,64vh,620px)] w-auto max-w-full overflow-hidden bg-sand">
           {ingredientStories.map((ingredient) => {
             const product = ingredient.relatedProductSlugs[0]
               ? getProductBySlug(ingredient.relatedProductSlugs[0])
