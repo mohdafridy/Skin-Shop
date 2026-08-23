@@ -17,6 +17,13 @@ export const metadata: Metadata = {
     title: "Shop Admin",
     statusBarStyle: "default",
   },
+  // Legacy alias: some older iOS Safari versions only honour this exact
+  // meta name for full-screen standalone launch. Next emits the modern
+  // `mobile-web-app-capable`; adding this keeps standalone working on every
+  // iPhone as well as Android.
+  other: {
+    "apple-mobile-web-app-capable": "yes",
+  },
 };
 
 export const viewport: Viewport = {
