@@ -3,6 +3,7 @@ import SmartImage from "./SmartImage";
 import SectionHeading from "./SectionHeading";
 import Reveal from "./Reveal";
 import SectionDivider from "./SectionDivider";
+import AmbientDecor from "./AmbientDecor";
 
 type StorySectionProps = {
   eyebrow?: string;
@@ -24,8 +25,9 @@ export default function StorySection({
   reverse = false,
 }: StorySectionProps) {
   return (
-    <section className="chapter-section bg-ivory py-[var(--space-section-lg)]">
-      <div className="mx-auto max-w-wide px-6 sm:px-8">
+    <section className="chapter-section relative overflow-hidden bg-ivory py-[var(--space-section-lg)]">
+      <AmbientDecor variant="story" />
+      <div className="relative z-10 mx-auto max-w-wide px-6 sm:px-8">
         <div
           className={`grid items-center gap-12 lg:grid-cols-[1.08fr_0.92fr] lg:gap-20 xl:gap-28 ${
             reverse ? "lg:[&>*:first-child]:order-2" : ""
@@ -58,7 +60,7 @@ export default function StorySection({
           </Reveal>
         </div>
       </div>
-      <div className="mt-[var(--space-section-lg)]">
+      <div className="relative z-10 mt-[var(--space-section-lg)]">
         <SectionDivider />
       </div>
     </section>

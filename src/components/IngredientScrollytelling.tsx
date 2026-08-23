@@ -36,9 +36,15 @@ export default function IngredientScrollytelling() {
       <div className="sticky top-28 self-start">
         <div className="mb-4 flex items-center justify-between border-b border-gold/20 pb-3">
           <p className="text-[0.66rem] font-semibold uppercase tracking-[0.16em] text-walnut/48">Ingredient study</p>
-          <p className="font-display text-lg tracking-[-0.02em] text-burgundy">
+          <p key={activeId} className="editorial-line-in font-display text-lg tracking-[-0.02em] text-burgundy">
             {String(activeIndex + 1).padStart(2, "0")} <span className="text-walnut/35">/ {String(ingredientStories.length).padStart(2, "0")}</span>
           </p>
+        </div>
+        <div className="-mt-4 mb-4 h-px overflow-hidden bg-gold/12" aria-hidden="true">
+          <span
+            className="ingredient-progress-bar block h-full bg-gold/70"
+            style={{ width: `${((activeIndex + 1) / ingredientStories.length) * 100}%` }}
+          />
         </div>
         <div className="relative aspect-[4/5] overflow-hidden bg-sand">
           {ingredientStories.map((ingredient) => {
@@ -52,8 +58,8 @@ export default function IngredientScrollytelling() {
               <div
                 key={ingredient.id}
                 aria-hidden={!isActive}
-                className={`absolute inset-0 transition-[opacity,transform] duration-[750ms] ease-premium ${
-                  isActive ? "scale-100 opacity-100" : "scale-[1.01] opacity-0"
+                className={`absolute inset-0 transition-[opacity,transform] duration-[900ms] ease-premium ${
+                  isActive ? "scale-100 opacity-100" : "scale-[1.035] opacity-0"
                 }`}
               >
                 {imageSrc ? (
@@ -95,8 +101,8 @@ export default function IngredientScrollytelling() {
                 if (node) rowRefs.current.set(ingredient.id, node);
                 else rowRefs.current.delete(ingredient.id);
               }}
-              className={`max-w-xl border-b border-gold/18 py-16 transition-opacity duration-300 first:pt-6 last:border-b-0 ${
-                isActive ? "opacity-100" : "opacity-58"
+              className={`ingredient-copy-motion max-w-xl border-b border-gold/18 py-16 first:pt-6 last:border-b-0 ${
+                isActive ? "is-active opacity-100" : "opacity-48"
               }`}
             >
               <div className="flex items-baseline gap-4">
@@ -123,7 +129,7 @@ export default function IngredientScrollytelling() {
                   className="editorial-link mt-6 text-burgundy"
                 >
                   Discover {product.shortName ?? product.name}
-                  <span aria-hidden="true">→</span>
+                  <span aria-hidden="true" className="motion-arrow">→</span>
                 </Link>
               )}
             </article>

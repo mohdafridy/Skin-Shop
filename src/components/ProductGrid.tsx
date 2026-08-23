@@ -23,7 +23,7 @@ export default function ProductGrid({
   return (
     <div className="grid grid-cols-2 gap-x-5 gap-y-10 sm:gap-x-6 lg:grid-cols-4 lg:gap-x-8">
       {products.map((product, i) => (
-        <Reveal key={product.slug} delay={(i % 4) * 60}>
+        <Reveal key={product.slug} delay={(i % 4) * 85}>
           <ProductCard product={product} />
         </Reveal>
       ))}

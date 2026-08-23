@@ -218,16 +218,17 @@ export default function Header() {
 
       {menuOpen && (
         <div
-          className={`absolute inset-x-0 border-b border-[rgba(69,48,42,0.08)] bg-ivory px-6 pb-8 pt-4 text-ink shadow-[0_18px_45px_rgba(42,32,28,0.08)] transition-[top] duration-300 ease-premium lg:hidden ${
+          className={`mobile-menu-enter absolute inset-x-0 border-b border-[rgba(69,48,42,0.08)] bg-ivory px-6 pb-8 pt-4 text-ink shadow-[0_18px_45px_rgba(42,32,28,0.08)] transition-[top] duration-300 ease-premium lg:hidden ${
             scrolled ? "top-16" : "top-[72px]"
           }`}
         >
           <nav className="flex flex-col gap-2" aria-label="Mobile">
-            {mainNav.map((item) => (
+            {mainNav.map((item, index) => (
               <Link
                 key={item.label}
                 href={item.href}
-                className="border-b border-gold/15 px-1 py-4 font-display text-[1.65rem] leading-none tracking-[-0.02em] transition-colors hover:text-burgundy"
+                className="mobile-menu-link-enter border-b border-gold/15 px-1 py-4 font-display text-[1.65rem] leading-none tracking-[-0.02em] transition-colors hover:text-burgundy"
+                style={{ "--menu-delay": `${80 + index * 55}ms` } as React.CSSProperties}
               >
                 {item.label}
               </Link>

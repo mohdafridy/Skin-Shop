@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import SectionHeading from "./SectionHeading";
+import AmbientDecor from "./AmbientDecor";
 
 export default function Newsletter() {
   const [submitted, setSubmitted] = useState(false);
@@ -35,8 +36,9 @@ export default function Newsletter() {
   }
 
   return (
-    <section className="chapter-section bg-ivory py-[var(--space-section-lg)]">
-      <div className="mx-auto grid max-w-standard gap-9 px-6 sm:px-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-end lg:gap-20">
+    <section className="chapter-section relative overflow-hidden bg-ivory py-[var(--space-section-lg)]">
+      <AmbientDecor variant="newsletter" />
+      <div className="relative z-10 mx-auto grid max-w-standard gap-9 px-6 sm:px-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-end lg:gap-20">
         <SectionHeading eyebrow="Stay Close" title="A Little Beauty, Delivered" size="large" />
         <div className="border-b border-gold/30 pb-2">
           <p className="max-w-xl text-balance text-sm leading-[1.8] text-walnut/65">

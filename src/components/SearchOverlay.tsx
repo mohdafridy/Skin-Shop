@@ -58,14 +58,14 @@ export default function SearchOverlay({
       aria-hidden={!isOpen}
     >
       <div
-        className={`absolute inset-0 bg-[rgba(30,22,18,0.34)] backdrop-blur-[2px] transition-opacity duration-300 ease-premium ${
+        className={`absolute inset-0 bg-[rgba(30,22,18,0.34)] backdrop-blur-[2px] transition-opacity duration-[380ms] ease-premium ${
           isOpen ? "opacity-100" : "opacity-0"
         }`}
         onClick={onClose}
       />
       <div
-        className={`relative mx-auto mt-20 w-[92%] max-w-3xl border border-gold/20 bg-ivory p-6 shadow-[0_24px_70px_rgba(42,32,28,0.16)] transition-[opacity,transform] duration-300 ease-premium sm:p-9 ${
-          isOpen ? "translate-y-0 opacity-100" : "-translate-y-2 opacity-0"
+        className={`relative mx-auto mt-20 w-[92%] max-w-3xl border border-gold/20 bg-ivory p-6 shadow-[0_24px_70px_rgba(42,32,28,0.16)] transition-[opacity,transform] duration-[420ms] ease-premium sm:p-9 ${
+          isOpen ? "translate-y-0 opacity-100" : "-translate-y-3 opacity-0"
         }`}
       >
         <div className="flex items-center gap-3 border-b border-gold/25 pb-4">
@@ -124,8 +124,12 @@ export default function SearchOverlay({
             </div>
           ) : (
             <ul className="divide-y divide-gold/15">
-              {results.map((product) => (
-                <li key={product.slug}>
+              {results.map((product, index) => (
+                <li
+                  key={product.slug}
+                  className="search-result-enter"
+                  style={{ "--search-delay": `${index * 45}ms` } as React.CSSProperties}
+                >
                   <Link
                     href={`/products/${product.slug}`}
                     onClick={onClose}

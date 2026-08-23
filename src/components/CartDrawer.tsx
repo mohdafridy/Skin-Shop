@@ -82,7 +82,7 @@ export default function CartDrawer() {
       aria-hidden={!isOpen}
     >
       <div
-        className={`absolute inset-0 bg-[rgba(30,22,18,0.34)] backdrop-blur-[2px] transition-opacity duration-300 ease-premium ${
+        className={`absolute inset-0 bg-[rgba(30,22,18,0.34)] backdrop-blur-[2px] transition-opacity duration-[380ms] ease-premium ${
           isOpen ? "opacity-100" : "opacity-0"
         }`}
         onClick={closeCart}
@@ -91,7 +91,7 @@ export default function CartDrawer() {
         role="dialog"
         aria-modal="true"
         aria-label="Shopping bag"
-        className={`absolute right-0 top-0 flex h-full w-full max-w-md flex-col bg-ivory shadow-[0_0_60px_rgba(42,32,28,0.16)] transition-transform duration-300 ease-premium ${
+        className={`absolute right-0 top-0 flex h-full w-full max-w-md flex-col bg-ivory shadow-[0_0_60px_rgba(42,32,28,0.16)] transition-transform duration-[420ms] ease-premium ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
@@ -124,8 +124,12 @@ export default function CartDrawer() {
         ) : (
           <>
             <ul className="flex-1 divide-y divide-gold/15 overflow-y-auto px-6">
-              {items.map((item) => (
-                <li key={item.key} className="flex gap-4 py-5">
+              {items.map((item, index) => (
+                <li
+                  key={item.key}
+                  className={`flex gap-4 py-5 ${isOpen ? "cart-line-enter" : ""}`}
+                  style={{ "--cart-delay": `${70 + index * 55}ms` } as React.CSSProperties}
+                >
                   <SmartImage
                     src={item.image}
                     alt={item.name}
