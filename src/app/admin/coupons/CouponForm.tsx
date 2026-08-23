@@ -30,10 +30,11 @@ export default function CouponForm() {
       action={formAction}
       className="rounded-2xl border border-gold/20 bg-white/50 p-6"
     >
-      <h2 className="font-display text-xl text-ink">Create a one-time code</h2>
+      <h2 className="font-display text-xl text-ink">Create a code</h2>
       <p className="mt-1 text-sm text-walnut/70">
-        Every code is single-use. Give it to a chosen customer privately — it&apos;s
-        never shown anywhere on the shop.
+        Codes are never shown on the shop — you hand them out yourself. Choose a
+        one-time code for a single customer, or a reusable code anyone can use
+        until you disable it.
       </p>
 
       <div className="mt-5 grid gap-4 sm:grid-cols-2">
@@ -48,6 +49,20 @@ export default function CouponForm() {
             placeholder="e.g. AISHA10"
             className="mt-1 w-full rounded-lg border border-gold/30 bg-white px-3 py-2 text-sm uppercase tracking-wide text-ink outline-none focus:border-burgundy"
           />
+        </label>
+
+        <label className="block sm:col-span-2">
+          <span className="text-xs font-semibold uppercase tracking-wide text-walnut/70">
+            Usage
+          </span>
+          <select
+            name="usage"
+            defaultValue="single"
+            className="mt-1 w-full rounded-lg border border-gold/30 bg-white px-3 py-2 text-sm text-ink outline-none focus:border-burgundy"
+          >
+            <option value="single">One-time — a single customer, once</option>
+            <option value="reusable">Reusable — anyone can use it, until you disable it</option>
+          </select>
         </label>
 
         <label className="block">

@@ -41,7 +41,8 @@ export default async function AdminCouponsPage() {
               code={c.code}
               label={describe(c.type, c.value)}
               minimumSubtotal={c.minimumSubtotal}
-              used={c.timesUsed > 0}
+              reusable={c.usageLimit === null}
+              timesUsed={c.timesUsed}
               active={c.active}
               expiresAt={c.expiresAt?.toISOString() ?? null}
               createdAt={c.createdAt.toISOString()}

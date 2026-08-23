@@ -9,12 +9,15 @@ import { prisma } from "@/lib/prisma";
 export type AdminActionState = { error?: string; success?: string } | null;
 
 /**
- * Owner-only coupon generator. Every code created here is single-use
- * (usageLimit = 1), so once a chosen customer redeems it at checkout the
- * code is spent for good — checkout increments timesUsed and
- * couponIsUsable() then rejects it. Codes are never surfaced anywhere on
- * the storefront; the owner reads the code off this admin screen and hands
- * it to the customer personally.
+ * Owner-only coupon generator. Codes are never surfaced anywhere on the
+ * storefront; the owner reads a code off this admin screen and hands it out.
+ *
+ * Two kinds:
+ * - "single" (usageLimit = 1): burns after one redemption — an exclusive,
+ *   one-time code for a chosen customer.
+ * - "reusable" (usageLimit = null): a permanent code any customer can use,
+ *   any number of times, until the owner disables it. Enable/disable is
+ *   available anytime from the code list.
  */
 
 const createSchema = z
@@ -28,6 +31,7 @@ const createSchema = z
       .max(40, "Code is too long.")
       .regex(/^[A-Za-z0-9-]+$/, "Use only letters, numbers and hyphens."),
     type: z.enum(["PERCENTAGE", "FIXED"]),
+    usage: z.enum(["single", "reusable"]).default("single"),
     value: z.coerce.number().int().positive("Enter a value greater than zero."),
     minimumSubtotal: z.coerce.number().int().nonnegative().optional(),
     expiresAt: z.string().trim().optional(),
@@ -46,6 +50,7 @@ export async function createCouponAction(
   const parsed = createSchema.safeParse({
     code: formData.get("code"),
     type: formData.get("type"),
+    usage: formData.get("usage") || undefined,
     value: formData.get("value"),
     minimumSubtotal: formData.get("minimumSubtotal") || undefined,
     expiresAt: formData.get("expiresAt") || undefined,
@@ -54,7 +59,7 @@ export async function createCouponAction(
     return { error: parsed.error.issues[0]?.message ?? "Invalid coupon." };
   }
 
-  const { code, type, value, minimumSubtotal, expiresAt } = parsed.data;
+  const { code, type, usage, value, minimumSubtotal, expiresAt } = parsed.data;
 
   let expires: Date | null = null;
   if (expiresAt) {
@@ -72,7 +77,8 @@ export async function createCouponAction(
         type,
         value,
         minimumSubtotal: minimumSubtotal && minimumSubtotal > 0 ? minimumSubtotal : null,
-        usageLimit: 1, // single-use: burns after one redemption
+        // single = burns after one redemption; reusable = unlimited until disabled.
+        usageLimit: usage === "reusable" ? null : 1,
         active: true,
         expiresAt: expires,
       },
@@ -86,7 +92,12 @@ export async function createCouponAction(
   }
 
   revalidatePath("/admin/coupons");
-  return { success: `Coupon ${code.toUpperCase()} created. Give it to your customer.` };
+  return {
+    success:
+      usage === "reusable"
+        ? `Reusable code ${code.toUpperCase()} created. Share it with customers; disable it anytime.`
+        : `One-time code ${code.toUpperCase()} created. Give it to your customer.`,
+  };
 }
 
 const toggleSchema = z.object({

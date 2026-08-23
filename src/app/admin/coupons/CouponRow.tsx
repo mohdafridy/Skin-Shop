@@ -10,7 +10,8 @@ export default function CouponRow({
   code,
   label,
   minimumSubtotal,
-  used,
+  reusable,
+  timesUsed,
   active,
   expiresAt,
   createdAt,
@@ -19,7 +20,8 @@ export default function CouponRow({
   code: string;
   label: string;
   minimumSubtotal: number | null;
-  used: boolean;
+  reusable: boolean;
+  timesUsed: number;
   active: boolean;
   expiresAt: string | null;
   createdAt: string;
@@ -27,12 +29,15 @@ export default function CouponRow({
   const [state, formAction, pending] = useActionState(setCouponActiveAction, initialState);
 
   const expired = expiresAt != null && new Date(expiresAt) < new Date();
+  // A single-use code is spent for good once redeemed; a reusable code never
+  // "burns" — it only stops working when the owner disables it or it expires.
+  const spent = !reusable && timesUsed > 0;
 
   let status: { text: string; className: string };
-  if (used) status = { text: "Redeemed", className: "bg-olive/15 text-olive" };
+  if (spent) status = { text: "Redeemed", className: "bg-olive/15 text-olive" };
   else if (expired) status = { text: "Expired", className: "bg-burgundy/10 text-burgundy" };
   else if (!active) status = { text: "Disabled", className: "bg-sand text-walnut" };
-  else status = { text: "Available", className: "bg-burgundy/10 text-burgundy" };
+  else status = { text: "Active", className: "bg-burgundy/10 text-burgundy" };
 
   return (
     <li className="rounded-2xl border border-gold/20 bg-white/50 p-5">
@@ -44,6 +49,9 @@ export default function CouponRow({
           <p className="mt-1 text-sm text-walnut/75">
             {label}
             {minimumSubtotal ? ` · min ₹${minimumSubtotal}` : ""}
+            {reusable
+              ? ` · reusable${timesUsed > 0 ? ` · used ${timesUsed}×` : ""}`
+              : " · one-time"}
           </p>
         </div>
         <span className={`rounded-full px-3 py-1 text-xs font-medium ${status.className}`}>
@@ -68,7 +76,7 @@ export default function CouponRow({
             : " · no expiry"}
         </span>
 
-        {!used && (
+        {!spent && (
           <form action={formAction}>
             <input type="hidden" name="couponId" value={id} />
             <input type="hidden" name="active" value={active ? "false" : "true"} />
