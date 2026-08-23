@@ -59,14 +59,14 @@ export default function Hero() {
       <div className="relative mx-auto flex h-full w-full max-w-7xl flex-col items-start justify-start px-6 pt-[115px] text-left sm:px-8 lg:justify-center lg:px-8 lg:pt-0">
         <p
           className="stagger-in text-xs font-semibold uppercase tracking-[0.2em] text-gold lg:text-sm lg:tracking-[0.22em]"
-          style={{ "--stagger-rise": "6px", "--stagger-delay": "0ms" } as React.CSSProperties}
+          style={{ "--stagger-rise": "18px", "--stagger-delay": "0ms" } as React.CSSProperties}
         >
           {productTagline}
         </p>
 
         <h1
           className="stagger-in mt-4 max-w-[340px] font-display font-normal tracking-[-0.045em] text-ivory text-[clamp(2.9rem,11vw,3.55rem)] leading-[0.94] lg:mt-5 lg:max-w-[560px] lg:text-[clamp(4rem,5vw,5.2rem)] lg:leading-[0.93]"
-          style={{ "--stagger-rise": "10px", "--stagger-delay": "80ms" } as React.CSSProperties}
+          style={{ "--stagger-rise": "26px", "--stagger-delay": "110ms" } as React.CSSProperties}
         >
           Rooted in Kashmir.
           <br />
@@ -78,7 +78,7 @@ export default function Hero() {
             the headline and copy instead. */}
         <div
           className="stagger-in mt-7 hidden items-center gap-3 sm:flex"
-          style={{ "--stagger-rise": "6px", "--stagger-delay": "140ms" } as React.CSSProperties}
+          style={{ "--stagger-rise": "18px", "--stagger-delay": "210ms" } as React.CSSProperties}
           aria-hidden="true"
         >
           <span className="h-px w-24 bg-gradient-to-r from-transparent to-gold/60 lg:w-28" />
@@ -88,7 +88,7 @@ export default function Hero() {
 
         <p
           className="stagger-in mt-6 max-w-[315px] text-base leading-[1.5] text-ivory/90 sm:max-w-[360px] lg:text-[17px] lg:leading-[1.55]"
-          style={{ "--stagger-rise": "8px", "--stagger-delay": "200ms" } as React.CSSProperties}
+          style={{ "--stagger-rise": "22px", "--stagger-delay": "300ms" } as React.CSSProperties}
         >
           Thoughtfully made skincare inspired by Kashmir&rsquo;s botanicals, beauty
           traditions, and remarkable sense of place.
@@ -96,17 +96,17 @@ export default function Hero() {
 
         <div
           className="stagger-in mt-7 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:gap-6 lg:mt-8"
-          style={{ "--stagger-rise": "0px", "--stagger-delay": "260ms" } as React.CSSProperties}
+          style={{ "--stagger-rise": "18px", "--stagger-delay": "410ms" } as React.CSSProperties}
         >
           <Link
             href="/shop"
             onClick={() => track({ name: "hero_cta_click", cta: "Shop All" })}
-            className="premium-button min-w-[180px] border border-ivory bg-ivory text-burgundy-dark hover:bg-sand sm:min-w-[195px]"
+            className="group premium-button min-w-[180px] border border-ivory bg-ivory text-burgundy-dark hover:bg-sand sm:min-w-[195px]"
           >
             Shop All
             <span
               aria-hidden="true"
-              className="text-base transition-transform duration-[180ms] ease-premium group-hover:translate-x-1"
+              className="motion-arrow text-base"
             >
               →
             </span>
@@ -132,7 +132,7 @@ export default function Hero() {
           fill="none"
           stroke="currentColor"
           strokeWidth="1.5"
-          className="h-4 w-4 text-ivory/55"
+          className="scroll-cue-float h-4 w-4 text-ivory/55"
           aria-hidden="true"
         >
           <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v13m0 0-4-4m4 4 4-4" />

@@ -4,10 +4,13 @@ import SectionHeading from "./SectionHeading";
 import IngredientCard from "./IngredientCard";
 import IngredientScrollytelling from "./IngredientScrollytelling";
 import Reveal from "./Reveal";
+import AmbientDecor from "./AmbientDecor";
 
 export default function IngredientStorytelling() {
   return (
-    <section className="chapter-section mx-auto max-w-standard px-6 py-[var(--space-section-lg)] sm:px-8">
+    <section className="chapter-section relative mx-auto max-w-standard overflow-hidden px-6 py-[var(--space-section-lg)] sm:px-8">
+      <AmbientDecor variant="ingredients" />
+      <div className="relative z-10">
       <div className="grid gap-7 lg:grid-cols-[1fr_0.7fr] lg:items-end">
         <SectionHeading
           eyebrow="Signature Ingredients"
@@ -36,6 +39,7 @@ export default function IngredientStorytelling() {
         <Link href="/shop" className="editorial-link text-burgundy">
           Explore Our Ingredients <span aria-hidden="true">→</span>
         </Link>
+      </div>
       </div>
     </section>
   );

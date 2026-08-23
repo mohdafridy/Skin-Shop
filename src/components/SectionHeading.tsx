@@ -1,3 +1,7 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+
 type SectionHeadingProps = {
   eyebrow?: string;
   title: string;
@@ -15,8 +19,32 @@ export default function SectionHeading({
   light = false,
   size = "default",
 }: SectionHeadingProps) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const node = ref.current;
+    if (!node) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.2, rootMargin: "0px 0px -8% 0px" },
+    );
+
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <div className={center ? "text-center" : ""}>
+    <div
+      ref={ref}
+      className={`section-heading-reveal ${visible ? "is-visible" : ""} ${center ? "text-center" : ""}`}
+    >
       {eyebrow && (
         <div className={`mb-4 flex items-center gap-3 ${center ? "justify-center" : ""}`}>
           {!center && <span className={`h-px w-8 ${light ? "bg-gold/70" : "bg-gold/80"}`} aria-hidden="true" />}

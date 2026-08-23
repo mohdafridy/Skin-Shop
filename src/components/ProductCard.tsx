@@ -32,7 +32,7 @@ export default function ProductCard({ product }: { product: Product }) {
   const focalPoint = focalPointBySlug[product.slug] ?? "";
 
   return (
-    <article className="group relative flex min-w-0 flex-col">
+    <article className="group product-card-motion relative flex min-w-0 flex-col">
       <Link
         href={`/products/${product.slug}`}
         className="relative block overflow-hidden bg-sand/70"
@@ -44,11 +44,11 @@ export default function ProductCard({ product }: { product: Product }) {
           label={product.shortName ?? product.name}
           className="aspect-[4/3]"
           sizes="(min-width: 1024px) 23vw, (min-width: 640px) 45vw, 48vw"
-          imageClassName={`product-photo ${focalPoint} transition-transform duration-[700ms] ease-premium group-hover:scale-[1.028]`}
+          imageClassName={`product-photo ${focalPoint} transition-transform duration-[700ms] ease-premium group-hover:scale-[1.04]`}
         />
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-ink/10 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-ink/16 to-transparent opacity-0 transition-opacity duration-[420ms] ease-premium group-hover:opacity-100"
         />
       </Link>
 
@@ -86,16 +86,16 @@ export default function ProductCard({ product }: { product: Product }) {
               addItem(product);
               triggerAdded();
             }}
-            className="editorial-link text-burgundy lg:opacity-0 lg:transition-opacity lg:duration-300 lg:group-hover:opacity-100 lg:group-focus-within:opacity-100"
+            className="editorial-link product-card-actions text-burgundy"
           >
             {added ? "Added ✓" : "Quick Add"}
-            <span aria-hidden="true">+</span>
+            <span aria-hidden="true" className="motion-arrow">+</span>
           </button>
           <Link
             href={`/products/${product.slug}`}
             className="text-[0.68rem] font-semibold uppercase tracking-[0.12em] text-walnut/50 transition-colors duration-200 hover:text-burgundy"
           >
-            Discover <span aria-hidden="true">→</span>
+            Discover <span aria-hidden="true" className="motion-arrow">→</span>
           </Link>
         </div>
       </div>

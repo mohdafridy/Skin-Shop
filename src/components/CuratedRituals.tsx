@@ -2,11 +2,13 @@ import { combos } from "@/data/combos";
 import SectionHeading from "./SectionHeading";
 import ComboCard from "./ComboCard";
 import Reveal from "./Reveal";
+import AmbientDecor from "./AmbientDecor";
 
 export default function CuratedRituals() {
   return (
-    <section className="chapter-section bg-walnut py-[var(--space-section-lg)]">
-      <div className="mx-auto max-w-standard px-6 sm:px-8">
+    <section className="chapter-section relative overflow-hidden bg-walnut py-[var(--space-section-lg)]">
+      <AmbientDecor variant="rituals" />
+      <div className="relative z-10 mx-auto max-w-standard px-6 sm:px-8">
         <div className="max-w-3xl">
           <SectionHeading
             eyebrow="Together"

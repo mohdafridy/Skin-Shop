@@ -7,6 +7,7 @@ import { getComboBySlug, getComboPricing } from "@/data/combos";
 import { formatPrice } from "@/lib/format";
 import SmartImage from "./SmartImage";
 import SectionHeading from "./SectionHeading";
+import AmbientDecor from "./AmbientDecor";
 
 type Goal = "fresh" | "glow" | "evening" | "reset" | "beyond" | "essentials";
 type Time = "morning" | "evening" | "anytime";
@@ -88,8 +89,9 @@ export default function BuildYourRitual() {
   }
 
   return (
-    <section className="chapter-section bg-ivory py-[var(--space-section-lg)]">
-      <div className="mx-auto max-w-standard px-6 sm:px-8">
+    <section className="chapter-section relative overflow-hidden bg-ivory py-[var(--space-section-lg)]">
+      <AmbientDecor variant="builder" />
+      <div className="relative z-10 mx-auto max-w-standard px-6 sm:px-8">
         <div className="grid gap-12 lg:grid-cols-[0.72fr_1.28fr] lg:gap-20">
           <div>
             <SectionHeading
@@ -100,7 +102,7 @@ export default function BuildYourRitual() {
             />
             <div className="mt-8 flex items-center gap-2 text-gold/70" aria-hidden="true">
               {[1, 2, 3].map((n) => (
-                <span key={n} className={`h-px transition-all duration-300 ${step >= n ? "w-10 bg-burgundy" : "w-6 bg-gold/30"}`} />
+                <span key={n} className={`h-px transition-all duration-500 ease-premium ${step >= n ? "w-10 bg-burgundy" : "w-6 bg-gold/30"}`} />
               ))}
             </div>
           </div>
@@ -112,7 +114,7 @@ export default function BuildYourRitual() {
                   <div className="editorial-line-in">
                     <p className="text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-burgundy">01 / What are you looking for?</p>
                     <div className="mt-6 grid gap-x-8 sm:grid-cols-2">
-                      {goals.map((option) => (
+                      {goals.map((option, index) => (
                         <button
                           key={option.id}
                           type="button"
@@ -120,7 +122,8 @@ export default function BuildYourRitual() {
                             setGoal(option.id);
                             setStep(2);
                           }}
-                          className="group flex items-center justify-between border-b border-gold/20 py-4 text-left transition-colors hover:border-burgundy/45"
+                          className="group ritual-choice-enter flex items-center justify-between border-b border-gold/20 py-4 text-left transition-colors hover:border-burgundy/45"
+                          style={{ "--choice-delay": `${index * 55}ms` } as React.CSSProperties}
                         >
                           <span>
                             <span className="block font-display text-[1.45rem] leading-none tracking-[-0.02em] text-ink group-hover:text-burgundy">{option.label}</span>
@@ -138,7 +141,7 @@ export default function BuildYourRitual() {
                     <button type="button" onClick={() => setStep(1)} className="mb-6 text-xs font-medium text-walnut/55 hover:text-burgundy">← Back</button>
                     <p className="text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-burgundy">02 / When do you prefer your ritual?</p>
                     <div className="mt-6 grid gap-3 sm:grid-cols-3">
-                      {timeOptions.map((option) => (
+                      {timeOptions.map((option, index) => (
                         <button
                           key={option.id}
                           type="button"
@@ -146,7 +149,8 @@ export default function BuildYourRitual() {
                             setTime(option.id);
                             setStep(3);
                           }}
-                          className="min-h-24 border border-gold/25 px-5 py-5 text-left font-display text-[1.35rem] leading-none tracking-[-0.02em] text-ink transition-[border-color,color,transform] duration-200 hover:-translate-y-px hover:border-burgundy hover:text-burgundy"
+                          className="ritual-choice-enter min-h-24 border border-gold/25 px-5 py-5 text-left font-display text-[1.35rem] leading-none tracking-[-0.02em] text-ink transition-[border-color,color,transform] duration-300 ease-premium hover:-translate-y-0.5 hover:border-burgundy hover:text-burgundy"
+                          style={{ "--choice-delay": `${index * 85}ms` } as React.CSSProperties}
                         >
                           {option.label}
                         </button>
@@ -160,12 +164,13 @@ export default function BuildYourRitual() {
                     <button type="button" onClick={() => setStep(2)} className="mb-6 text-xs font-medium text-walnut/55 hover:text-burgundy">← Back</button>
                     <p className="text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-burgundy">03 / How simple should it be?</p>
                     <div className="mt-6 grid gap-3 sm:grid-cols-3">
-                      {depthOptions.map((option) => (
+                      {depthOptions.map((option, index) => (
                         <button
                           key={option.id}
                           type="button"
                           onClick={() => setDepth(option.id)}
-                          className="group min-h-32 border border-gold/25 px-5 py-5 text-left transition-[border-color,transform] duration-200 hover:-translate-y-px hover:border-burgundy"
+                          className="group ritual-choice-enter min-h-32 border border-gold/25 px-5 py-5 text-left transition-[border-color,transform] duration-300 ease-premium hover:-translate-y-0.5 hover:border-burgundy"
+                          style={{ "--choice-delay": `${index * 85}ms` } as React.CSSProperties}
                         >
                           <span className="block font-display text-[1.35rem] leading-none tracking-[-0.02em] text-ink group-hover:text-burgundy">{option.label}</span>
                           <span className="mt-2 block text-xs leading-relaxed text-walnut/55">{option.note}</span>
@@ -192,13 +197,18 @@ export default function BuildYourRitual() {
                       <p className="font-display text-3xl leading-none tracking-[-0.03em] text-ink">{result.combo.name}</p>
                       <p className="mt-3 max-w-lg text-sm leading-[1.7] text-walnut/65">{result.combo.description}</p>
                       <p className="mt-3 text-sm font-medium text-ink">{formatPrice(getComboPricing(result.combo).price, result.combo.currency)}</p>
-                      <Link href={`/rituals#${result.combo.slug}`} className="editorial-link mt-5 text-burgundy">See the ritual <span aria-hidden="true">→</span></Link>
+                      <Link href={`/rituals#${result.combo.slug}`} className="editorial-link mt-5 text-burgundy">See the ritual <span aria-hidden="true" className="motion-arrow">→</span></Link>
                     </div>
                   </div>
                 ) : (
                   <div className="mt-8 grid gap-6 border-t border-gold/20 pt-6 sm:grid-cols-2">
-                    {result.products.map((product) => (
-                      <Link key={product.slug} href={`/products/${product.slug}`} className="group grid grid-cols-[86px_1fr] items-center gap-4">
+                    {result.products.map((product, index) => (
+                      <Link
+                        key={product.slug}
+                        href={`/products/${product.slug}`}
+                        className="group ritual-choice-enter grid grid-cols-[86px_1fr] items-center gap-4"
+                        style={{ "--choice-delay": `${index * 100}ms` } as React.CSSProperties}
+                      >
                         <SmartImage src={product.image} alt={product.name} label={product.shortName ?? product.name} className="aspect-[4/5]" sizes="86px" imageClassName="transition-transform duration-500 group-hover:scale-[1.025]" />
                         <div>
                           <p className="text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-walnut/45">{product.category}</p>

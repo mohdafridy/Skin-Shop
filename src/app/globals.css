@@ -106,13 +106,14 @@ p {
     transform: scale(1);
   }
   to {
-    /* Nearly imperceptible — depth, not a demonstration. */
-    transform: scale(1.025);
+    /* Deliberately visible but still photographic — enough movement to feel
+       cinematic without turning the hero into a zoom effect. */
+    transform: scale(1.045);
   }
 }
 
 .animate-slow-zoom {
-  animation: slow-zoom 14s ease-out forwards;
+  animation: slow-zoom 11s var(--ease-premium) forwards;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -126,7 +127,7 @@ p {
 @keyframes stagger-in {
   from {
     opacity: 0;
-    transform: translateY(var(--stagger-rise, 8px));
+    transform: translateY(var(--stagger-rise, 20px));
   }
   to {
     opacity: 1;
@@ -135,7 +136,7 @@ p {
 }
 
 .stagger-in {
-  animation: stagger-in 0.6s var(--ease-premium) both;
+  animation: stagger-in 0.78s var(--ease-premium) both;
   animation-delay: var(--stagger-delay, 0ms);
 }
 
@@ -153,7 +154,7 @@ p {
 @keyframes image-reveal {
   from {
     opacity: 0;
-    transform: translateY(24px) scale(1.02);
+    transform: translateY(32px) scale(1.018);
   }
   to {
     opacity: 1;
@@ -166,7 +167,7 @@ p {
 }
 
 .image-reveal.in-view {
-  animation: image-reveal 0.6s var(--ease-premium) forwards;
+  animation: image-reveal 0.82s var(--ease-premium) forwards;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -179,7 +180,7 @@ p {
 @keyframes fade-up {
   from {
     opacity: 0;
-    transform: translateY(16px);
+    transform: translateY(28px);
   }
   to {
     opacity: 1;
@@ -192,7 +193,7 @@ p {
 }
 
 .reveal.in-view {
-  animation: fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: fade-up 0.8s var(--ease-premium) forwards;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -261,7 +262,7 @@ html {
 @keyframes page-enter {
   from {
     opacity: 0;
-    transform: translateY(5px);
+    transform: translateY(11px);
   }
   to {
     opacity: 1;
@@ -270,7 +271,7 @@ html {
 }
 
 .page-enter {
-  animation: page-enter 320ms var(--ease-premium) both;
+  animation: page-enter 400ms var(--ease-premium) both;
 }
 
 /* A quieter editorial reveal for type blocks. Used sparingly on hero/section
@@ -278,8 +279,8 @@ html {
 @keyframes editorial-line-in {
   from {
     opacity: 0;
-    transform: translateY(14px);
-    clip-path: inset(0 0 22% 0);
+    transform: translateY(24px);
+    clip-path: inset(0 0 28% 0);
   }
   to {
     opacity: 1;
@@ -289,7 +290,7 @@ html {
 }
 
 .editorial-line-in {
-  animation: editorial-line-in 760ms var(--ease-premium) both;
+  animation: editorial-line-in 840ms var(--ease-premium) both;
 }
 
 /* Shared understated controls. Kept in CSS so the storefront has one visual
@@ -307,14 +308,14 @@ html {
   letter-spacing: 0.13em;
   text-transform: uppercase;
   transition:
-    transform 260ms var(--ease-premium),
-    background-color 260ms var(--ease-premium),
-    color 260ms var(--ease-premium),
-    border-color 260ms var(--ease-premium);
+    transform 320ms var(--ease-premium),
+    background-color 320ms var(--ease-premium),
+    color 320ms var(--ease-premium),
+    border-color 320ms var(--ease-premium);
 }
 
 .premium-button:hover {
-  transform: translateY(-1px);
+  transform: translateY(-2px);
 }
 
 .premium-button:active {
@@ -497,14 +498,221 @@ html {
   }
 }
 
+
+
+/* -------------------------------------------------------------------------
+   Motion visibility pass
+   ------------------------------------------------------------------------- */
+
+/* Reusable directional arrow motion for editorial CTAs. */
+.motion-arrow {
+  display: inline-block;
+  transition: transform 300ms var(--ease-premium);
+}
+
+.group:hover .motion-arrow,
+.group:focus-visible .motion-arrow,
+.group:focus-within .motion-arrow,
+.editorial-link:hover .motion-arrow,
+.editorial-link:focus-visible .motion-arrow {
+  transform: translateX(4px);
+}
+
+/* Header mobile menu: the panel and links now arrive deliberately instead of
+   simply appearing after the conditional render. */
+@keyframes mobile-menu-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.mobile-menu-enter {
+  animation: mobile-menu-enter 430ms var(--ease-premium) both;
+}
+
+@keyframes mobile-menu-link-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-7px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.mobile-menu-link-enter {
+  animation: mobile-menu-link-enter 460ms var(--ease-premium) both;
+  animation-delay: var(--menu-delay, 0ms);
+}
+
+/* The scroll cue is allowed a small, slow movement because it is purely
+   directional and disappears once the user begins exploring. */
+@keyframes scroll-cue-float {
+  0%, 100% { transform: translateY(0); opacity: 0.58; }
+  50% { transform: translateY(5px); opacity: 0.92; }
+}
+
+.scroll-cue-float {
+  animation: scroll-cue-float 2.2s ease-in-out infinite;
+}
+
+/* SectionHeading owns its own in-view sequencing so headings farther down the
+   page reveal when the visitor actually reaches them. */
+.section-heading-reveal > * {
+  opacity: 0;
+  transform: translateY(22px);
+  transition:
+    opacity 760ms var(--ease-premium),
+    transform 760ms var(--ease-premium);
+}
+
+.section-heading-reveal.is-visible > * {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.section-heading-reveal.is-visible > *:nth-child(1) { transition-delay: 0ms; }
+.section-heading-reveal.is-visible > *:nth-child(2) { transition-delay: 100ms; }
+.section-heading-reveal.is-visible > *:nth-child(3) { transition-delay: 210ms; }
+
+/* Product cards should feel responsive to touch/hover without behaving like
+   floating app cards. The photography remains the dominant moving element. */
+.product-card-motion {
+  transition: transform 420ms var(--ease-premium);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .product-card-motion:hover,
+  .product-card-motion:focus-within {
+    transform: translateY(-3px);
+  }
+}
+
+.product-card-actions {
+  transition:
+    opacity 360ms var(--ease-premium),
+    transform 360ms var(--ease-premium);
+}
+
+@media (hover: hover) and (pointer: fine) and (min-width: 1024px) {
+  .product-card-actions {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  .group:hover .product-card-actions,
+  .group:focus-within .product-card-actions {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Ingredient explorer — active copy moves into position and the visual image
+   shift is intentionally stronger than the original 1% scale. */
+.ingredient-copy-motion {
+  transition:
+    opacity 520ms var(--ease-premium),
+    transform 520ms var(--ease-premium);
+}
+
+.ingredient-copy-motion.is-active {
+  transform: translateX(0);
+}
+
+.ingredient-copy-motion:not(.is-active) {
+  transform: translateX(9px);
+}
+
+.ingredient-progress-bar {
+  transform-origin: left;
+  transition: width 650ms var(--ease-premium);
+}
+
+/* Build Your Ritual choice rows gain a sequential entrance inside each step. */
+@keyframes ritual-choice-enter {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ritual-choice-enter {
+  animation: ritual-choice-enter 520ms var(--ease-premium) both;
+  animation-delay: var(--choice-delay, 0ms);
+}
+
+/* Cart items animate when the drawer opens, but quantity updates keep their
+   existing pulse and never remount the entire line. */
+@keyframes cart-line-enter {
+  from {
+    opacity: 0;
+    transform: translateX(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.cart-line-enter {
+  animation: cart-line-enter 460ms var(--ease-premium) both;
+  animation-delay: var(--cart-delay, 0ms);
+}
+
+/* Search results arrive as a small cascade so opening/searching feels alive,
+   not app-like or abrupt. */
+@keyframes search-result-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.search-result-enter {
+  animation: search-result-enter 420ms var(--ease-premium) both;
+  animation-delay: var(--search-delay, 0ms);
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
   }
 
   .page-enter,
-  .editorial-line-in {
+  .editorial-line-in,
+  .mobile-menu-enter,
+  .mobile-menu-link-enter,
+  .scroll-cue-float,
+  .ritual-choice-enter,
+  .cart-line-enter,
+  .search-result-enter {
     animation: none;
+  }
+
+  .section-heading-reveal > *,
+  .section-heading-reveal.is-visible > *,
+  .product-card-motion,
+  .product-card-actions,
+  .ingredient-copy-motion,
+  .ingredient-progress-bar,
+  .motion-arrow {
+    opacity: 1;
+    transform: none;
+    transition: none;
   }
 
   .smart-image-media,
@@ -513,5 +721,468 @@ html {
     transform: none;
     filter: none;
     transition: none;
+  }
+}
+
+/* -------------------------------------------------------------------------
+   Ambient negative-space art direction
+   -------------------------------------------------------------------------
+   Decorative only: never interactive, never part of reading order, and kept
+   deliberately low-contrast so the page feels art-directed rather than busy.
+*/
+
+.ambient-decor {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  user-select: none;
+  contain: paint;
+}
+
+.ambient-word {
+  position: absolute;
+  display: block;
+  white-space: nowrap;
+  font-family: var(--font-instrument-serif), Georgia, serif;
+  font-size: clamp(7rem, 15vw, 13.5rem);
+  font-weight: 400;
+  line-height: 0.75;
+  letter-spacing: -0.055em;
+  opacity: 0;
+  transform: translate3d(0, 26px, 0);
+  transition:
+    opacity 1200ms var(--ease-premium),
+    transform 1400ms var(--ease-premium);
+}
+
+.ambient-decor.is-visible .ambient-word {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+.ambient-word--story {
+  top: 4%;
+  right: -2.5%;
+  color: rgba(126, 37, 57, 0.038);
+}
+
+.ambient-word--builder {
+  right: -1.5%;
+  bottom: 7%;
+  color: rgba(126, 37, 57, 0.035);
+}
+
+.ambient-word--ingredients {
+  top: 3%;
+  right: -3%;
+  color: rgba(69, 48, 42, 0.032);
+  font-size: clamp(6.5rem, 12.5vw, 11rem);
+}
+
+.ambient-botanical {
+  position: absolute;
+  color: rgba(103, 113, 72, 0.16);
+  overflow: visible;
+  transform-origin: 50% 90%;
+  opacity: 0;
+  transition: opacity 900ms var(--ease-premium);
+}
+
+.ambient-botanical--story {
+  width: clamp(108px, 12vw, 170px);
+  height: auto;
+  right: 1.5%;
+  bottom: -8%;
+  transform: rotate(5deg);
+}
+
+.ambient-botanical--ingredients {
+  width: clamp(90px, 10vw, 145px);
+  height: auto;
+  left: -1.5%;
+  bottom: 3%;
+  transform: rotate(-5deg);
+  color: rgba(103, 113, 72, 0.13);
+}
+
+.ambient-decor.is-visible .ambient-botanical {
+  opacity: 1;
+  animation: ambient-botanical-drift 16s ease-in-out 2.7s infinite alternate;
+}
+
+@keyframes ambient-botanical-drift {
+  from { translate: 0 0; rotate: -0.6deg; }
+  to { translate: 0 -10px; rotate: 0.9deg; }
+}
+
+.ambient-draw {
+  stroke: currentColor;
+  stroke-width: 1.25;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 720;
+  stroke-dashoffset: 720;
+}
+
+.ambient-decor.is-visible .ambient-draw {
+  animation: ambient-line-draw 2.2s var(--ease-premium) forwards;
+}
+
+.ambient-decor.is-visible .ambient-draw--delay-1 { animation-delay: 120ms; }
+.ambient-decor.is-visible .ambient-draw--delay-2 { animation-delay: 240ms; }
+.ambient-decor.is-visible .ambient-draw--delay-3 { animation-delay: 360ms; }
+.ambient-decor.is-visible .ambient-draw--delay-4 { animation-delay: 480ms; }
+.ambient-decor.is-visible .ambient-draw--delay-5 { animation-delay: 600ms; }
+
+@keyframes ambient-line-draw {
+  to { stroke-dashoffset: 0; }
+}
+
+.ambient-threads {
+  position: absolute;
+  width: clamp(210px, 26vw, 390px);
+  height: auto;
+  overflow: visible;
+  opacity: 0;
+  transition: opacity 900ms var(--ease-premium);
+}
+
+.ambient-threads--builder {
+  right: -2.5%;
+  top: 16%;
+  transform: rotate(-8deg);
+}
+
+.ambient-threads--ingredients {
+  right: -6%;
+  bottom: 9%;
+  transform: rotate(12deg);
+}
+
+.ambient-decor.is-visible .ambient-threads {
+  opacity: 1;
+  animation: ambient-thread-drift 14s ease-in-out 2.2s infinite alternate;
+}
+
+@keyframes ambient-thread-drift {
+  from { translate: 0 0; }
+  to { translate: -8px 7px; }
+}
+
+.ambient-thread {
+  fill: none;
+  stroke: rgba(184, 139, 75, 0.18);
+  stroke-width: 1.15;
+  stroke-linecap: round;
+  stroke-dasharray: 460;
+  stroke-dashoffset: 460;
+}
+
+.ambient-thread--two {
+  stroke: rgba(126, 37, 57, 0.13);
+}
+
+.ambient-thread--three {
+  stroke: rgba(184, 139, 75, 0.12);
+}
+
+.ambient-decor.is-visible .ambient-thread {
+  animation: ambient-thread-draw 2.4s var(--ease-premium) forwards;
+}
+
+.ambient-decor.is-visible .ambient-thread--two { animation-delay: 180ms; }
+.ambient-decor.is-visible .ambient-thread--three { animation-delay: 340ms; }
+
+@keyframes ambient-thread-draw {
+  to { stroke-dashoffset: 0; }
+}
+
+.ambient-seal {
+  position: absolute;
+  width: clamp(118px, 11vw, 158px);
+  height: auto;
+  right: clamp(18px, 4vw, 72px);
+  top: clamp(22px, 5vw, 66px);
+  color: rgba(233, 221, 205, 0.34);
+  opacity: 0;
+  transform: scale(0.94);
+  transition:
+    opacity 950ms var(--ease-premium),
+    transform 1100ms var(--ease-premium);
+}
+
+.ambient-decor.is-visible .ambient-seal {
+  opacity: 1;
+  transform: scale(1);
+  animation: ambient-seal-turn 34s linear 1.1s infinite;
+}
+
+@keyframes ambient-seal-turn {
+  to { rotate: 360deg; }
+}
+
+.ambient-seal-ring,
+.ambient-seal-sprig {
+  stroke: currentColor;
+  stroke-width: 0.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.ambient-seal-ring--inner {
+  opacity: 0.55;
+  stroke-dasharray: 3 5;
+}
+
+.ambient-seal-text {
+  fill: currentColor;
+  font-family: var(--font-manrope), Arial, sans-serif;
+  font-size: 8.5px;
+  font-weight: 600;
+  letter-spacing: 2.2px;
+}
+
+.ambient-corner {
+  position: absolute;
+  left: -20px;
+  bottom: -24px;
+  width: clamp(155px, 17vw, 230px);
+  color: rgba(184, 139, 75, 0.18);
+  opacity: 0;
+  transition: opacity 700ms var(--ease-premium);
+}
+
+.ambient-decor.is-visible .ambient-corner {
+  opacity: 1;
+}
+
+.ambient-corner-line,
+.ambient-corner-diamond {
+  stroke: currentColor;
+  stroke-width: 1;
+  stroke-linecap: square;
+  stroke-linejoin: miter;
+  stroke-dasharray: 360;
+  stroke-dashoffset: 360;
+}
+
+.ambient-decor.is-visible .ambient-corner-line,
+.ambient-decor.is-visible .ambient-corner-diamond {
+  animation: ambient-line-draw 1.9s var(--ease-premium) forwards;
+}
+
+.ambient-decor.is-visible .ambient-corner-line--delay { animation-delay: 150ms; }
+.ambient-decor.is-visible .ambient-corner-line--delay-2 { animation-delay: 300ms; }
+.ambient-decor.is-visible .ambient-corner-diamond { animation-delay: 420ms; }
+.ambient-decor.is-visible .ambient-corner-diamond--small { animation-delay: 560ms; }
+
+.ambient-edge-label {
+  position: absolute;
+  display: block;
+  font-size: 0.56rem;
+  font-weight: 650;
+  letter-spacing: 0.19em;
+  text-transform: uppercase;
+  opacity: 0;
+  transition:
+    opacity 850ms var(--ease-premium),
+    transform 850ms var(--ease-premium);
+}
+
+.ambient-edge-label--story,
+.ambient-edge-label--ingredients {
+  left: 12px;
+  top: 50%;
+  writing-mode: vertical-rl;
+  transform: translateY(-50%) translateX(-6px) rotate(180deg);
+  color: rgba(126, 37, 57, 0.26);
+}
+
+.ambient-edge-label--rituals {
+  right: 12px;
+  bottom: 14%;
+  writing-mode: vertical-rl;
+  transform: translateX(6px);
+  color: rgba(233, 221, 205, 0.34);
+}
+
+.ambient-edge-label--newsletter {
+  right: 18px;
+  bottom: 18%;
+  color: rgba(126, 37, 57, 0.22);
+  transform: translateY(6px);
+}
+
+.ambient-decor.is-visible .ambient-edge-label--story,
+.ambient-decor.is-visible .ambient-edge-label--ingredients {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0) rotate(180deg);
+}
+
+.ambient-decor.is-visible .ambient-edge-label--rituals,
+.ambient-decor.is-visible .ambient-edge-label--newsletter {
+  opacity: 1;
+  transform: translate(0);
+}
+
+.ambient-gold-dot {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(184, 139, 75, 0.32);
+  opacity: 0;
+}
+
+.ambient-gold-dot--one { right: 11%; top: 22%; }
+.ambient-gold-dot--two { right: 18%; top: 32%; width: 3px; height: 3px; }
+.ambient-gold-dot--three { right: 8%; top: 39%; width: 2px; height: 2px; }
+
+.ambient-decor.is-visible .ambient-gold-dot {
+  animation: ambient-dot-breathe 4.8s ease-in-out infinite;
+}
+
+.ambient-decor.is-visible .ambient-gold-dot--two { animation-delay: 700ms; }
+.ambient-decor.is-visible .ambient-gold-dot--three { animation-delay: 1300ms; }
+
+@keyframes ambient-dot-breathe {
+  0%, 100% { opacity: 0.16; transform: scale(0.9); }
+  50% { opacity: 0.46; transform: scale(1.08); }
+}
+
+.ambient-leaf-shadow {
+  position: absolute;
+  right: -8%;
+  top: -12%;
+  width: min(54vw, 680px);
+  height: auto;
+  color: rgba(69, 48, 42, 0.055);
+  opacity: 0;
+  filter: blur(1.5px);
+  transform: rotate(-4deg) translate3d(20px, -8px, 0);
+  transition: opacity 1200ms var(--ease-premium);
+}
+
+.ambient-leaf-shadow-group {
+  fill: currentColor;
+  stroke: currentColor;
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+
+.ambient-decor.is-visible .ambient-leaf-shadow {
+  opacity: 1;
+  animation: ambient-shadow-drift 18s ease-in-out 1.2s infinite alternate;
+}
+
+@keyframes ambient-shadow-drift {
+  from { transform: rotate(-4deg) translate3d(20px, -8px, 0); }
+  to { transform: rotate(-1.5deg) translate3d(-8px, 10px, 0); }
+}
+
+/* Dark-section tuning. */
+.ambient-decor--rituals .ambient-corner,
+.ambient-decor--rituals .ambient-seal,
+.ambient-decor--rituals .ambient-edge-label {
+  mix-blend-mode: screen;
+}
+
+/* Keep ambient art out of the way on smaller screens. The content should be
+   the hero on mobile, not decorative illustration. */
+@media (max-width: 900px) {
+  .ambient-word,
+  .ambient-seal,
+  .ambient-edge-label,
+  .ambient-corner {
+    display: none;
+  }
+
+  .ambient-botanical--story {
+    right: -46px;
+    bottom: -12%;
+    width: 116px;
+    color: rgba(103, 113, 72, 0.1);
+  }
+
+  .ambient-botanical--ingredients {
+    left: -44px;
+    width: 104px;
+    color: rgba(103, 113, 72, 0.09);
+  }
+
+  .ambient-threads {
+    width: 220px;
+    opacity: 0;
+  }
+
+  .ambient-threads--builder {
+    right: -88px;
+    top: 9%;
+  }
+
+  .ambient-threads--ingredients {
+    right: -104px;
+    bottom: 5%;
+  }
+
+  .ambient-leaf-shadow {
+    width: 470px;
+    right: -230px;
+    top: -60px;
+    color: rgba(69, 48, 42, 0.04);
+  }
+}
+
+@media (max-width: 520px) {
+  .ambient-botanical,
+  .ambient-threads,
+  .ambient-gold-dot {
+    display: none;
+  }
+
+  .ambient-leaf-shadow {
+    width: 400px;
+    right: -245px;
+    opacity: 0;
+  }
+
+  .ambient-decor.is-visible .ambient-leaf-shadow {
+    opacity: 0.65;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ambient-word,
+  .ambient-botanical,
+  .ambient-threads,
+  .ambient-seal,
+  .ambient-corner,
+  .ambient-edge-label,
+  .ambient-leaf-shadow,
+  .ambient-gold-dot {
+    animation: none !important;
+    transition: none !important;
+    transform: none;
+  }
+
+  .ambient-decor.is-visible .ambient-word,
+  .ambient-decor.is-visible .ambient-botanical,
+  .ambient-decor.is-visible .ambient-threads,
+  .ambient-decor.is-visible .ambient-seal,
+  .ambient-decor.is-visible .ambient-corner,
+  .ambient-decor.is-visible .ambient-edge-label,
+  .ambient-decor.is-visible .ambient-leaf-shadow,
+  .ambient-decor.is-visible .ambient-gold-dot {
+    opacity: 1;
+  }
+
+  .ambient-draw,
+  .ambient-thread,
+  .ambient-corner-line,
+  .ambient-corner-diamond {
+    animation: none !important;
+    stroke-dashoffset: 0;
   }
 }
