@@ -32,6 +32,7 @@ export default function CartDrawer() {
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const [couponInput, setCouponInput] = useState("");
   const [couponError, setCouponError] = useState<string | null>(null);
+  const [couponPending, setCouponPending] = useState(false);
 
   const suggestion = useMemo(() => {
     const productSlugs = items.filter((i) => i.type === "product").map((i) => i.slug);
@@ -65,9 +66,13 @@ export default function CartDrawer() {
     };
   }, [isOpen, closeCart]);
 
-  function handleApplyCoupon(e: React.FormEvent) {
+  async function handleApplyCoupon(e: React.FormEvent) {
     e.preventDefault();
-    const result = applyCoupon(couponInput);
+    if (couponPending) return;
+    setCouponPending(true);
+    setCouponError(null);
+    const result = await applyCoupon(couponInput);
+    setCouponPending(false);
     if (!result.valid) {
       setCouponError(result.reason ?? "That code isn't valid.");
       return;
@@ -287,9 +292,10 @@ export default function CartDrawer() {
                   />
                   <button
                     type="submit"
-                    className="flex-shrink-0 border border-ink px-4 py-2 text-xs font-semibold uppercase tracking-[0.08em] text-ink transition hover:bg-ink hover:text-ivory"
+                    disabled={couponPending}
+                    className="flex-shrink-0 border border-ink px-4 py-2 text-xs font-semibold uppercase tracking-[0.08em] text-ink transition hover:bg-ink hover:text-ivory disabled:cursor-not-allowed disabled:opacity-50"
                   >
-                    Apply
+                    {couponPending ? "Checking…" : "Apply"}
                   </button>
                 </form>
               )}

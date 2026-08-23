@@ -10,7 +10,6 @@ import {
 } from "react";
 import type { Product } from "@/data/products";
 import type { Combo } from "@/data/combos";
-import { validateCoupon, type CouponCartLine } from "@/data/coupons";
 import { track } from "@/lib/analytics";
 
 const STORAGE_KEY = "the-skin-shop-cart";
@@ -90,7 +89,7 @@ type CartContextValue = {
   subtotal: number;
   couponCode: string | null;
   discount: number;
-  applyCoupon: (code: string) => { valid: boolean; reason?: string };
+  applyCoupon: (code: string) => Promise<{ valid: boolean; reason?: string }>;
   removeCoupon: () => void;
   total: number;
 };
@@ -102,6 +101,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
   const [hydrated, setHydrated] = useState(false);
   const [couponCode, setCouponCode] = useState<string | null>(null);
+  const [appliedDiscount, setAppliedDiscount] = useState(0);
 
   useEffect(() => {
     try {
@@ -190,6 +190,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const clearCart = useCallback(() => {
     setItems([]);
     setCouponCode(null);
+    setAppliedDiscount(0);
   }, []);
 
   const openCart = useCallback(() => setIsOpen(true), []);
@@ -202,27 +203,78 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     [items],
   );
 
-  const discount = useMemo(() => {
-    if (!couponCode) return 0;
-    const lines: CouponCartLine[] = items.map((i) => ({ type: i.type, slug: i.slug }));
-    const result = validateCoupon(couponCode, { lines, subtotal });
-    return result.valid ? result.discount : 0;
-  }, [couponCode, items, subtotal]);
-
-  const applyCoupon = useCallback(
-    (code: string) => {
-      const lines: CouponCartLine[] = items.map((i) => ({ type: i.type, slug: i.slug }));
-      const result = validateCoupon(code, { lines, subtotal });
-      if (result.valid) {
-        setCouponCode(code.trim().toUpperCase());
-        return { valid: true };
-      }
-      return { valid: false, reason: result.reason };
-    },
-    [items, subtotal],
+  // Coupons are validated server-side against the database (the same codes
+  // the owner generates in /admin/coupons), never a static list — so
+  // admin-issued codes actually work. The checkout API re-validates and is
+  // the authoritative source; this is the live in-cart preview.
+  const discount = useMemo(
+    () => (couponCode ? Math.min(appliedDiscount, subtotal) : 0),
+    [couponCode, appliedDiscount, subtotal],
   );
 
-  const removeCoupon = useCallback(() => setCouponCode(null), []);
+  async function validateCouponRemotely(code: string, forSubtotal: number) {
+    const res = await fetch("/api/coupons/validate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code, subtotal: forSubtotal }),
+    });
+    const data = (await res.json().catch(() => null)) as
+      | { valid?: boolean; discount?: number; message?: string }
+      | null;
+    return { ok: res.ok, data };
+  }
+
+  // Keep the applied discount in step with the cart: re-check the code against
+  // the database whenever the code or subtotal changes. Only drop a code the
+  // server explicitly rejects (used, expired, below minimum); a transient
+  // network/server error leaves it in place — checkout will re-validate.
+  useEffect(() => {
+    // Nothing to validate without a code or a positive subtotal. The discount
+    // memo already reports 0 in that case, so no state reset is needed here.
+    if (!couponCode || subtotal <= 0) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const { ok, data } = await validateCouponRemotely(couponCode, subtotal);
+        if (cancelled) return;
+        if (data?.valid) {
+          setAppliedDiscount(data.discount ?? 0);
+        } else if (ok) {
+          setAppliedDiscount(0);
+          setCouponCode(null);
+        }
+      } catch {
+        /* keep the current code/discount; checkout re-validates */
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [couponCode, subtotal]);
+
+  const applyCoupon = useCallback(
+    async (code: string) => {
+      const trimmed = code.trim().toUpperCase();
+      if (!trimmed) return { valid: false, reason: "Enter a coupon code." };
+      try {
+        const { data } = await validateCouponRemotely(trimmed, subtotal);
+        if (data?.valid) {
+          setCouponCode(trimmed);
+          setAppliedDiscount(data.discount ?? 0);
+          return { valid: true };
+        }
+        return { valid: false, reason: data?.message ?? "That code isn't valid." };
+      } catch {
+        return { valid: false, reason: "Couldn't check that code. Please try again." };
+      }
+    },
+    [subtotal],
+  );
+
+  const removeCoupon = useCallback(() => {
+    setCouponCode(null);
+    setAppliedDiscount(0);
+  }, []);
 
   const total = subtotal - discount;
 

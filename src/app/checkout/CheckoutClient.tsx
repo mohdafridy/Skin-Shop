@@ -172,6 +172,7 @@ export default function CheckoutClient({ isPaymentConfigured }: { isPaymentConfi
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [couponInput, setCouponInput] = useState("");
   const [couponError, setCouponError] = useState<string | null>(null);
+  const [couponPending, setCouponPending] = useState(false);
   const [paymentPending, setPaymentPending] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -193,9 +194,13 @@ export default function CheckoutClient({ isPaymentConfigured }: { isPaymentConfi
     setForm((prev) => ({ ...prev, [key]: value }));
   }
 
-  function handleApplyCoupon(e: React.FormEvent) {
+  async function handleApplyCoupon(e: React.FormEvent) {
     e.preventDefault();
-    const result = applyCoupon(couponInput);
+    if (couponPending) return;
+    setCouponPending(true);
+    setCouponError(null);
+    const result = await applyCoupon(couponInput);
+    setCouponPending(false);
     if (!result.valid) {
       setCouponError(result.reason ?? "That code isn't valid.");
       return;
@@ -517,9 +522,10 @@ export default function CheckoutClient({ isPaymentConfigured }: { isPaymentConfi
                   <button
                     type="button"
                     onClick={handleApplyCoupon}
-                    className="flex-shrink-0 rounded-full border border-ink px-5 py-2.5 text-xs font-medium text-ink transition hover:bg-ink hover:text-ivory"
+                    disabled={couponPending}
+                    className="flex-shrink-0 rounded-full border border-ink px-5 py-2.5 text-xs font-medium text-ink transition hover:bg-ink hover:text-ivory disabled:cursor-not-allowed disabled:opacity-50"
                   >
-                    Apply
+                    {couponPending ? "Checking…" : "Apply"}
                   </button>
                 </div>
               )}
