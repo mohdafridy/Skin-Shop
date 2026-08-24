@@ -108,6 +108,27 @@ export async function openRazorpayCheckout(
       },
       notes: { orderNumber: config.orderNumber },
       theme: { color: "#7d2a3f" },
+      // Restrict the Razorpay modal to card, netbanking and wallets. UPI is
+      // deliberately excluded here — it's offered as a separate direct-UPI
+      // option (instant settlement to our own account), so we don't want it
+      // routed through the gateway too. show_default_blocks:false hides every
+      // method not listed below, which is what drops UPI.
+      config: {
+        display: {
+          blocks: {
+            other: {
+              name: "Card, Netbanking & Wallets",
+              instruments: [
+                { method: "card" },
+                { method: "netbanking" },
+                { method: "wallet" },
+              ],
+            },
+          },
+          sequence: ["block.other"],
+          preferences: { show_default_blocks: false },
+        },
+      },
       modal: {
         ondismiss: () => settle({ status: "dismissed" }),
       },

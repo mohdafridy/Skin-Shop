@@ -621,7 +621,7 @@ export default function CheckoutClient({
                   />
                   <span>
                     <span className="block font-medium text-ink">
-                      Pay online — UPI, card &amp; netbanking
+                      Pay online — card, netbanking &amp; wallets
                     </span>
                     <span className="mt-0.5 block text-xs text-walnut/60">
                       {isPaymentConfigured
@@ -656,7 +656,7 @@ export default function CheckoutClient({
               <div className="rounded-md border border-gold/30 bg-white/50 px-5 py-4 text-sm text-walnut/75">
                 <p className="font-medium text-ink">Pay securely with Razorpay</p>
                 <p className="mt-1">
-                  UPI, cards and netbanking open in a secure Razorpay window. No payment
+                  Card, netbanking and wallets open in a secure Razorpay window. No payment
                   information is collected on this page.
                 </p>
               </div>
