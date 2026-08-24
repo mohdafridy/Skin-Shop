@@ -2,21 +2,18 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { createRazorpayOrder, razorpayPublicKeyId } from "@/lib/razorpay";
 import { toMinorUnits } from "@/lib/format";
-import { calculateDiscount, checkoutSchema, couponIsUsable, createOrderNumber } from "@/lib/backend";
-import { calculateShippingCost } from "@/data/shipping";
-import { getCurrentUser } from "@/lib/auth";
-import { createAccessToken, recordOrderEvent } from "@/lib/orders/events";
+import { checkoutSchema } from "@/lib/backend";
+import {
+  createPendingOrder,
+  CheckoutError,
+  CouponUnavailableError,
+} from "@/lib/orders/create-pending-order";
 import {
   getServerPaymentProviderId,
   isActiveProviderConfigured,
   unconfiguredProviderMessage,
 } from "@/lib/payment/server";
 import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
-
-/** A checkout failure the shopper can act on (an item sold out or was
- * withdrawn). Its message is written to be shown as-is; every other error
- * stays generic so implementation details never reach the browser. */
-class CheckoutError extends Error {}
 
 const CHECKOUT_LIMIT = 15;
 const CHECKOUT_WINDOW_MS = 10 * 60 * 1000;
@@ -66,181 +63,14 @@ export async function POST(request: Request) {
   }
 
   try {
-    const { lines, couponCode, shipping, source } = parsed.data;
-    // Optional — guest checkout is the default and stays fully supported.
-    const currentUser = await getCurrentUser();
-
-    const productSlugs = lines.filter((line) => line.type === "product").map((line) => line.slug);
-    const comboSlugs = lines.filter((line) => line.type === "combo").map((line) => line.slug);
-
-    const [products, combos] = await Promise.all([
-      productSlugs.length
-        ? prisma.product.findMany({ where: { slug: { in: productSlugs }, active: true } })
-        : Promise.resolve([]),
-      comboSlugs.length
-        ? prisma.combo.findMany({ where: { slug: { in: comboSlugs }, active: true } })
-        : Promise.resolve([]),
-    ]);
-
-    const productBySlug = new Map(products.map((product) => [product.slug, product]));
-    const comboBySlug = new Map(combos.map((combo) => [combo.slug, combo]));
-
-    let subtotal = 0;
-    const orderItems = lines.map((line) => {
-      if (line.type === "product") {
-        const product = productBySlug.get(line.slug);
-        if (!product) {
-          throw new CheckoutError("A product in your cart is no longer available.");
-        }
-        if (product.stock !== null && line.quantity > product.stock) {
-          throw new CheckoutError("A product in your cart no longer has enough stock.");
-        }
-
-        const lineTotal = product.price * line.quantity;
-        subtotal += lineTotal;
-
-        return {
-          type: "PRODUCT" as const,
-          slug: product.slug,
-          productId: product.id,
-          name: product.name,
-          image: product.image,
-          unitPrice: product.price,
-          quantity: line.quantity,
-          lineTotal,
-        };
-      }
-
-      const combo = comboBySlug.get(line.slug);
-      if (!combo) {
-        throw new CheckoutError("A combo in your cart is no longer available.");
-      }
-      if (combo.stock !== null && line.quantity > combo.stock) {
-        throw new CheckoutError("A combo in your cart no longer has enough stock.");
-      }
-
-      const lineTotal = combo.price * line.quantity;
-      subtotal += lineTotal;
-
-      return {
-        type: "COMBO" as const,
-        slug: combo.slug,
-        comboId: combo.id,
-        name: combo.name,
-        image: combo.image,
-        unitPrice: combo.price,
-        quantity: line.quantity,
-        lineTotal,
-      };
-    });
-
-    let coupon = null;
-    let discount = 0;
-    let couponReserved = false;
-
-    if (couponCode) {
-      coupon = await prisma.coupon.findUnique({
-        where: { code: couponCode.trim().toUpperCase() },
-      });
-
-      if (coupon && couponIsUsable(coupon, subtotal)) {
-        discount = calculateDiscount(coupon, subtotal);
-
-        // For limited-use coupons, reserve one use before creating the
-        // Razorpay order. The conditional update prevents two concurrent checkouts
-        // from both claiming the same final use.
-        if (coupon.usageLimit !== null) {
-          const reservation = await prisma.coupon.updateMany({
-            where: {
-              id: coupon.id,
-              active: true,
-              timesUsed: { lt: coupon.usageLimit },
-            },
-            data: { timesUsed: { increment: 1 } },
-          });
-
-          if (reservation.count !== 1) {
-            return NextResponse.json(
-              {
-                error: "coupon_unavailable",
-                message: "That coupon is no longer available. Please try again.",
-              },
-              { status: 409 },
-            );
-          }
-
-          couponReserved = true;
-        }
-      } else {
-        coupon = null;
-      }
-    }
-
     const provider = getServerPaymentProviderId();
 
-    // Never trust a client-supplied shipping number — recompute from the
-    // order's own city and item composition, the same as the checkout page
-    // does for display. Tax has no rate supplied yet (see src/data/tax.ts),
-    // so it stays at 0 rather than inventing one.
-    const shippingCost = calculateShippingCost({
-      city: shipping.city,
-      hasFreeShippingItem: orderItems.some((item) => item.type === "COMBO"),
-    });
-    const tax = 0;
-    const currency = (process.env.STORE_CURRENCY || "INR").toUpperCase();
-    const total = Math.max(0, subtotal - discount + shippingCost + tax);
-
-    let order;
-    try {
-      order = await prisma.order.create({
-        data: {
-          orderNumber: createOrderNumber(),
-          email: shipping.email,
-          customerName: shipping.name,
-          phone: shipping.phone,
-          // Guest checkout leaves this null; a signed-in shopper gets the
-          // order linked so it appears in their /account order history.
-          userId: currentUser?.id ?? null,
-          source,
-          paymentStatus: "PENDING",
-          paymentProvider: provider,
-          // Unguessable token so a guest can track this order without an
-          // account, and without the order number alone granting access.
-          accessToken: createAccessToken(),
-          subtotal,
-          discount,
-          shipping: shippingCost,
-          tax,
-          total,
-          currency,
-          couponId: coupon?.id,
-          shippingName: shipping.name,
-          shippingLine1: shipping.address1,
-          shippingLine2: shipping.address2 || null,
-          shippingCity: shipping.city,
-          shippingState: shipping.state,
-          shippingPostal: shipping.postalCode,
-          shippingCountry: shipping.country,
-          items: { create: orderItems },
-        },
-      });
-    } catch (error) {
-      if (couponReserved && coupon) {
-        await prisma.coupon.updateMany({
-          where: { id: coupon.id, timesUsed: { gt: 0 } },
-          data: { timesUsed: { decrement: 1 } },
-        });
-      }
-      throw error;
-    }
-
-    // Order exists as PENDING from here on; the history trail starts now.
-    await recordOrderEvent(order.id, "ORDER_CREATED", {
-      provider,
-      total,
-      currency,
-      lineCount: orderItems.length,
-    });
+    // Validate, price, reserve any coupon and create the PENDING order. Shared
+    // with the direct-UPI path so the money math can never diverge between them.
+    const { order, coupon, couponReserved, total, currency } = await createPendingOrder(
+      parsed.data,
+      { provider },
+    );
 
     try {
       // Razorpay Checkout is a browser modal, not a redirect, so we hand the
@@ -293,8 +123,6 @@ export async function POST(request: Request) {
       throw error;
     }
   } catch (error) {
-    console.error("checkout_failed", error);
-
     // Availability problems are the shopper's to resolve, so their (already
     // sanitized) message is returned; otherwise a retry tells them nothing.
     if (error instanceof CheckoutError) {
@@ -303,6 +131,16 @@ export async function POST(request: Request) {
         { status: 409 },
       );
     }
+
+    // A limited coupon's last use was taken between validation and reservation.
+    if (error instanceof CouponUnavailableError) {
+      return NextResponse.json(
+        { error: "coupon_unavailable", message: error.message },
+        { status: 409 },
+      );
+    }
+
+    console.error("checkout_failed", error);
 
     // Keep implementation/database/gateway details out of the browser response.
     return NextResponse.json(

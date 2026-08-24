@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { formatPrice } from "@/lib/format";
 import { isRazorpayConfigured } from "@/lib/razorpay";
 import { StatusPill, paymentLabels, fulfilmentLabels } from "@/components/OrderStatusBadge";
+import { UPI_PROVIDER_ID } from "@/data/payment";
 import AdminHeader from "../../AdminHeader";
 import OrderActions from "./OrderActions";
 
@@ -73,6 +74,18 @@ export default async function AdminOrderDetailPage({ params }: { params: Promise
           {order.createdAt.toLocaleString("en-IN", { day: "numeric", month: "short", year: "numeric", hour: "numeric", minute: "2-digit" })}
         </span>
       </div>
+
+      {order.paymentProvider === UPI_PROVIDER_ID && order.paymentStatus === "PENDING" && (
+        <div className="mb-6 rounded-2xl border border-burgundy/25 bg-burgundy/5 p-5 text-sm text-burgundy">
+          <p className="font-medium">Direct UPI order — verify in your bank</p>
+          <p className="mt-1 text-burgundy/90">
+            The customer was asked to pay {formatPrice(order.total, order.currency)} to your UPI.
+            This won&apos;t show in Razorpay. Check your bank/UPI app for a payment of this exact
+            amount, then set Payment status to <span className="font-semibold">Paid</span> below.
+            Don&apos;t dispatch until you&apos;ve confirmed the money arrived.
+          </p>
+        </div>
+      )}
 
       <div className="grid gap-8 lg:grid-cols-[1.3fr_1fr]">
         <div className="space-y-8">
@@ -152,7 +165,10 @@ export default async function AdminOrderDetailPage({ params }: { params: Promise
           <section className="rounded-2xl border border-gold/20 bg-white/50 p-6">
             <h2 className="font-display text-xl text-ink">Payment</h2>
             <dl className="mt-3 space-y-1.5 text-sm">
-              <Row label="Provider" value={order.paymentProvider ?? "—"} />
+              <Row
+                label="Provider"
+                value={order.paymentProvider === UPI_PROVIDER_ID ? "UPI (direct)" : order.paymentProvider ?? "—"}
+              />
               <Row label="Method" value={order.paymentMethod ?? "—"} />
               <Row label="Razorpay order" value={order.razorpayOrderId ?? "—"} mono />
               <Row label="Razorpay payment" value={order.razorpayPaymentId ?? "—"} mono />
