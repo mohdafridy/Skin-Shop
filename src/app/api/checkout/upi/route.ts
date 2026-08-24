@@ -6,6 +6,7 @@ import {
   CouponUnavailableError,
 } from "@/lib/orders/create-pending-order";
 import { isUpiDirectEnabled, UPI_PROVIDER_ID } from "@/data/payment";
+import { sendOwnerUpiOrderAlert } from "@/lib/notifications/owner-alert";
 import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 
 const CHECKOUT_LIMIT = 15;
@@ -56,6 +57,21 @@ export async function POST(request: Request) {
 
   try {
     const { order } = await createPendingOrder(parsed.data, { provider: UPI_PROVIDER_ID });
+
+    // Direct UPI has no gateway webhook, so email the owner immediately to go
+    // check their bank. Never throws; awaited so it runs before the serverless
+    // function returns (an unawaited promise can be killed after the response).
+    await sendOwnerUpiOrderAlert({
+      id: order.id,
+      orderNumber: order.orderNumber,
+      total: order.total,
+      currency: order.currency,
+      customerName: order.customerName,
+      email: order.email,
+      phone: order.phone,
+      itemCount: parsed.data.lines.reduce((n, line) => n + line.quantity, 0),
+    });
+
     return NextResponse.json({
       orderId: order.id,
       orderNumber: order.orderNumber,
