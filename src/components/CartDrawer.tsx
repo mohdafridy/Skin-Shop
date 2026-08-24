@@ -27,12 +27,14 @@ export default function CartDrawer() {
     discount,
     applyCoupon,
     removeCoupon,
+    clearCart,
     total,
   } = useCart();
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const [couponInput, setCouponInput] = useState("");
   const [couponError, setCouponError] = useState<string | null>(null);
   const [couponPending, setCouponPending] = useState(false);
+  const [clearConfirm, setClearConfirm] = useState(false);
 
   const suggestion = useMemo(() => {
     const productSlugs = items.filter((i) => i.type === "product").map((i) => i.slug);
@@ -48,6 +50,7 @@ export default function CartDrawer() {
     if (!isOpen) {
       setCouponInput("");
       setCouponError(null);
+      setClearConfirm(false);
     }
   }
 
@@ -353,13 +356,44 @@ export default function CartDrawer() {
                 <InstagramIcon className="h-4 w-4" />
                 Order via Instagram
               </a>
-              <button
-                type="button"
-                onClick={closeCart}
-                className="mt-2 w-full px-6 py-3 text-center text-xs font-semibold uppercase tracking-[0.1em] text-walnut/60 transition hover:text-ink"
-              >
-                Continue Shopping
-              </button>
+              <div className="mt-3 flex items-center justify-between gap-3 border-t border-gold/20 pt-3 text-xs font-semibold uppercase tracking-[0.1em]">
+                <Link
+                  href="/shop"
+                  onClick={closeCart}
+                  className="py-1 text-walnut/60 transition hover:text-ink"
+                >
+                  View All Products
+                </Link>
+                {clearConfirm ? (
+                  <span className="flex items-center gap-4">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        clearCart();
+                        setClearConfirm(false);
+                      }}
+                      className="py-1 text-burgundy transition hover:underline"
+                    >
+                      Clear?
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setClearConfirm(false)}
+                      className="py-1 text-walnut/60 transition hover:text-ink"
+                    >
+                      Cancel
+                    </button>
+                  </span>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setClearConfirm(true)}
+                    className="py-1 text-walnut/60 transition hover:text-burgundy"
+                  >
+                    Clear Cart
+                  </button>
+                )}
+              </div>
             </div>
           </>
         )}
