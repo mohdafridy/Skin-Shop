@@ -165,7 +165,13 @@ function validate(form: FormState): Record<string, string> {
   return errors;
 }
 
-export default function CheckoutClient({ isPaymentConfigured }: { isPaymentConfigured: boolean }) {
+export default function CheckoutClient({
+  isPaymentConfigured,
+  isUpiEnabled,
+}: {
+  isPaymentConfigured: boolean;
+  isUpiEnabled: boolean;
+}) {
   const { lines, mode, error: linesError } = useOrderLines();
   const { couponCode, discount, applyCoupon, removeCoupon, clearCart } = useCart();
   const [form, setForm] = useState<FormState>(initialForm);
@@ -175,6 +181,12 @@ export default function CheckoutClient({ isPaymentConfigured }: { isPaymentConfi
   const [couponPending, setCouponPending] = useState(false);
   const [paymentPending, setPaymentPending] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  // "razorpay" = the gateway modal (default). "upi" = pay the owner's UPI ID
+  // directly; only offered when a VPA is configured. If the gateway isn't
+  // connected but UPI is, direct UPI becomes the default.
+  const [payMethod, setPayMethod] = useState<"razorpay" | "upi">(
+    isPaymentConfigured || !isUpiEnabled ? "razorpay" : "upi",
+  );
 
   const currency = lines[0]?.currency ?? "INR";
   const subtotal = lines.reduce((sum, l) => sum + l.price * l.quantity, 0);
@@ -223,6 +235,59 @@ export default function CheckoutClient({ isPaymentConfigured }: { isPaymentConfi
     track({ name: "add_shipping_info" });
     setSubmitting(true);
     setPaymentPending(null);
+
+    const shippingPayload = {
+      name: `${form.firstName} ${form.lastName}`,
+      email: form.email,
+      phone: form.phone,
+      address1: form.address1,
+      address2: form.address2 || null,
+      city: form.city,
+      state: form.state,
+      postalCode: form.postalCode,
+      country: form.country,
+    };
+    const orderSource = mode === "buynow" ? "buy_now" : "cart";
+    const orderCoupon = mode === "cart" ? couponCode : null;
+
+    // Direct UPI: no gateway. Create the pending order, then send the customer
+    // to the pay page (UPI ID + amount QR). Owner confirms payment in /admin.
+    if (payMethod === "upi") {
+      track({ name: "add_payment_info" });
+      let data: { payUrl?: string; message?: string; error?: string } | null = null;
+      try {
+        const res = await fetch("/api/checkout/upi", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            lines: lines.map((l) => ({ type: l.type, slug: l.slug, quantity: l.quantity })),
+            couponCode: orderCoupon,
+            shipping: shippingPayload,
+            source: orderSource,
+          }),
+        });
+        data = await res.json().catch(() => null);
+        if (!res.ok || !data?.payUrl) {
+          setSubmitting(false);
+          setPaymentPending(
+            data?.message ?? "We couldn't place your order. Please try again in a moment.",
+          );
+          return;
+        }
+      } catch {
+        setSubmitting(false);
+        setPaymentPending(
+          "We couldn't reach the store. Please check your connection and try again.",
+        );
+        return;
+      }
+      // Order is placed; the bag has been checked out. Leave `submitting` true —
+      // navigating to the pay page.
+      if (mode === "cart") clearCart();
+      window.location.assign(data.payUrl);
+      return;
+    }
+
     const provider = getActivePaymentProvider();
     track({ name: "add_payment_info" });
     const result = await provider.initiate({
@@ -539,7 +604,55 @@ export default function CheckoutClient({ isPaymentConfigured }: { isPaymentConfi
 
           <fieldset>
             <legend className="mb-4 font-display text-xl text-ink">Payment</legend>
-            {isPaymentConfigured ? (
+            {isUpiEnabled ? (
+              <div className="space-y-2">
+                <label
+                  className={`flex cursor-pointer items-start gap-3 rounded-md border px-4 py-3.5 text-sm transition ${
+                    payMethod === "razorpay" ? "border-burgundy bg-white/70" : "border-gold/30 bg-white/50"
+                  } ${!isPaymentConfigured ? "cursor-not-allowed opacity-60" : ""}`}
+                >
+                  <input
+                    type="radio"
+                    name="payMethod"
+                    checked={payMethod === "razorpay"}
+                    disabled={!isPaymentConfigured}
+                    onChange={() => setPayMethod("razorpay")}
+                    className="mt-0.5 h-[18px] w-[18px] text-burgundy focus:ring-burgundy"
+                  />
+                  <span>
+                    <span className="block font-medium text-ink">
+                      Pay online — UPI, card &amp; netbanking
+                    </span>
+                    <span className="mt-0.5 block text-xs text-walnut/60">
+                      {isPaymentConfigured
+                        ? "Opens a secure Razorpay window. Instant confirmation."
+                        : "Temporarily unavailable."}
+                    </span>
+                  </span>
+                </label>
+
+                <label
+                  className={`flex cursor-pointer items-start gap-3 rounded-md border px-4 py-3.5 text-sm transition ${
+                    payMethod === "upi" ? "border-burgundy bg-white/70" : "border-gold/30 bg-white/50"
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="payMethod"
+                    checked={payMethod === "upi"}
+                    onChange={() => setPayMethod("upi")}
+                    className="mt-0.5 h-[18px] w-[18px] text-burgundy focus:ring-burgundy"
+                  />
+                  <span>
+                    <span className="block font-medium text-ink">Pay directly via UPI</span>
+                    <span className="mt-0.5 block text-xs text-walnut/60">
+                      Scan a QR or use our UPI ID. We confirm your payment, then dispatch your
+                      order.
+                    </span>
+                  </span>
+                </label>
+              </div>
+            ) : isPaymentConfigured ? (
               <div className="rounded-md border border-gold/30 bg-white/50 px-5 py-4 text-sm text-walnut/75">
                 <p className="font-medium text-ink">Pay securely with Razorpay</p>
                 <p className="mt-1">
@@ -576,7 +689,11 @@ export default function CheckoutClient({ isPaymentConfigured }: { isPaymentConfi
             disabled={submitting}
             className="w-full rounded-full bg-burgundy px-7 py-3.5 text-sm font-medium text-ivory transition hover:bg-burgundy-dark disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {submitting ? "Placing Order…" : "Place Order"}
+            {submitting
+              ? "Placing Order…"
+              : payMethod === "upi"
+                ? "Continue to UPI Payment"
+                : "Place Order"}
           </button>
         </form>
 
