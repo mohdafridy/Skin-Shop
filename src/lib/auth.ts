@@ -41,21 +41,36 @@ export const loginSchema = z.object({
   password: z.string().min(1).max(200),
 });
 
-/** Creates a DB-backed session and sets the httpOnly cookie. Route Handlers
- * only — cookies can't be written during Server Component render. */
-export async function createSession(userId: string) {
-  const token = randomBytes(32).toString("hex");
-  const expiresAt = new Date(Date.now() + SESSION_DAYS * 24 * 60 * 60 * 1000);
-  await prisma.session.create({ data: { id: token, userId, expiresAt } });
-
-  const store = await cookies();
-  store.set(SESSION_COOKIE, token, {
+/** Cookie attributes for the session token — one source of truth so the JSON
+ * routes and the OAuth callback (which sets it on a redirect response) stay
+ * identical. */
+export function sessionCookieOptions(expiresAt: Date) {
+  return {
     httpOnly: true,
-    sameSite: "lax",
+    sameSite: "lax" as const,
     secure: process.env.NODE_ENV === "production",
     path: "/",
     expires: expiresAt,
-  });
+  };
+}
+
+/** Creates the DB-backed session row and returns its token. Writing the
+ * cookie is the caller's job: JSON handlers use createSession(); the OAuth
+ * callback sets the cookie on its redirect response directly (cookies() from
+ * next/headers doesn't reliably attach to a returned NextResponse.redirect). */
+export async function createSessionRow(userId: string): Promise<{ token: string; expiresAt: Date }> {
+  const token = randomBytes(32).toString("hex");
+  const expiresAt = new Date(Date.now() + SESSION_DAYS * 24 * 60 * 60 * 1000);
+  await prisma.session.create({ data: { id: token, userId, expiresAt } });
+  return { token, expiresAt };
+}
+
+/** Creates a DB-backed session and sets the httpOnly cookie. Route Handlers
+ * only — cookies can't be written during Server Component render. */
+export async function createSession(userId: string) {
+  const { token, expiresAt } = await createSessionRow(userId);
+  const store = await cookies();
+  store.set(SESSION_COOKIE, token, sessionCookieOptions(expiresAt));
 }
 
 export async function destroySession() {

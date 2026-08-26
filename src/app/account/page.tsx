@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getCurrentUser } from "@/lib/auth";
+import { isGoogleOAuthConfigured } from "@/lib/google-oauth";
 import { prisma } from "@/lib/prisma";
 import { formatPrice } from "@/lib/format";
 import { FulfilmentStatusBadge, PaymentStatusBadge } from "@/components/OrderStatusBadge";
@@ -51,7 +52,10 @@ export default async function AccountPage() {
           works perfectly well as a guest.
         </p>
         <div className="mt-10">
-          <AccountAuthForm accountsEnabled={accountsEnabled} />
+          <AccountAuthForm
+            accountsEnabled={accountsEnabled}
+            googleEnabled={isGoogleOAuthConfigured()}
+          />
         </div>
       </div>
     );

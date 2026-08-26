@@ -1,14 +1,52 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Field from "@/components/Field";
 
 type Mode = "login" | "register";
 
-export default function AccountAuthForm({ accountsEnabled }: { accountsEnabled: boolean }) {
+const GOOGLE_AUTH_MESSAGES: Record<string, string> = {
+  google_failed: "Google sign-in didn't complete. Please try again.",
+  google_unverified:
+    "That Google account's email isn't verified, so we can't sign you in with it.",
+  google_unavailable: "Google sign-in isn't available right now.",
+};
+
+function GoogleGlyph() {
+  return (
+    <svg viewBox="0 0 18 18" className="h-[18px] w-[18px]" aria-hidden="true">
+      <path
+        fill="#4285F4"
+        d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.92c1.7-1.57 2.68-3.88 2.68-6.62z"
+      />
+      <path
+        fill="#34A853"
+        d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.92-2.26c-.8.54-1.84.86-3.04.86-2.34 0-4.32-1.58-5.03-3.7H.96v2.34A9 9 0 0 0 9 18z"
+      />
+      <path
+        fill="#FBBC05"
+        d="M3.97 10.72a5.4 5.4 0 0 1 0-3.44V4.94H.96a9 9 0 0 0 0 8.12l3.01-2.34z"
+      />
+      <path
+        fill="#EA4335"
+        d="M9 3.58c1.32 0 2.5.46 3.44 1.35l2.58-2.58C13.46.9 11.43 0 9 0A9 9 0 0 0 .96 4.94l3.01 2.34C4.68 5.16 6.66 3.58 9 3.58z"
+      />
+    </svg>
+  );
+}
+
+export default function AccountAuthForm({
+  accountsEnabled,
+  googleEnabled = false,
+}: {
+  accountsEnabled: boolean;
+  googleEnabled?: boolean;
+}) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const authError = GOOGLE_AUTH_MESSAGES[searchParams.get("auth") ?? ""] ?? null;
   const [mode, setMode] = useState<Mode>("login");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -42,6 +80,29 @@ export default function AccountAuthForm({ accountsEnabled }: { accountsEnabled: 
 
   return (
     <div className="mx-auto max-w-md">
+      {authError && (
+        <p role="alert" className="mb-6 rounded-xl bg-burgundy/10 p-3 text-sm text-burgundy">
+          {authError}
+        </p>
+      )}
+
+      {googleEnabled && accountsEnabled && (
+        <>
+          <a
+            href="/api/auth/google"
+            className="flex w-full items-center justify-center gap-3 rounded-full border border-gold/40 bg-white px-6 py-3 text-sm font-medium text-ink transition hover:border-burgundy hover:bg-sand/40"
+          >
+            <GoogleGlyph />
+            Continue with Google
+          </a>
+          <div className="my-6 flex items-center gap-4">
+            <span className="h-px flex-1 bg-gold/25" />
+            <span className="text-xs uppercase tracking-[0.15em] text-walnut/50">or</span>
+            <span className="h-px flex-1 bg-gold/25" />
+          </div>
+        </>
+      )}
+
       <div className="mb-8 flex rounded-full border border-gold/30 p-1">
         {(["login", "register"] as Mode[]).map((m) => (
           <button
