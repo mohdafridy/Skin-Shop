@@ -160,8 +160,37 @@ model User {
   passwordHash String
   orders       Order[]
   sessions     Session[]
+  addresses    Address[]
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
+}
+
+/// A shopper's saved delivery address, so a signed-in customer can pick it at
+/// checkout instead of retyping. Optional convenience only — guest checkout and
+/// the Order's own shipping snapshot fields are untouched; an order never
+/// references an Address, it copies the values in (so editing/deleting a saved
+/// address never rewrites the history of a past order).
+model Address {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  /// Optional nickname, e.g. "Home" or "Office".
+  label      String?
+  name       String
+  phone      String
+  line1      String
+  line2      String?
+  city       String
+  state      String
+  postalCode String
+  country    String   @default("India")
+  /// Exactly one address per user should be default; enforced in the app layer
+  /// (setting one clears the others in a transaction).
+  isDefault  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([userId])
 }
 
 model Session {

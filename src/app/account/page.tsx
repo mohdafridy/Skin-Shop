@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getCurrentUser } from "@/lib/auth";
 import { isGoogleOAuthConfigured } from "@/lib/google-oauth";
+import { listUserAddresses } from "@/lib/addresses";
 import { prisma } from "@/lib/prisma";
+import SavedAddresses from "./addresses/SavedAddresses";
 import { formatPrice } from "@/lib/format";
 import { FulfilmentStatusBadge, PaymentStatusBadge } from "@/components/OrderStatusBadge";
 import AccountAuthForm from "./AccountAuthForm";
@@ -61,7 +63,7 @@ export default async function AccountPage() {
     );
   }
 
-  const orders = await getOrders(user.id);
+  const [orders, addresses] = await Promise.all([getOrders(user.id), listUserAddresses(user.id)]);
 
   return (
     <div className="mx-auto max-w-3xl px-6 py-16 sm:px-8">
@@ -77,6 +79,8 @@ export default async function AccountPage() {
         </div>
         <SignOutButton />
       </div>
+
+      <SavedAddresses addresses={addresses} />
 
       <h2 className="mt-14 font-display text-2xl text-ink">Order History</h2>
 

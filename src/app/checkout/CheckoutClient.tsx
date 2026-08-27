@@ -10,6 +10,7 @@ import { defaultZone, calculateShippingCost } from "@/data/shipping";
 import { getActivePaymentProvider } from "@/lib/payment";
 import { openRazorpayCheckout, type RazorpayCheckoutConfig } from "@/lib/payment/razorpay-client";
 import { track } from "@/lib/analytics";
+import type { SavedAddress } from "@/lib/addresses";
 import OrderSummary, { type OrderLine } from "@/components/checkout/OrderSummary";
 import Field from "@/components/Field";
 
@@ -58,6 +59,36 @@ const initialForm: FormState = {
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const INDIA_PIN_PATTERN = /^\d{6}$/;
 const PHONE_PATTERN = /^[0-9+()\-\s]{7,15}$/;
+
+// A saved address stores one full name; the checkout form splits it into first
+// / last. Split on the first space so "Aisha Khan" → ("Aisha", "Khan") and a
+// single-word name keeps the last name empty.
+function shippingFieldsFromAddress(a: SavedAddress) {
+  const parts = a.name.trim().split(/\s+/);
+  return {
+    firstName: parts[0] ?? "",
+    lastName: parts.slice(1).join(" "),
+    phone: a.phone,
+    address1: a.line1,
+    address2: a.line2 ?? "",
+    city: a.city,
+    state: a.state,
+    postalCode: a.postalCode,
+    country: a.country || "India",
+  };
+}
+
+const BLANK_SHIPPING = {
+  firstName: "",
+  lastName: "",
+  phone: "",
+  address1: "",
+  address2: "",
+  city: "",
+  state: "",
+  postalCode: "",
+  country: "India",
+};
 
 function useOrderLines(): { lines: OrderLine[]; mode: "cart" | "buynow"; error: string | null } {
   const searchParams = useSearchParams();
@@ -168,13 +199,27 @@ function validate(form: FormState): Record<string, string> {
 export default function CheckoutClient({
   isPaymentConfigured,
   isUpiEnabled,
+  isSignedIn = false,
+  savedAddresses = [],
 }: {
   isPaymentConfigured: boolean;
   isUpiEnabled: boolean;
+  isSignedIn?: boolean;
+  savedAddresses?: SavedAddress[];
 }) {
   const { lines, mode, error: linesError } = useOrderLines();
   const { couponCode, discount, applyCoupon, removeCoupon, clearCart } = useCart();
-  const [form, setForm] = useState<FormState>(initialForm);
+  // Pre-fill the shipping form from the default saved address (or the first
+  // one) so a returning customer barely has to touch it.
+  const defaultAddress = savedAddresses.find((a) => a.isDefault) ?? savedAddresses[0];
+  const [form, setForm] = useState<FormState>(() =>
+    defaultAddress ? { ...initialForm, ...shippingFieldsFromAddress(defaultAddress) } : initialForm,
+  );
+  // Which saved address is selected, or null when typing a new one.
+  const [selectedAddressId, setSelectedAddressId] = useState<string | null>(
+    defaultAddress?.id ?? null,
+  );
+  const [saveAddress, setSaveAddress] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [couponInput, setCouponInput] = useState("");
   const [couponError, setCouponError] = useState<string | null>(null);
@@ -206,6 +251,18 @@ export default function CheckoutClient({
     setForm((prev) => ({ ...prev, [key]: value }));
   }
 
+  function selectSavedAddress(address: SavedAddress) {
+    setSelectedAddressId(address.id);
+    setForm((prev) => ({ ...prev, ...shippingFieldsFromAddress(address) }));
+    setSaveAddress(false);
+    setErrors({});
+  }
+
+  function useNewAddress() {
+    setSelectedAddressId(null);
+    setForm((prev) => ({ ...prev, ...BLANK_SHIPPING }));
+  }
+
   async function handleApplyCoupon(e: React.FormEvent) {
     e.preventDefault();
     if (couponPending) return;
@@ -235,6 +292,30 @@ export default function CheckoutClient({
     track({ name: "add_shipping_info" });
     setSubmitting(true);
     setPaymentPending(null);
+
+    // Save the typed address to the account when asked (signed-in, new address).
+    // Fire-and-forget: a save failure must never block the order. The API
+    // de-dupes, so re-saving an identical address is harmless.
+    if (isSignedIn && saveAddress && selectedAddressId === null) {
+      try {
+        await fetch("/api/account/addresses", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: `${form.firstName} ${form.lastName}`.trim(),
+            phone: form.phone,
+            line1: form.address1,
+            line2: form.address2 || undefined,
+            city: form.city,
+            state: form.state,
+            postalCode: form.postalCode,
+            country: form.country,
+          }),
+        });
+      } catch {
+        // Non-blocking — proceed to payment regardless.
+      }
+    }
 
     const shippingPayload = {
       name: `${form.firstName} ${form.lastName}`,
@@ -407,6 +488,62 @@ export default function CheckoutClient({
 
           <fieldset>
             <legend className="mb-4 font-display text-xl text-ink">Shipping Address</legend>
+
+            {savedAddresses.length > 0 && (
+              <div className="mb-5 space-y-2">
+                <p className="text-xs font-semibold uppercase tracking-wide text-walnut/60">
+                  Your saved addresses
+                </p>
+                {savedAddresses.map((a) => (
+                  <label
+                    key={a.id}
+                    className={`flex cursor-pointer items-start gap-3 rounded-md border px-4 py-3 text-sm transition ${
+                      selectedAddressId === a.id
+                        ? "border-burgundy bg-white/70"
+                        : "border-gold/30 bg-white/50"
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="savedAddress"
+                      checked={selectedAddressId === a.id}
+                      onChange={() => selectSavedAddress(a)}
+                      className="mt-0.5 h-[18px] w-[18px] text-burgundy focus:ring-burgundy"
+                    />
+                    <span>
+                      <span className="flex items-center gap-2 font-medium text-ink">
+                        {a.label || a.name}
+                        {a.isDefault && (
+                          <span className="rounded-full bg-burgundy/10 px-2 py-0.5 text-[11px] font-medium text-burgundy">
+                            Default
+                          </span>
+                        )}
+                      </span>
+                      <span className="mt-0.5 block text-xs text-walnut/60">
+                        {[a.line1, a.city, a.postalCode].filter(Boolean).join(", ")}
+                      </span>
+                    </span>
+                  </label>
+                ))}
+                <label
+                  className={`flex cursor-pointer items-center gap-3 rounded-md border px-4 py-3 text-sm transition ${
+                    selectedAddressId === null
+                      ? "border-burgundy bg-white/70"
+                      : "border-gold/30 bg-white/50"
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="savedAddress"
+                    checked={selectedAddressId === null}
+                    onChange={useNewAddress}
+                    className="h-[18px] w-[18px] text-burgundy focus:ring-burgundy"
+                  />
+                  <span className="font-medium text-ink">Use a new address</span>
+                </label>
+              </div>
+            )}
+
             <div className="grid gap-4">
               <Field
                 label="Address line 1"
@@ -461,6 +598,18 @@ export default function CheckoutClient({
                 />
               </div>
             </div>
+
+            {isSignedIn && selectedAddressId === null && (
+              <label className="mt-4 flex items-center gap-2.5 text-sm text-walnut/80">
+                <input
+                  type="checkbox"
+                  checked={saveAddress}
+                  onChange={(e) => setSaveAddress(e.target.checked)}
+                  className="h-[18px] w-[18px] rounded border-gold/40 text-burgundy focus:ring-burgundy"
+                />
+                Save this address to my account for next time
+              </label>
+            )}
           </fieldset>
 
           <fieldset>
