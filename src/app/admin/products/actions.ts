@@ -49,6 +49,8 @@ export async function updateProductStockAction(
   }
 
   revalidatePath("/admin/products");
+  revalidatePath("/shop");
+  revalidatePath("/");
   return { success: "Saved." };
 }
 
@@ -96,5 +98,7 @@ export async function addProductStockAction(
   }
 
   revalidatePath("/admin/products");
+  revalidatePath("/shop");
+  revalidatePath("/");
   return { success: `Added ${amount} — new stock: ${newStock}.` };
 }

@@ -99,6 +99,7 @@ model Product {
   price      Int
   currency   String      @default("INR")
   image      String
+  details    Json?
   active     Boolean     @default(true)
   /// null = not stock-tracked (unlimited). Set a number to enable tracking.
   stock      Int?

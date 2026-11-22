@@ -1,6 +1,8 @@
 "use client";
 
 import { useActionState, useState } from "react";
+import Link from "next/link";
+import { formatPrice } from "@/lib/format";
 import { addProductStockAction, updateProductStockAction, type AdminActionState } from "./actions";
 
 const initialState: AdminActionState = null;
@@ -12,12 +14,16 @@ export default function ProductRow({
   id,
   name,
   category,
+  price,
+  currency,
   stock,
   active,
 }: {
   id: string;
   name: string;
   category: string;
+  price: number;
+  currency: string;
   stock: number | null;
   active: boolean;
 }) {
@@ -34,7 +40,9 @@ export default function ProductRow({
       <td className="px-4 py-3">
         <div className="font-medium text-ink">{name}</div>
         <div className="text-xs text-walnut/60">{category}</div>
+        <Link href={"/admin/products/" + id + "/edit"} className="mt-1 inline-block text-xs font-medium text-burgundy underline underline-offset-2">Edit details</Link>
       </td>
+      <td className="px-4 py-3 font-medium text-ink">{formatPrice(price, currency)}</td>
       <td className="px-4 py-3">
         {isOutOfStock ? (
           <span className="rounded-full bg-burgundy/10 px-3 py-1 text-xs font-medium text-burgundy">
