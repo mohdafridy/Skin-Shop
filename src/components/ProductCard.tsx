@@ -9,6 +9,7 @@ import { formatPrice } from "@/lib/format";
 import { useAddedFeedback } from "@/lib/use-added-feedback";
 import { HeartIcon } from "./icons";
 import SmartImage from "./SmartImage";
+import NewArrivalBadge from "./NewArrivalBadge";
 
 const focalPointBySlug: Record<string, string> = {
   "husn-e-yusuf-whitening-soap-cleanser": "product-photo--upper",
@@ -51,6 +52,7 @@ export default function ProductCard({ product: initialProduct }: { product: Prod
           sizes="(min-width: 1024px) 23vw, (min-width: 640px) 45vw, 48vw"
           imageClassName={`product-photo ${focalPoint} transition-transform duration-[700ms] ease-premium group-hover:scale-[1.04]`}
         />
+        {product.newBadgeUntil && <NewArrivalBadge key={product.newBadgeUntil} until={product.newBadgeUntil} />}
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-ink/16 to-transparent opacity-0 transition-opacity duration-[420ms] ease-premium group-hover:opacity-100"

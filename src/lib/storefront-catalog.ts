@@ -2,6 +2,7 @@ import { cache } from "react";
 import { prisma } from "@/lib/prisma";
 import { products as originalProducts, type Product, type ProductCollection, type RitualTag } from "@/data/products";
 import type { Prisma } from "@prisma/client";
+import { activeNewBadgeUntil, type NewBadgeSettings } from "@/lib/new-arrival";
 
 export type ProductDetails = {
   tagline?: string;
@@ -17,6 +18,7 @@ export type ProductDetails = {
   ritualTags?: RitualTag[];
   featured?: boolean;
   bestseller?: boolean;
+  newBadge?: NewBadgeSettings;
 };
 type StoredProduct = {
   id: string; slug: string; name: string; shortName: string | null;
@@ -47,6 +49,7 @@ export function asStorefrontProduct(row: StoredProduct): Product {
     ...legacy, id: row.id, slug: row.slug, name: row.name, shortName: row.shortName ?? undefined,
     category: row.category, collection: row.collection as ProductCollection, price: row.price,
     currency: row.currency, image, stock: row.stock, active: row.active,
+    newBadgeUntil: activeNewBadgeUntil(row.details),
     tagline: details.tagline ?? legacy?.tagline ?? row.name,
     shortDescription: details.shortDescription ?? legacy?.shortDescription ?? row.name,
     description: details.description ?? legacy?.description ?? row.name,

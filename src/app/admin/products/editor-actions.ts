@@ -7,6 +7,7 @@ import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { requireAdminSession } from "@/lib/admin-auth";
 import type { ProductDetails } from "@/lib/storefront-catalog";
+import { readNewBadgeSettings, chooseNewBadgeSettings, type NewBadgeDuration } from "@/lib/new-arrival";
 
 export type EditorState = { error?: string; fieldErrors?: Record<string, string> } | null;
 
@@ -31,6 +32,7 @@ const schema = z.object({
   ritual: z.string().trim().max(5000),
   related: z.string().trim().max(3000),
   ritualTags: z.string().trim().max(300),
+  newBadgeDuration: z.enum(["off", "30", "60", "90"]),
 });
 
 function lines(value: string) { return value.split(/\r?\n/).map((v)=>v.trim()).filter(Boolean); }
@@ -45,8 +47,13 @@ export async function saveProductAction(_previous: EditorState, form: FormData):
   await requireAdminSession();
   const fields = ["id","slug","name","shortName","category","collection","price","image","stock","tagline",
     "shortDescription","description","size","suitableFor","gallery","ingredients","benefits","ritual",
-    "related","ritualTags"] as const;
-  const raw = Object.fromEntries(fields.map((key)=>[key, String(form.get(key) ?? "")]));
+    "related","ritualTags","newBadgeDuration"] as const;
+  const raw = Object.fromEntries(fields.map((key) => [
+    key,
+    key === "related" || key === "ritualTags"
+      ? form.getAll(key).map(String).join("\n")
+      : String(form.get(key) ?? ""),
+  ]));
   const parsed = schema.safeParse(raw);
   if (!parsed.success) {
     const fieldErrors: Record<string,string> = {};
@@ -81,20 +88,36 @@ export async function saveProductAction(_previous: EditorState, form: FormData):
     featured:form.get("featured")==="on",
     bestseller:form.get("bestseller")==="on",
   };
-  const updates = {
-    name:value.name, shortName:value.shortName||null, category:value.category,
-    collection:value.collection, price:value.price, currency:"INR", image:value.image,
-    stock:value.stock===""?null:Number(value.stock),
-    active:form.get("active")==="on",
-    details:details as Prisma.InputJsonValue,
-  };
+  const duration: NewBadgeDuration | null = value.newBadgeDuration === "off"
+    ? null : Number(value.newBadgeDuration) as NewBadgeDuration;
+  const restartBadge = form.get("restartNewBadge") === "on";
 
   let savedSlug=value.slug;
   try {
+    let previousBadge;
     if (value.id) {
-      const previous=await prisma.product.findUnique({where:{id:value.id},select:{slug:true}});
+      const previous=await prisma.product.findUnique({
+        where:{id:value.id}, select:{slug:true, details:true},
+      });
       if (!previous) return {error:"Product not found."};
       savedSlug=previous.slug; // Never rename URLs of previously purchased or bundled items.
+      previousBadge = readNewBadgeSettings(previous.details);
+    }
+    // Editing a product's price or name does not restart its launch period.
+    // Selecting a different period or "Restart countdown" starts it today.
+    details.newBadge = chooseNewBadgeSettings(
+      duration, previousBadge, restartBadge, new Date(),
+    );
+
+    const updates = {
+      name:value.name, shortName:value.shortName||null, category:value.category,
+      collection:value.collection, price:value.price, currency:"INR", image:value.image,
+      stock:value.stock===""?null:Number(value.stock),
+      active:form.get("active")==="on",
+      details:details as Prisma.InputJsonValue,
+    };
+
+    if (value.id) {
       await prisma.product.update({where:{id:value.id},data:updates});
     } else {
       await prisma.product.create({data:{slug:value.slug,...updates}});

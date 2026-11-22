@@ -2,67 +2,51 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { requireAdminSession } from "@/lib/admin-auth";
 import { prisma } from "@/lib/prisma";
+import { readNewBadgeSettings, newBadgeDaysRemaining } from "@/lib/new-arrival";
 import AdminHeader from "../AdminHeader";
-import ProductRow from "./ProductRow";
+import ProductsManager, { type AdminProductRow } from "./ProductsManager";
 
-export const metadata: Metadata = { title: "Products", robots: { index: false, follow: false } };
+export const metadata: Metadata = { title: "Product manager", robots: { index: false, follow: false } };
 export const dynamic = "force-dynamic";
 
 export default async function AdminProductsPage() {
   await requireAdminSession();
+  const rows = await prisma.product.findMany({
+    orderBy: [{ createdAt: "desc" }, { name: "asc" }],
+    select: {
+      id: true, slug: true, name: true, category: true, collection: true,
+      price: true, currency: true, image: true, stock: true, active: true, details: true,
+    },
+  });
 
-  const products = await prisma.product.findMany({
-    orderBy: [{ category: "asc" }, { name: "asc" }],
-    select: { id: true, name: true, category: true, price: true, currency: true, stock: true, active: true },
+  const products: AdminProductRow[] = rows.map((row) => {
+    const settings = readNewBadgeSettings(row.details);
+    return {
+      id: row.id, slug: row.slug, name: row.name, category: row.category,
+      collection: row.collection, price: row.price, currency: row.currency,
+      image: row.image, stock: row.stock, active: row.active,
+      newBadge: settings ? {
+        durationDays: settings.durationDays,
+        daysRemaining: newBadgeDaysRemaining(settings),
+      } : undefined,
+    };
   });
 
   return (
-    <div className="mx-auto max-w-5xl px-6 py-10 sm:px-8">
-      <AdminHeader title="Products" />
-      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-        <p className="text-sm text-walnut/70">Edit products, photos, prices and inventory.</p>
-        <Link href="/admin/products/new" className="rounded-full bg-burgundy px-5 py-2.5 text-sm font-medium text-ivory">+ Add product</Link>
-      </div>
-
-      <p className="mb-6 text-sm text-walnut/70">
-        Set a stock quantity to track inventory, or leave it blank for unlimited. Checkout blocks any
-        order that would exceed the number here — set it to <strong>0</strong> (or use &ldquo;Mark out
-        of stock&rdquo;) to stop a product from selling without removing it from the site. Turning{" "}
-        <strong>Active</strong> off blocks checkout entirely for that product.
-      </p>
-
-      {products.length === 0 ? (
-        <p className="rounded-2xl border border-gold/20 bg-white/40 p-8 text-center text-walnut/70">
-          No products yet.
-        </p>
-      ) : (
-        <div className="overflow-x-auto rounded-2xl border border-gold/20">
-          <table className="w-full min-w-[640px] text-left text-sm">
-            <thead>
-              <tr className="border-b border-gold/20 bg-sand/30 text-xs uppercase tracking-wide text-walnut/60">
-                <th className="px-4 py-3 font-medium">Product</th>
-                <th className="px-4 py-3 font-medium">Price</th>
-                <th className="px-4 py-3 font-medium">Status</th>
-                <th className="px-4 py-3 font-medium">Stock &amp; active</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gold/15">
-              {products.map((product) => (
-                <ProductRow
-                  key={`${product.id}-${product.stock}-${product.active}`}
-                  id={product.id}
-                  name={product.name}
-                  category={product.category}
-                  price={product.price}
-                  currency={product.currency}
-                  stock={product.stock}
-                  active={product.active}
-                />
-              ))}
-            </tbody>
-          </table>
+    <div className="mx-auto max-w-standard px-5 py-10 sm:px-8">
+      <AdminHeader title="Manage products" />
+      <div className="mb-7 flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <h2 className="font-display text-3xl text-ink">Your product collection</h2>
+          <p className="mt-2 max-w-xl text-sm leading-relaxed text-walnut/70">
+            Edit names, prices, images and launch badges yourself. Use Quick stock for fast inventory updates.
+          </p>
         </div>
-      )}
+        <Link href="/admin/products/new" className="rounded-full bg-burgundy px-6 py-3 text-sm font-semibold text-ivory shadow-sm transition hover:bg-burgundy-dark">
+          + Add a product
+        </Link>
+      </div>
+      <ProductsManager products={products} />
     </div>
   );
 }

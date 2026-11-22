@@ -22,6 +22,8 @@ export type Product = {
   currency: string;
   stock?: number | null;
   active?: boolean;
+  /** ISO expiration for the optional time-limited NEW label. */
+  newBadgeUntil?: string;
   size?: string;
   ingredients?: string[];
   benefits?: string[];
