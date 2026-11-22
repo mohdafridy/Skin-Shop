@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "postinstall": "prisma generate",
-    "build": "node scripts/migrate-supabase-session.cjs && next build",
+    "build": "next build",
     "start": "next start",
     "lint": "eslint",
     "db:generate": "prisma generate",
