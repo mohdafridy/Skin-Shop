@@ -1,11 +1,12 @@
 import Link from "next/link";
 import { ritualCategories } from "@/data/rituals";
-import { getProductBySlug } from "@/data/products";
+import { getStorefrontCatalog } from "@/lib/storefront-catalog";
 import SectionHeading from "./SectionHeading";
 import SmartImage from "./SmartImage";
 import Reveal from "./Reveal";
 
-export default function ShopByRitual() {
+export default async function ShopByRitual() {
+  const catalog = await getStorefrontCatalog();
   return (
     <section className="chapter-section bg-sand/32 py-[var(--space-section-lg)]">
       <div className="mx-auto max-w-standard px-6 sm:px-8">
@@ -23,7 +24,8 @@ export default function ShopByRitual() {
 
         <div className="mt-14 grid grid-cols-2 gap-x-5 gap-y-11 sm:grid-cols-3 sm:gap-x-7 lg:gap-x-9">
           {ritualCategories.map((ritual, i) => {
-            const product = getProductBySlug(ritual.representativeSlug);
+            const product = catalog.find((p) => p.slug === ritual.representativeSlug);
+            if (!product) return null;
             return (
               <Reveal key={ritual.name} delay={(i % 4) * 60}>
                 <Link

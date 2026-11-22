@@ -48,11 +48,13 @@ export default function ProductInfo({ product }: { product: Product }) {
   }, [product.slug]);
 
   function handleAdd() {
+    if (product.stock === 0) return;
     addItem(product, quantity);
     triggerAdded();
   }
 
   function handleBuyNow() {
+    if (product.stock === 0) return;
     router.push(`/checkout?mode=buynow&type=product&slug=${product.slug}&qty=${quantity}`);
   }
 
@@ -120,7 +122,7 @@ export default function ProductInfo({ product }: { product: Product }) {
             <span key={quantity} className="qty-pulse w-8 text-center text-sm font-medium">{quantity}</span>
             <button
               type="button"
-              onClick={() => setQuantity((q) => q + 1)}
+              onClick={() => setQuantity((q) => Math.min(20, product.stock == null ? 20 : Math.max(1, product.stock), q + 1))}
               className="flex h-full w-11 items-center justify-center text-lg text-ink transition-colors duration-150 ease-premium hover:text-burgundy active:scale-90"
               aria-label="Increase quantity"
             >
@@ -128,10 +130,10 @@ export default function ProductInfo({ product }: { product: Product }) {
             </button>
           </div>
 
-          <button type="button" onClick={handleAdd} className="premium-button premium-button-primary flex-1 sm:flex-none sm:px-8">
-            {added ? "Added ✓" : "Add to Bag"}
+          <button type="button" onClick={handleAdd} disabled={product.stock === 0} className="premium-button premium-button-primary flex-1 sm:flex-none sm:px-8 disabled:opacity-50">
+            {product.stock === 0 ? "Sold out" : added ? "Added ✓" : "Add to Bag"}
           </button>
-          <button type="button" onClick={handleBuyNow} className="premium-button premium-button-secondary flex-1 sm:flex-none sm:px-8">
+          <button type="button" onClick={handleBuyNow} disabled={product.stock === 0} className="premium-button premium-button-secondary flex-1 sm:flex-none sm:px-8 disabled:opacity-50">
             Buy Now
           </button>
           <button
@@ -175,8 +177,8 @@ export default function ProductInfo({ product }: { product: Product }) {
           <p className="truncate font-display text-lg leading-none text-ink">{product.shortName ?? product.name}</p>
           <p className="mt-1 text-xs text-walnut/60">{formatPrice(product.price, product.currency)}</p>
         </div>
-        <button type="button" onClick={handleAdd} className="premium-button premium-button-primary min-h-[46px] px-5 py-2.5">
-          {added ? "Added ✓" : "Add to Bag"}
+        <button type="button" onClick={handleAdd} disabled={product.stock === 0} className="premium-button premium-button-primary min-h-[46px] px-5 py-2.5 disabled:opacity-50">
+          {product.stock === 0 ? "Sold out" : added ? "Added ✓" : "Add to Bag"}
         </button>
       </div>
     </div>

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { requireAdminSession } from "@/lib/admin-auth";
 import { prisma } from "@/lib/prisma";
 import AdminHeader from "../AdminHeader";
@@ -12,12 +13,16 @@ export default async function AdminProductsPage() {
 
   const products = await prisma.product.findMany({
     orderBy: [{ category: "asc" }, { name: "asc" }],
-    select: { id: true, name: true, category: true, stock: true, active: true },
+    select: { id: true, name: true, category: true, price: true, currency: true, stock: true, active: true },
   });
 
   return (
     <div className="mx-auto max-w-5xl px-6 py-10 sm:px-8">
       <AdminHeader title="Products" />
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+        <p className="text-sm text-walnut/70">Edit products, photos, prices and inventory.</p>
+        <Link href="/admin/products/new" className="rounded-full bg-burgundy px-5 py-2.5 text-sm font-medium text-ivory">+ Add product</Link>
+      </div>
 
       <p className="mb-6 text-sm text-walnut/70">
         Set a stock quantity to track inventory, or leave it blank for unlimited. Checkout blocks any
@@ -36,6 +41,7 @@ export default async function AdminProductsPage() {
             <thead>
               <tr className="border-b border-gold/20 bg-sand/30 text-xs uppercase tracking-wide text-walnut/60">
                 <th className="px-4 py-3 font-medium">Product</th>
+                <th className="px-4 py-3 font-medium">Price</th>
                 <th className="px-4 py-3 font-medium">Status</th>
                 <th className="px-4 py-3 font-medium">Stock &amp; active</th>
               </tr>
@@ -47,6 +53,8 @@ export default async function AdminProductsPage() {
                   id={product.id}
                   name={product.name}
                   category={product.category}
+                  price={product.price}
+                  currency={product.currency}
                   stock={product.stock}
                   active={product.active}
                 />

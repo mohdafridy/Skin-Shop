@@ -6,11 +6,11 @@ function normalize(value: string): string {
   return value.replace(/ /g, " ").toLowerCase().trim();
 }
 
-export function searchProducts(query: string, limit = 8): Product[] {
+export function searchProducts(query: string, limit = 8, catalog: Product[] = products): Product[] {
   const q = normalize(query);
   if (!q) return [];
 
-  return products
+  return catalog
     .map((product) => {
       const haystack = normalize(
         [

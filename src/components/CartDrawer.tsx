@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useCart } from "@/lib/cart-context";
 import { formatPrice } from "@/lib/format";
 import { getCartSuggestion, getComboPricing } from "@/data/combos";
-import { getProductBySlug } from "@/data/products";
+import { useCatalog } from "@/lib/product-catalog-context";
 import { whatsappLink, instagramUrl } from "@/data/contact";
 import { buildWhatsAppOrderMessage } from "@/lib/whatsapp-order";
 import { track } from "@/lib/analytics";
@@ -13,6 +13,7 @@ import { WhatsAppIcon, InstagramIcon } from "./icons";
 import SmartImage from "./SmartImage";
 
 export default function CartDrawer() {
+  const { getProduct, products } = useCatalog();
   const {
     items,
     isOpen,
@@ -218,7 +219,7 @@ export default function CartDrawer() {
                     </p>
                     <p className="mt-1 text-sm text-walnut/75">
                       Discover the complete ritual — save{" "}
-                      {formatPrice(getComboPricing(suggestion.combo).savings, suggestion.combo.currency)} when
+                      {formatPrice(getComboPricing(suggestion.combo, products).savings, suggestion.combo.currency)} when
                       bundled.
                     </p>
                     <Link
@@ -231,7 +232,7 @@ export default function CartDrawer() {
                   </>
                 ) : (
                   (() => {
-                    const product = getProductBySlug(suggestion.missingSlug);
+                    const product = getProduct(suggestion.missingSlug);
                     if (!product) return null;
                     return (
                       <>

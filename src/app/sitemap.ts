@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/lib/seo";
-import { products } from "@/data/products";
+import { getStorefrontCatalog } from "@/lib/storefront-catalog";
 
 /**
  * Dynamic sitemap: static marketing/info pages plus every product, generated
@@ -8,7 +8,9 @@ import { products } from "@/data/products";
  * Deliberately excludes admin, account, checkout, order-success, track,
  * wishlist and api/* — see robots.ts for the matching disallow rules.
  */
-export default function sitemap(): MetadataRoute.Sitemap {
+export const dynamic = "force-dynamic";
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const products = await getStorefrontCatalog();
   const staticPages: MetadataRoute.Sitemap = [
     { url: `${SITE_URL}/`, changeFrequency: "weekly", priority: 1 },
     { url: `${SITE_URL}/shop`, changeFrequency: "daily", priority: 0.9 },

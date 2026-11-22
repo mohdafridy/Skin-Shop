@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { Combo } from "@/data/combos";
 import { getComboPricing } from "@/data/combos";
-import { getProductBySlug } from "@/data/products";
+import { useCatalog } from "@/lib/product-catalog-context";
 import { useCart } from "@/lib/cart-context";
 import { formatPrice } from "@/lib/format";
 import ReviewsSection from "./ReviewsSection";
@@ -12,11 +12,12 @@ import SmartImage from "./SmartImage";
 
 export default function ComboDetail({ combo }: { combo: Combo }) {
   const { addCombo } = useCart();
+  const { products, getProduct } = useCatalog();
   const router = useRouter();
   const comboProducts = combo.productSlugs
-    .map((slug) => getProductBySlug(slug))
+    .map((slug) => getProduct(slug))
     .filter((p): p is NonNullable<typeof p> => Boolean(p));
-  const { individualValue, price, savings, currency } = getComboPricing(combo);
+  const { individualValue, price, savings, currency } = getComboPricing(combo, products);
 
   function handleBuyNow() {
     router.push(`/checkout?mode=buynow&type=combo&slug=${combo.slug}&qty=1`);

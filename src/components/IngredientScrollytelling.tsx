@@ -3,12 +3,13 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ingredientStories } from "@/data/ingredients";
-import { getProductBySlug } from "@/data/products";
+import { useCatalog } from "@/lib/product-catalog-context";
 import { track } from "@/lib/analytics";
 import SmartImage from "./SmartImage";
 import BotanicalMark from "./BotanicalMark";
 
 export default function IngredientScrollytelling() {
+  const { getProduct } = useCatalog();
   const [activeId, setActiveId] = useState(ingredientStories[0].id);
   const rowRefs = useRef(new Map<string, HTMLElement>());
 
@@ -49,7 +50,7 @@ export default function IngredientScrollytelling() {
         <div className="relative mx-auto aspect-[4/5] h-[clamp(460px,64vh,620px)] w-auto max-w-full overflow-hidden bg-sand">
           {ingredientStories.map((ingredient) => {
             const product = ingredient.relatedProductSlugs[0]
-              ? getProductBySlug(ingredient.relatedProductSlugs[0])
+              ? getProduct(ingredient.relatedProductSlugs[0])
               : undefined;
             const imageSrc = ingredient.image ?? product?.image;
             const isActive = activeId === ingredient.id;
@@ -89,7 +90,7 @@ export default function IngredientScrollytelling() {
       <div className="flex flex-col py-4">
         {ingredientStories.map((ingredient, index) => {
           const product = ingredient.relatedProductSlugs[0]
-            ? getProductBySlug(ingredient.relatedProductSlugs[0])
+            ? getProduct(ingredient.relatedProductSlugs[0])
             : undefined;
           const isActive = activeId === ingredient.id;
 

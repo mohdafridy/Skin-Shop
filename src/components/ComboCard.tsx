@@ -3,6 +3,7 @@
 import Link from "next/link";
 import type { Combo } from "@/data/combos";
 import { getComboPricing } from "@/data/combos";
+import { useCatalog } from "@/lib/product-catalog-context";
 import { useCart } from "@/lib/cart-context";
 import { formatPrice } from "@/lib/format";
 import { useAddedFeedback } from "@/lib/use-added-feedback";
@@ -11,8 +12,9 @@ import SmartImage from "./SmartImage";
 
 export default function ComboCard({ combo }: { combo: Combo }) {
   const { addCombo } = useCart();
+  const { products } = useCatalog();
   const [added, triggerAdded] = useAddedFeedback();
-  const { individualValue, price, savings, currency } = getComboPricing(combo);
+  const { individualValue, price, savings, currency } = getComboPricing(combo, products);
   const treatment = ritualHoverTreatment[combo.id] ?? defaultRitualTreatment;
 
   return (

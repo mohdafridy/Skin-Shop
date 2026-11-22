@@ -94,6 +94,7 @@ export default function SmartImage({
             sizes={sizes}
             priority={priority}
             quality={quality}
+            unoptimized={src.startsWith("https://")}
             onLoad={() => setLoaded(true)}
             onError={() => setErrored(true)}
             className={`relative smart-image-media ${loaded ? "is-loaded" : ""} ${fitClass} ${imageClassName}`}
@@ -107,6 +108,7 @@ export default function SmartImage({
             sizes={sizes}
             priority={priority}
             quality={quality}
+            unoptimized={src.startsWith("https://")}
             onLoad={() => setLoaded(true)}
             onError={() => setErrored(true)}
             className={`relative smart-image-media ${loaded ? "is-loaded" : ""} ${fitClass} ${imageClassName}`}

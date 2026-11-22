@@ -11,6 +11,7 @@ import {
 import type { Product } from "@/data/products";
 import type { Combo } from "@/data/combos";
 import { track } from "@/lib/analytics";
+import { useCatalog } from "@/lib/product-catalog-context";
 
 const STORAGE_KEY = "the-skin-shop-cart";
 
@@ -97,6 +98,7 @@ type CartContextValue = {
 const CartContext = createContext<CartContextValue | null>(null);
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
+  const { getProduct } = useCatalog();
   const [items, setItems] = useState<CartItem[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [hydrated, setHydrated] = useState(false);
@@ -109,13 +111,22 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       if (raw) {
         const parsed = JSON.parse(raw);
         // eslint-disable-next-line react-hooks/set-state-in-effect
-        setItems(migrateStoredItems(parsed.items ?? parsed));
+        setItems(migrateStoredItems(parsed.items ?? parsed).flatMap((item) => {
+          if (item.type !== "product") return [item];
+          const live = getProduct(item.slug);
+          if (!live) return [];
+          return [{ ...item, name: live.shortName ?? live.name, image: live.image,
+            category: live.category, price: live.price, currency: live.currency,
+            quantity: Math.min(20, Math.max(1, item.quantity)) }];
+        }));
         if (typeof parsed.couponCode === "string") setCouponCode(parsed.couponCode);
       }
     } catch {
       // ignore corrupted local storage
     }
     setHydrated(true);
+    // Hydration is a one-time read of persisted cart state.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -123,12 +134,35 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ items, couponCode }));
   }, [items, couponCode, hydrated]);
 
-  const addItem = useCallback<CartContextValue["addItem"]>((product, quantity = 1) => {
+
+  useEffect(() => {
+    if (!hydrated) return;
+    // A new server catalog snapshot may contain edited prices or products.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setItems((previous) => {
+      let changed = false;
+      const updated = previous.flatMap((item) => {
+        if (item.type !== "product") return [item];
+        const live = getProduct(item.slug);
+        if (!live) { changed = true; return []; }
+        const next = { ...item, name: live.shortName ?? live.name, price: live.price,
+          image: live.image, category: live.category, currency: live.currency };
+        if (next.name !== item.name || next.price !== item.price || next.image !== item.image ||
+            next.category !== item.category || next.currency !== item.currency) changed = true;
+        return [next];
+      });
+      return changed ? updated : previous;
+    });
+  }, [getProduct, hydrated]);
+
+  const addItem = useCallback<CartContextValue["addItem"]>((requested, quantity = 1) => {
+    const product = getProduct(requested.slug);
+    if (!product || product.stock === 0) return;
     const key = `product:${product.slug}`;
     setItems((prev) => {
       const existing = prev.find((i) => i.key === key);
       if (existing) {
-        return prev.map((i) => (i.key === key ? { ...i, quantity: i.quantity + quantity } : i));
+        return prev.map((i) => (i.key === key ? { ...i, quantity: Math.min(20, i.quantity + quantity) } : i));
       }
       return [
         ...prev,
@@ -141,13 +175,13 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
           category: product.category,
           price: product.price,
           currency: product.currency,
-          quantity,
+          quantity: Math.min(20, quantity),
         },
       ];
     });
     setIsOpen(true);
     track({ name: "add_to_cart", slug: product.slug, quantity, price: product.price, currency: product.currency });
-  }, []);
+  }, [getProduct]);
 
   const addCombo = useCallback<CartContextValue["addCombo"]>((combo, quantity = 1) => {
     const key = `combo:${combo.slug}`;
@@ -181,6 +215,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const updateQuantity = useCallback((key: string, quantity: number) => {
+    quantity = Math.min(20, quantity);
     setItems((prev) => {
       if (quantity <= 0) return prev.filter((i) => i.key !== key);
       return prev.map((i) => (i.key === key ? { ...i, quantity } : i));

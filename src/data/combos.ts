@@ -82,9 +82,9 @@ export type ComboPricing = {
   currency: string;
 };
 
-export function getComboPricing(combo: Combo): ComboPricing {
+export function getComboPricing(combo: Combo, catalog?: { slug: string; price: number }[]): ComboPricing {
   const individualValue = combo.productSlugs.reduce((sum, slug) => {
-    const product = getProductBySlug(slug);
+    const product = catalog ? catalog.find((p) => p.slug === slug) : getProductBySlug(slug);
     return sum + (product?.price ?? 0);
   }, 0);
 

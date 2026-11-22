@@ -2,14 +2,15 @@
 
 import Link from "next/link";
 import type { IngredientStory } from "@/data/ingredients";
-import { getProductBySlug } from "@/data/products";
+import { useCatalog } from "@/lib/product-catalog-context";
 import { track } from "@/lib/analytics";
 import SmartImage from "./SmartImage";
 import BotanicalMark from "./BotanicalMark";
 
 export default function IngredientCard({ ingredient }: { ingredient: IngredientStory }) {
+  const { getProduct } = useCatalog();
   const primaryProduct = ingredient.relatedProductSlugs[0]
-    ? getProductBySlug(ingredient.relatedProductSlugs[0])
+    ? getProduct(ingredient.relatedProductSlugs[0])
     : undefined;
   const imageSrc = ingredient.image ?? primaryProduct?.image;
 
