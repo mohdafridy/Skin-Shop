@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "postinstall": "prisma generate",
-    "build": "next build",
+    "build": "node scripts/add-fuschia-day-cream-once.cjs && next build",
     "start": "next start",
     "lint": "eslint",
     "db:generate": "prisma generate",
