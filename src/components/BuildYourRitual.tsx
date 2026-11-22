@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { getProductBySlug } from "@/data/products";
+import { useCatalog } from "@/lib/product-catalog-context";
 import { getComboBySlug, getComboPricing } from "@/data/combos";
 import { formatPrice } from "@/lib/format";
 import SmartImage from "./SmartImage";
@@ -68,6 +68,7 @@ function recommendations(goal: Goal, depth: Depth, time: Time) {
 }
 
 export default function BuildYourRitual() {
+  const { getProduct } = useCatalog();
   const [step, setStep] = useState(1);
   const [goal, setGoal] = useState<Goal | null>(null);
   const [time, setTime] = useState<Time | null>(null);
@@ -77,9 +78,9 @@ export default function BuildYourRitual() {
     if (!goal || !time || !depth) return null;
     const rec = recommendations(goal, depth, time);
     const combo = rec.comboSlug ? getComboBySlug(rec.comboSlug) : undefined;
-    const products = rec.productSlugs.map(getProductBySlug).filter((p) => p != null);
+    const products = rec.productSlugs.map(getProduct).filter((p) => p != null);
     return { combo, products };
-  }, [goal, time, depth]);
+  }, [goal, time, depth, getProduct]);
 
   function restart() {
     setStep(1);

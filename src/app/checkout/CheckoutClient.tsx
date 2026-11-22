@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useCart } from "@/lib/cart-context";
-import { getProductBySlug } from "@/data/products";
+import { useCatalog } from "@/lib/product-catalog-context";
 import { getComboBySlug } from "@/data/combos";
 import { defaultZone, calculateShippingCost } from "@/data/shipping";
 import { getActivePaymentProvider } from "@/lib/payment";
@@ -93,6 +93,7 @@ const BLANK_SHIPPING = {
 function useOrderLines(): { lines: OrderLine[]; mode: "cart" | "buynow"; error: string | null } {
   const searchParams = useSearchParams();
   const { items } = useCart();
+  const { getProduct } = useCatalog();
   const mode = searchParams.get("mode") === "buynow" ? "buynow" : "cart";
 
   if (mode === "buynow") {
@@ -101,7 +102,7 @@ function useOrderLines(): { lines: OrderLine[]; mode: "cart" | "buynow"; error: 
     const qty = Math.max(1, Number(searchParams.get("qty")) || 1);
 
     if (type === "product" && slug) {
-      const product = getProductBySlug(slug);
+      const product = getProduct(slug);
       if (!product) return { lines: [], mode, error: "We couldn't find that product." };
       return {
         lines: [

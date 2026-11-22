@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Product } from "@/data/products";
-import { getProductBySlug } from "@/data/products";
+import { getStorefrontCatalog } from "@/lib/storefront-catalog";
 
 type Stage = {
   label: string;
@@ -14,10 +14,11 @@ const stages: Stage[] = [
   { label: "Complete", matches: (p) => p.collection === "Lip Care" || p.collection === "Body" || p.collection === "Hair" || p.collection === "Kids" },
 ];
 
-export default function RitualTimeline({ product }: { product: Product }) {
+export default async function RitualTimeline({ product }: { product: Product }) {
+  const catalog = await getStorefrontCatalog();
   const pool = [
     product,
-    ...(product.related ?? []).map(getProductBySlug).filter((item) => item != null),
+    ...(product.related ?? []).map((slug) => catalog.find((p) => p.slug === slug)).filter((item) => item != null),
   ];
   const used = new Set<string>();
 

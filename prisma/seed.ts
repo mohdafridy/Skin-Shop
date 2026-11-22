@@ -1,9 +1,8 @@
 /**
- * Seeds the database from the site's real, locked catalog — src/data/products.ts
- * and src/data/combos.ts — rather than placeholder data. Those two files stay
- * the source of truth for display; this script just mirrors them into
- * Postgres so checkout has a trusted, server-side price to re-validate
- * against (never the browser's).
+ * Provisions an empty database with the original Skin Shop catalog.
+ * It never overwrites a product edited by an administrator — Postgres now
+ * supplies the authoritative product prices, names and availability to both
+ * the storefront and checkout. See ADMIN_CATALOG_SETUP.md.
  */
 import { PrismaClient } from "@prisma/client";
 import { products } from "../src/data/products";
@@ -17,16 +16,8 @@ async function main() {
   for (const p of products) {
     const row = await prisma.product.upsert({
       where: { slug: p.slug },
-      update: {
-        name: p.name,
-        shortName: p.shortName ?? null,
-        category: p.category,
-        collection: p.collection,
-        price: p.price,
-        currency: p.currency,
-        image: p.image,
-        active: true,
-      },
+      // Never overwrite admin edits (name, price, image or availability) on re-seed.
+      update: {},
       create: {
         slug: p.slug,
         name: p.name,

@@ -9,6 +9,8 @@ import WhatsAppButton from "@/components/WhatsAppButton";
 import ScrollProgress from "@/components/ScrollProgress";
 import PageTransition from "@/components/PageTransition";
 import { CartProvider } from "@/lib/cart-context";
+import { CatalogProvider } from "@/lib/product-catalog-context";
+import { getStorefrontCatalog } from "@/lib/storefront-catalog";
 import { WishlistProvider } from "@/lib/wishlist-context";
 import {
   SITE_NAME,
@@ -61,7 +63,10 @@ export const metadata: Metadata = {
   ...(GOOGLE_SITE_VERIFICATION ? { verification: { google: GOOGLE_SITE_VERIFICATION } } : {}),
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export const dynamic = "force-dynamic";
+
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const catalog = await getStorefrontCatalog();
   return (
     <html
       lang="en"
@@ -76,6 +81,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd()) }}
         />
+        <CatalogProvider products={catalog}>
         <CartProvider>
           <WishlistProvider>
             <a
@@ -95,6 +101,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             <WhatsAppButton />
           </WishlistProvider>
         </CartProvider>
+        </CatalogProvider>
       </body>
     </html>
   );

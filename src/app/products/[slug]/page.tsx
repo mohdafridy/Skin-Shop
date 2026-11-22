@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
-import { getProductBySlug, getRelatedProducts, products } from "@/data/products";
+import { getStorefrontCatalog, getStorefrontProduct } from "@/lib/storefront-catalog";
 import ProductGallery from "@/components/ProductGallery";
 import ProductInfo from "@/components/ProductInfo";
 import Accordion from "@/components/Accordion";
@@ -11,9 +11,7 @@ import SectionHeading from "@/components/SectionHeading";
 import RitualTimeline from "@/components/RitualTimeline";
 import { absoluteUrl, breadcrumbJsonLd, productJsonLd } from "@/lib/seo";
 
-export function generateStaticParams() {
-  return products.map((product) => ({ slug: product.slug }));
-}
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,
@@ -21,7 +19,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const product = getProductBySlug(slug);
+  const product = await getStorefrontProduct(slug);
   if (!product) return {};
 
   const url = absoluteUrl(`/products/${product.slug}`);
@@ -53,10 +51,12 @@ export default async function ProductPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const product = getProductBySlug(slug);
+  const product = await getStorefrontProduct(slug);
   if (!product) notFound();
 
-  const related = getRelatedProducts(product);
+  const catalog = await getStorefrontCatalog();
+  const related = (product.related ?? []).map((slug) => catalog.find((p) => p.slug === slug))
+    .filter((p): p is (typeof catalog)[number] => p !== undefined);
   const gallery = product.gallery ?? [product.image];
 
   const jsonLd = productJsonLd(product);

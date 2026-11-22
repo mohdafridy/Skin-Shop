@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { useWishlist } from "@/lib/wishlist-context";
-import { getProductBySlug } from "@/data/products";
+import { useCatalog } from "@/lib/product-catalog-context";
 import ProductGrid from "@/components/ProductGrid";
 
 export default function WishlistClient() {
   const { slugs } = useWishlist();
+  const { getProduct } = useCatalog();
   const products = slugs
-    .map((slug) => getProductBySlug(slug))
+    .map((slug) => getProduct(slug))
     .filter((p): p is NonNullable<typeof p> => p !== undefined);
 
   return (

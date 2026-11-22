@@ -1,10 +1,11 @@
 import Link from "next/link";
-import { getProductBySlug } from "@/data/products";
+import { getStorefrontCatalog } from "@/lib/storefront-catalog";
 import SectionHeading from "./SectionHeading";
 import ProductCard from "./ProductCard";
 import Reveal from "./Reveal";
 
-export default function StartHere() {
+export default async function StartHere() {
+  const catalog = await getStorefrontCatalog();
   const slugs = [
     "dahab-whitening-night-cream",
     "vitamin-c-serum",
@@ -12,7 +13,7 @@ export default function StartHere() {
     "coffee-detox-facemask",
     "argan-body-whitening-cream",
   ];
-  const products = slugs.map(getProductBySlug).filter((p) => p != null);
+  const products = slugs.map((slug) => catalog.find((p) => p.slug === slug)).filter((p) => p != null);
 
   if (products.length === 0) return null;
 

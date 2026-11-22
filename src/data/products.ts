@@ -20,6 +20,8 @@ export type Product = {
   /** Locked commercial price. INR, numeric, no invented values. */
   price: number;
   currency: string;
+  stock?: number | null;
+  active?: boolean;
   size?: string;
   ingredients?: string[];
   benefits?: string[];

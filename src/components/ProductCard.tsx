@@ -3,6 +3,7 @@
 import Link from "next/link";
 import type { Product } from "@/data/products";
 import { useCart } from "@/lib/cart-context";
+import { useCatalog } from "@/lib/product-catalog-context";
 import { useWishlist } from "@/lib/wishlist-context";
 import { formatPrice } from "@/lib/format";
 import { useAddedFeedback } from "@/lib/use-added-feedback";
@@ -24,12 +25,16 @@ const focalPointBySlug: Record<string, string> = {
   "saffron-gel": "product-photo--upper",
 };
 
-export default function ProductCard({ product }: { product: Product }) {
+export default function ProductCard({ product: initialProduct }: { product: Product }) {
+  const { getProduct } = useCatalog();
+  const product = getProduct(initialProduct.slug);
   const { addItem } = useCart();
   const { isWishlisted, toggle } = useWishlist();
   const [added, triggerAdded] = useAddedFeedback();
-  const wishlisted = isWishlisted(product.slug);
-  const focalPoint = focalPointBySlug[product.slug] ?? "";
+  const wishlisted = isWishlisted(initialProduct.slug);
+  const focalPoint = focalPointBySlug[initialProduct.slug] ?? "";
+  if (!product) return null;
+  const soldOut = product.stock === 0;
 
   return (
     <article className="group product-card-motion relative flex min-w-0 flex-col">
@@ -82,13 +87,14 @@ export default function ProductCard({ product }: { product: Product }) {
         <div className="mt-4 flex items-center justify-between border-t border-gold/20 pt-3">
           <button
             type="button"
+            disabled={soldOut}
             onClick={() => {
               addItem(product);
               triggerAdded();
             }}
             className="editorial-link product-card-actions text-burgundy"
           >
-            {added ? "Added ✓" : "Quick Add"}
+            {soldOut ? "Sold out" : added ? "Added ✓" : "Quick Add"}
             <span aria-hidden="true" className="motion-arrow">+</span>
           </button>
           <Link

@@ -2,7 +2,8 @@
 
 import { useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { products, collections, type Product } from "@/data/products";
+import { collections, type Product } from "@/data/products";
+import { useCatalog } from "@/lib/product-catalog-context";
 import type { RitualTag } from "@/data/products";
 import ProductGrid from "@/components/ProductGrid";
 
@@ -30,6 +31,7 @@ function sortProducts(list: Product[], sort: SortOption): Product[] {
 export default function ShopClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { products } = useCatalog();
 
   const initialFilter =
     searchParams.get("filter") ??
@@ -38,12 +40,11 @@ export default function ShopClient() {
     searchParams.get("ritual") ??
     null;
 
-  const [activeFilter, setActiveFilter] = useState<string | null>(initialFilter);
+  const activeFilter = initialFilter;
   const [query, setQuery] = useState(searchParams.get("q") ?? "");
   const [sort, setSort] = useState<SortOption>("featured");
 
   function applyFilter(value: string | null) {
-    setActiveFilter(value);
     const params = new URLSearchParams();
     if (value) params.set("filter", value);
     if (query) params.set("q", query);
@@ -70,7 +71,7 @@ export default function ShopClient() {
     }
 
     return sortProducts(list, sort);
-  }, [activeFilter, query, sort]);
+  }, [activeFilter, query, sort, products]);
 
   return (
     <div className="mx-auto max-w-standard px-6 pb-[var(--space-section-lg)] pt-14 sm:px-8 lg:pt-20">

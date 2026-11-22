@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { searchProducts } from "@/lib/search";
+import { useCatalog } from "@/lib/product-catalog-context";
 import { formatPrice } from "@/lib/format";
 import { track } from "@/lib/analytics";
 import SmartImage from "./SmartImage";
@@ -16,7 +17,8 @@ export default function SearchOverlay({
 }) {
   const [query, setQuery] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
-  const results = searchProducts(query);
+  const { products } = useCatalog();
+  const results = searchProducts(query, 8, products);
 
   const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
   if (isOpen !== prevIsOpen) {
