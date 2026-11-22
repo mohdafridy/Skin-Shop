@@ -13,7 +13,10 @@ export default async function StartHere() {
     "coffee-detox-facemask",
     "argan-body-whitening-cream",
   ];
-  const products = slugs.map((slug) => catalog.find((p) => p.slug === slug)).filter((p) => p != null);
+  const curated = catalog.filter((product) => product.featured);
+  const products = curated.length
+    ? curated.slice(0, 5)
+    : slugs.map((slug) => catalog.find((p) => p.slug === slug)).filter((p) => p != null);
 
   if (products.length === 0) return null;
 

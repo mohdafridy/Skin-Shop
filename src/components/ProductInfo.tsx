@@ -12,6 +12,7 @@ import { useProductReviews } from "@/lib/reviews-client";
 import { StarRow } from "./reviews/RatingStars";
 import { HeartIcon } from "./icons";
 import ConsultationCTA from "./ConsultationCTA";
+import NewArrivalBadge from "./NewArrivalBadge";
 
 export default function ProductInfo({ product }: { product: Product }) {
   const { addItem } = useCart();
@@ -63,6 +64,7 @@ export default function ProductInfo({ product }: { product: Product }) {
       <div className="flex items-center gap-3">
         <span className="h-px w-7 bg-gold/75" aria-hidden="true" />
         <p className="text-[0.66rem] font-semibold uppercase tracking-[0.16em] text-burgundy">{product.category}</p>
+        {product.newBadgeUntil && <NewArrivalBadge key={product.newBadgeUntil} until={product.newBadgeUntil} placement="inline" />}
       </div>
 
       <h1 className="mt-4 text-balance font-display text-[clamp(3rem,5.4vw,5.25rem)] font-normal leading-[0.9] tracking-[-0.055em] text-ink">
